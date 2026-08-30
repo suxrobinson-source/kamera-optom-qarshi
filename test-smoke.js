@@ -82,7 +82,9 @@ function testHtml(filePath, options = {}) {
     '/api/stories': [
       { id: 's1', label: 'Anor Market', mark: 'AM', title: '"Anor Market" · Qarshi', meta: '8 kamera · 12-avgust', dur: '0:42', views: 1284, live: true, file: 'anor-market.mp4', tags: ['8 × IPC-2410'], text: 'Sinov matni' }
     ],
-    '/api/admin/callbacks': []
+    '/api/admin/callbacks': [
+      { id: 1, name: 'Sanjar Rahimov', phone: '901234567', topic: 'Yangi kamera kerak', channel: 'Telefon', slot: 'Tezroq', note: '2 qavatli hovli', status: 'Yangi', created_at: '2026-08-30 11:30:00' }
+    ]
   };
 
   const sandbox = {
@@ -151,7 +153,7 @@ try {
   });
 
   // Test admin tabs
-  ['orders', 'products', 'credit', 'stories', 'settings', 'stats'].forEach(tab => {
+  ['orders', 'callbacks', 'products', 'credit', 'stories', 'settings', 'stats'].forEach(tab => {
     adminSandbox.set({ adminTab: tab });
     console.log(`✓ Admin tab "${tab}" rendered successfully`);
   });

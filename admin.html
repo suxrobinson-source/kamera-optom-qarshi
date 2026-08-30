@@ -15,7 +15,14 @@ body{margin:0;background:var(--bg);color:var(--fg);font-family:'Space Grotesk',s
 ::-webkit-scrollbar{width:7px;height:7px}::-webkit-scrollbar-thumb{background:var(--line4);border-radius:4px}
 #root{height:100%}
 input,textarea{font-family:inherit}
-@media (max-width:900px){ #side{display:none} }
+.burger-btn{display:none}
+#side-backdrop{display:none}
+@media (max-width:900px){
+  #side{position:fixed;top:0;bottom:0;left:0;z-index:60;transform:translateX(-100%);transition:transform .24s ease;box-shadow:0 0 40px rgba(0,0,0,.75)}
+  #side.open{transform:translateX(0)}
+  .burger-btn{display:flex !important}
+  #side-backdrop.open{display:block !important}
+}
 </style>
 </head>
 <body>
@@ -99,7 +106,7 @@ const PRODUCTS=[
 
 const S={
   token: _token, adminUser: null, loginUser: 'admin', loginPass: '', loginErr: '', loginLoading: false,
-  adminTab: _tab, toast:null,
+  adminTab: _tab, toast:null, sideOpen: false, confirmModal: null,
   orders: [], kpiData: null, stockProducts: [],
   promo:{'IPC-2410':'HIT','KIT-UY4':'CHEGIRMA','PTZ-5X':'YANGI'},
   labelOn:{HIT:true,CHEGIRMA:true,YANGI:true},
@@ -209,16 +216,33 @@ function vals(){
       note: nt ? nt.text : '',
       next: async ()=>{
         const ns = FLOW[(FLOW.indexOf(st)+1)%4];
-        try {
-          const updated = await api('/api/admin/orders/'+o.id.replace('#','')+'/status',{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({status:ns})});
-          set(stt=>({
-            orders: stt.orders.map(x=>x.id===o.id?updated:x),
-            orderStatus:{...stt.orderStatus,[o.id]:ns},
-            noteDraft:{id:o.id,client:o.client_name||'Mijoz',phone:phoneStr,status:ns},
-            noteText:NOTE_DEF[ns]||''
-          }));
-          api('/api/admin/kpis').then(kd=>set({kpiData:kd})).catch(err=>flash(err.message));
-        } catch(err) { flash(err.message); }
+        const doChangeStatus = async () => {
+          try {
+            const updated = await api('/api/admin/orders/'+o.id.replace('#','')+'/status',{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({status:ns})});
+            set(stt=>({
+              orders: stt.orders.map(x=>x.id===o.id?updated:x),
+              orderStatus:{...stt.orderStatus,[o.id]:ns},
+              noteDraft:{id:o.id,client:o.client_name||'Mijoz',phone:phoneStr,status:ns},
+              noteText:NOTE_DEF[ns]||'',
+              confirmModal: null
+            }));
+            api('/api/admin/kpis').then(kd=>set({kpiData:kd})).catch(err=>flash(err.message));
+          } catch(err) { flash(err.message); }
+        };
+        if (st === "Yopildi" && ns === "Yangi") {
+          set({
+            confirmModal: {
+              title: "Buyurtmani qayta ochish",
+              text: `Ushbu buyurtma yopilgan (${o.id}). Uni qaytadan "Yangi" holatiga o'tkazishni tasdiqlaysizmi?`,
+              actionLabel: "Qayta ochish",
+              cancelLabel: "Bekor",
+              danger: false,
+              action: doChangeStatus
+            }
+          });
+          return;
+        }
+        await doChangeStatus();
       }
     };
   });
@@ -273,7 +297,58 @@ function vals(){
     };
   });
 
+  const cbStatusList = ['Yangi', 'Aloqada', 'Bajarildi', 'Bekor'];
+  const CB_ST = {
+    Yangi: { fg: AMB, bg: 'rgba(255,176,32,.12)', border: 'rgba(255,176,32,.35)' },
+    Aloqada: { fg: '#7fb4ff', bg: 'rgba(127,180,255,.12)', border: 'rgba(127,180,255,.35)' },
+    Bajarildi: { fg: A, bg: 'rgba(47,224,182,.12)', border: 'rgba(47,224,182,.35)' },
+    Bekor: { fg: RED, bg: 'rgba(255,77,61,.12)', border: 'rgba(255,77,61,.35)' }
+  };
+  const callbackRows = s.callbacks.map(c => {
+    const st = c.status || 'Yangi';
+    const cStyle = CB_ST[st] || CB_ST.Yangi;
+    const phoneNorm = String(c.phone || '').replace(/[^0-9]/g, '').slice(-9);
+    const phoneFormatted = phoneNorm.length === 9
+      ? `+998 ${phoneNorm.slice(0,2)} ${phoneNorm.slice(2,5)} ${phoneNorm.slice(5,7)} ${phoneNorm.slice(7,9)}`
+      : (c.phone || '—');
+    const telHref = phoneNorm.length === 9 ? `tel:+998${phoneNorm}` : '#';
+    const dateStr = c.created_at ? c.created_at.slice(0, 16).replace('T', ' ') : 'Bugun';
+    return {
+      id: c.id,
+      name: c.name || 'Mijoz',
+      phone: phoneFormatted,
+      telHref,
+      topic: c.topic || 'Umumiy',
+      channel: c.channel || 'Telefon',
+      slot: c.slot || 'Tezroq',
+      note: c.note || '—',
+      date: dateStr,
+      status: st,
+      fg: cStyle.fg,
+      bg: cStyle.bg,
+      border: cStyle.border,
+      cycleStatus: async () => {
+        const nextStatus = cbStatusList[(cbStatusList.indexOf(st) + 1) % cbStatusList.length];
+        try {
+          await api('/api/admin/callbacks/' + c.id, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ status: nextStatus })
+          });
+          set(prev => ({
+            callbacks: prev.callbacks.map(x => x.id === c.id ? { ...x, status: nextStatus } : x)
+          }));
+          api('/api/admin/kpis').then(kd => set({ kpiData: kd })).catch(err => flash(err.message));
+          flash(`Ariza #${c.id} holati "${nextStatus}" ga o'zgartirildi`);
+        } catch(err) {
+          flash(err.message);
+        }
+      }
+    };
+  });
+
   const openOrdersCount = String(s.orders.length || 0);
+  const newCallbacksCount = String(s.callbacks.filter(c=>c.status==='Yangi').length || (s.kpiData ? s.kpiData.newCallbacks : 0));
   const stockCount = String(s.stockProducts.length || 0);
   const storiesCount = String(s.storyList.length || 0);
   const installCount = String(s.orders.filter(o=>o.install && !['Yopildi','Bekor'].includes(o.status)).length || 0);
@@ -281,6 +356,7 @@ function vals(){
 
   const aNav=[
     ['orders','Buyurtmalar',openOrdersCount],
+    ['callbacks','Arizalar',newCallbacksCount],
     ['products','Mahsulotlar',stockCount],
     ['credit',"Muddatli to'lov",creditCount],
     ['stories','Ishlarimiz video',storiesCount],
@@ -289,11 +365,12 @@ function vals(){
     ['install',"O'rnatish jadvali",installCount],
     ['clients','Mijozlar','']
   ];
-  const adminNav=aNav.map(([k,name,badge])=>({name,badge,go:()=>set({adminTab:k==='install'||k==='clients'?'orders':k}),
+  const adminNav=aNav.map(([k,name,badge])=>({name,badge,go:()=>set({adminTab:k==='install'||k==='clients'?'orders':k, sideOpen:false}),
     bg:s.adminTab===k?'rgba(47,224,182,.12)':'transparent', fg:s.adminTab===k?A:'var(--dim3)', badgeFg:s.adminTab===k?A:'var(--dim5)'}));
 
   const T={
     orders:['Buyurtmalar',s.orders.length ? `Jami ${s.orders.length} buyurtma · ${installCount} o’rnatish rejalashtirilgan` : 'Buyurtmalar ro’yxati'],
+    callbacks:['Mutaxassis arizalari',s.callbacks.length ? `Jami ${s.callbacks.length} ta ariza · ${s.callbacks.filter(c=>c.status==='Yangi').length} tasi yangi` : 'Qo\'ng\'iroq va mutaxassis so\'rovlari'],
     products:['Mahsulotlar va ombor',s.stockProducts.length ? `${s.stockProducts.length} pozitsiya · ${s.stockProducts.filter(p=>(p.qty??0)<10).length} tasi kam qoldi` : 'Ombordagi tovarlar'],
     credit:["Muddatli to'lov shartlari",'Foizlar mijoz ilovasida darhol ko’rinadi'],
     stories:['Ishlarimiz · video lenta','Mijoz ilovasidagi bosh sahifada ko’rinadi'],
@@ -344,17 +421,26 @@ function vals(){
 
   return {
     adminNav, adminTitle:T[0], adminSub:T[1],
-    goProducts:()=>set({adminTab:'products'}),
+    goProducts:()=>set({adminTab:'products', sideOpen:false}),
     exportCsv:()=>exportCSV(orders),
-    aOrders:s.adminTab==='orders', aProducts:s.adminTab==='products', aStats:s.adminTab==='stats',
+    aOrders:s.adminTab==='orders', aCallbacks:s.adminTab==='callbacks', aProducts:s.adminTab==='products', aStats:s.adminTab==='stats',
     aCredit:s.adminTab==='credit', aStories:s.adminTab==='stories', aSettings:s.adminTab==='settings',
+    sideOpen:!!s.sideOpen, toggleSide:()=>set(p=>({sideOpen:!p.sideOpen})), closeSide:()=>set({sideOpen:false}),
+    confirmOn:!!s.confirmModal,
+    confirmTitle:s.confirmModal?s.confirmModal.title:'',
+    confirmText:s.confirmModal?s.confirmModal.text:'',
+    confirmActionLabel:s.confirmModal?s.confirmModal.actionLabel:'Tasdiqlash',
+    confirmCancelLabel:s.confirmModal?s.confirmModal.cancelLabel:'Bekor',
+    confirmDanger:s.confirmModal?!!s.confirmModal.danger:false,
+    confirmAction:()=>{ if(S.confirmModal&&S.confirmModal.action) S.confirmModal.action(); },
+    confirmCancel:()=>set({confirmModal:null}),
     kpis:[
       {label:'BUGUNGI SAVDO',value:s.kpiData?revText:'—',delta:s.kpiData?((kd.todayOrders||0)+' ta buyurtma'):'Yuklanmoqda…',dFg:A},
       {label:'OCHIQ BUYURTMALAR',value:s.kpiData?String(kd.openOrders||0):'—',delta:s.kpiData?(kd.newCallbacks?kd.newCallbacks+' ta yangi ariza':'Javob kutmoqda'):'Yuklanmoqda…',dFg:AMB},
       {label:"O'RNATISH REJASI",value:s.kpiData?String(kd.installing||0):'—',delta:s.kpiData?'Jarayondagi montaj':'Yuklanmoqda…',dFg:'var(--dim3)'},
       {label:'KAM QOLGAN TOVAR',value:s.kpiData?String(kd.lowStock||0):'—',delta:s.kpiData?lowStockNames:'Yuklanmoqda…',dFg:RED}
     ],
-    orders, stock, formFields,
+    orders, callbacks:callbackRows, stock, formFields,
     videoOn:s.video, videoMeta:'1:24 · 46 MB · asosiy video',
     addVideo:()=>set({video:true}), delVideo:()=>set({video:false}),
     saveProduct:()=>flash('Mahsulot kartochkasi saqlandi va nashr qilindi'),
@@ -416,12 +502,23 @@ function vals(){
           set(p=>({storyList:p.storyList.map(x=>x.id===st.id?{...x,live:nextLive}:x)}));
         } catch(err){ flash(err.message); }
       },
-      del:async ()=>{
-        try {
-          await api('/api/admin/stories/'+st.id, {method:'DELETE'});
-          set(p=>({storyList:p.storyList.filter(x=>x.id!==st.id), cId:p.cId===st.id?null:p.cId}));
-          flash(st.label+' lentadan o’chirildi');
-        } catch(err){ flash(err.message); }
+      del:()=>{
+        set({
+          confirmModal: {
+            title: "Storyni o'chirish",
+            text: `"${st.title}" storysini lentadan butunlay o'chirmoqchimisiz?`,
+            actionLabel: "O'chirish",
+            cancelLabel: "Bekor",
+            danger: true,
+            action: async ()=>{
+              try {
+                await api('/api/admin/stories/'+st.id, {method:'DELETE'});
+                set(p=>({storyList:p.storyList.filter(x=>x.id!==st.id), cId:p.cId===st.id?null:p.cId, confirmModal:null}));
+                flash(st.label+' lentadan o’chirildi');
+              } catch(err){ flash(err.message); }
+            }
+          }
+        });
       },
       up:()=>moveStory(i,-1), down:()=>moveStory(i,1),
       edit:()=>set({cId:st.id,cTitle:st.title,cCams:String(parseInt(st.meta)||''),cDate:(st.meta.split('· ')[1]||''),cText:st.text,cTags:st.tags,cLive:st.live!==false,cFile:st.file})})),
@@ -497,6 +594,7 @@ function vals(){
 
 const LOGO='<svg width="19" height="19" viewBox="0 0 24 24" fill="none"><g transform="rotate(-14 12 12)"><rect x="3.2" y="8.4" width="12.4" height="6.2" rx="2.4" fill="#06231d"/><circle cx="17.4" cy="11.5" r="3.1" fill="#06231d"/><circle cx="17.4" cy="11.5" r="1.15" fill="#2fe0b6"/><rect x="9" y="14.2" width="1.8" height="4.4" rx="0.9" fill="#06231d"/><rect x="6.2" y="18.2" width="7.4" height="1.8" rx="0.9" fill="#06231d"/></g></svg>';
 const GC="104px 1.4fr 1fr 118px 148px 132px";
+const GC_CB="55px 120px 1.1fr 135px 1.1fr 85px 105px 1.2fr 100px";
 const GS="1.35fr 104px 84px 128px";
 const GR="96px 1fr 132px 150px 120px";
 const GT="64px 84px 1fr 96px 108px 92px";
@@ -531,11 +629,14 @@ function mLogin(v){return `
 </div>`;}
 
 function mSide(v){return `
-<div id="side" style="width:216px;flex:none;border-right:1px solid var(--line);padding:20px 14px;display:flex;flex-direction:column;gap:22px;background:var(--bar)">
-  <a href="/" style="display:flex;align-items:center;gap:9px;text-decoration:none;color:inherit">
-    <div style="width:28px;height:28px;border-radius:8px;background:var(--acc);display:flex;align-items:center;justify-content:center">${LOGO}</div>
-    <div style="line-height:1"><div style="font:700 12px/1 'Space Grotesk',sans-serif">KAMERA OPTOM</div><div style="font:600 8.5px/1 'IBM Plex Mono',monospace;color:var(--acc);letter-spacing:.16em;margin-top:3px">QARSHI · ADMIN</div></div>
-  </a>
+<div id="side" class="${v.sideOpen?'open':''}" style="width:216px;flex:none;border-right:1px solid var(--line);padding:20px 14px;display:flex;flex-direction:column;gap:22px;background:var(--bar)">
+  <div style="display:flex;align-items:center;justify-content:space-between">
+    <a href="/" style="display:flex;align-items:center;gap:9px;text-decoration:none;color:inherit">
+      <div style="width:28px;height:28px;border-radius:8px;background:var(--acc);display:flex;align-items:center;justify-content:center">${LOGO}</div>
+      <div style="line-height:1"><div style="font:700 12px/1 'Space Grotesk',sans-serif">KAMERA OPTOM</div><div style="font:600 8.5px/1 'IBM Plex Mono',monospace;color:var(--acc);letter-spacing:.16em;margin-top:3px">QARSHI · ADMIN</div></div>
+    </a>
+    <div onclick="${h(v.closeSide)}" class="burger-btn" style="width:28px;height:28px;border-radius:7px;border:1px solid var(--line3);align-items:center;justify-content:center;font:600 12px 'IBM Plex Mono',monospace;color:var(--dim);cursor:pointer">✕</div>
+  </div>
   <div style="display:flex;flex-direction:column;gap:3px">
     ${v.adminNav.map(a=>`
       <div onclick="${h(a.go)}" style="display:flex;align-items:center;justify-content:space-between;padding:10px 11px;border-radius:9px;cursor:pointer;background:${a.bg};color:${a.fg};font:500 12.5px 'Space Grotesk',sans-serif">
@@ -548,6 +649,42 @@ function mSide(v){return `
     <div style="display:flex;align-items:center;justify-content:space-between;margin-top:6px">
       <div style="font:400 10px 'IBM Plex Mono',monospace;color:var(--acc)">ONLAYN</div>
       <div onclick="${h(v.logout)}" style="font:600 10px 'IBM Plex Mono',monospace;color:var(--dim2);cursor:pointer;padding:2px 6px;border-radius:4px;border:1px solid var(--line3)">Chiqish</div>
+    </div>
+  </div>
+</div>`;}
+
+function mCallbacks(v){return `
+<div style="margin-top:20px;border:1px solid var(--line);border-radius:13px;overflow:auto">
+  <div style="min-width:960px">
+  <div style="display:grid;grid-template-columns:${GC_CB};gap:12px;padding:12px 16px;background:var(--thead);font:600 10px 'IBM Plex Mono',monospace;color:var(--dim2);letter-spacing:.05em">
+    <span>ID</span><span>SANA</span><span>MIJOZ</span><span>TELEFON</span><span>MAVZU</span><span>ALOQA</span><span>QULAY VAQT</span><span>IZOH</span><span>STATUS</span>
+  </div>
+  ${v.callbacks.length === 0 ? `
+    <div style="padding:36px 16px;text-align:center;color:var(--dim3);font:400 13px 'Space Grotesk',sans-serif">Hozircha arizalar yo'q</div>
+  ` : v.callbacks.map(c=>`
+    <div style="display:grid;grid-template-columns:${GC_CB};gap:12px;padding:14px 16px;border-top:1px solid var(--fill);align-items:center;font:400 12px 'Space Grotesk',sans-serif">
+      <span style="font:500 11px 'IBM Plex Mono',monospace;color:var(--dim)">#${c.id}</span>
+      <span style="font:400 10.5px 'IBM Plex Mono',monospace;color:var(--dim2)">${c.date}</span>
+      <div style="font-weight:600">${esc(c.name)}</div>
+      <div><a href="${c.telHref}" style="color:var(--acc);text-decoration:none;font:600 11.5px 'IBM Plex Mono',monospace">${c.phone}</a></div>
+      <span style="color:var(--fg2)">${esc(c.topic)}</span>
+      <span style="font:500 11px 'IBM Plex Mono',monospace;color:var(--dim3)">${esc(c.channel)}</span>
+      <span style="font:500 11px 'IBM Plex Mono',monospace;color:var(--dim)">${esc(c.slot)}</span>
+      <span style="color:var(--dim2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${esc(c.note)}">${esc(c.note)}</span>
+      <div onclick="${h(c.cycleStatus)}" style="cursor:pointer;justify-self:start;font:600 10px 'IBM Plex Mono',monospace;color:${c.fg};background:${c.bg};border:1px solid ${c.border};padding:6px 9px;border-radius:6px">${c.status}</div>
+    </div>`).join('')}
+  </div>
+</div>
+<div style="font:400 11px 'IBM Plex Mono',monospace;color:var(--dim5);margin-top:10px">Status ustuniga bosib holatni o'zgartiring: Yangi → Aloqada → Bajarildi → Bekor</div>`;}
+
+function mConfirm(v){return `
+<div style="position:fixed;inset:0;z-index:70;background:rgba(0,0,0,.65);display:flex;align-items:center;justify-content:center;padding:24px">
+  <div style="width:100%;max-width:400px;background:var(--bar);border:1px solid var(--line);border-radius:16px;padding:22px;box-shadow:0 24px 60px rgba(0,0,0,.6)">
+    <div style="font:600 16px 'Space Grotesk',sans-serif">${esc(v.confirmTitle)}</div>
+    <div style="font:400 12.5px/1.5 'Space Grotesk',sans-serif;color:var(--dim2);margin-top:8px">${esc(v.confirmText)}</div>
+    <div style="display:flex;gap:9px;margin-top:20px">
+      <div onclick="${h(v.confirmCancel)}" style="flex:1;text-align:center;padding:12px;border-radius:10px;border:1px solid var(--line3);color:var(--fg2);font:600 12px 'Space Grotesk',sans-serif;cursor:pointer">${esc(v.confirmCancelLabel)}</div>
+      <div onclick="${h(v.confirmAction)}" style="flex:1;text-align:center;padding:12px;border-radius:10px;background:${v.confirmDanger?RED:'var(--acc)'};color:${v.confirmDanger?'#fff':'#06231d'};font:600 12px 'Space Grotesk',sans-serif;cursor:pointer">${esc(v.confirmActionLabel)}</div>
     </div>
   </div>
 </div>`;}
@@ -949,12 +1086,16 @@ function render(){
   }
   ROOT.innerHTML=`
 <div style="height:100%;position:relative;display:flex;background:var(--bg);color:var(--fg);font-family:'Space Grotesk',sans-serif">
+  <div id="side-backdrop" class="${v.sideOpen?'open':''}" onclick="${h(v.closeSide)}" style="position:fixed;inset:0;background:rgba(0,0,0,.62);z-index:55"></div>
   ${mSide(v)}
   <div style="flex:1;min-width:0;display:flex;flex-direction:column">
     <div style="flex:none;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px 24px;border-bottom:1px solid var(--line)">
-      <div>
-        <div style="font:600 18px 'Space Grotesk',sans-serif">${v.adminTitle}</div>
-        <div style="font:400 11.5px 'IBM Plex Mono',monospace;color:var(--dim2);margin-top:4px">${v.adminSub}</div>
+      <div style="display:flex;align-items:center">
+        <div onclick="${h(v.toggleSide)}" class="burger-btn" style="width:34px;height:34px;border-radius:8px;border:1px solid var(--line3);align-items:center;justify-content:center;font:600 16px 'IBM Plex Mono',monospace;cursor:pointer;color:var(--fg);margin-right:12px">☰</div>
+        <div>
+          <div style="font:600 18px 'Space Grotesk',sans-serif">${v.adminTitle}</div>
+          <div style="font:400 11.5px 'IBM Plex Mono',monospace;color:var(--dim2);margin-top:4px">${v.adminSub}</div>
+        </div>
       </div>
       <div style="display:flex;gap:9px">
         <div onclick="${h(v.exportCsv)}" style="font:500 11.5px 'IBM Plex Mono',monospace;color:var(--dim);border:1px solid var(--line3);padding:9px 12px;border-radius:9px;cursor:pointer">Eksport CSV</div>
@@ -971,6 +1112,7 @@ function render(){
           </div>`).join('')}
       </div>
       ${v.aOrders?mOrders(v):''}
+      ${v.aCallbacks?mCallbacks(v):''}
       ${v.aProducts?mProducts(v):''}
       ${v.aCredit?mCredit(v):''}
       ${v.aSettings?mSettings(v):''}
@@ -979,6 +1121,7 @@ function render(){
     </div>
   </div>
   ${v.noteOn?mNote(v):''}
+  ${v.confirmOn?mConfirm(v):''}
   ${v.toastOn?`<div style="position:fixed;right:24px;bottom:24px;z-index:50;background:var(--fg);color:var(--bg);border-radius:12px;padding:13px 16px;font:600 12.5px 'Space Grotesk',sans-serif;box-shadow:0 12px 30px rgba(0,0,0,.5)">${v.toast}</div>`:''}
 </div>`;
   const sc=document.getElementById('scroller'); if(sc) sc.scrollTop=_scroll;

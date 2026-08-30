@@ -100,23 +100,20 @@ const PRODUCTS=[
 const S={
   token: _token, adminUser: null, loginUser: 'admin', loginPass: '', loginErr: '', loginLoading: false,
   adminTab: _tab, toast:null,
+  orders: [], kpiData: null, stockProducts: [],
   promo:{'IPC-2410':'HIT','KIT-UY4':'CHEGIRMA','PTZ-5X':'YANGI'},
   labelOn:{HIT:true,CHEGIRMA:true,YANGI:true},
   mod:{banners:true,stories:true,gps:true,memory:true,cable:true,install:true,cloud:true},
   rates:{3:0,6:8,12:14,24:26}, rateOn:{3:true,6:true,12:true,24:true}, down:{3:0,6:10,12:20,24:30},
   creditService:true, expertService:true,
   provOn:{'Uzum Nasiya':true,'Alif Nasiya':true,'Hamkor Nasiya':true},
-  qty:{'IPC-2410':46,'PTZ-5X':8,'NVR-8CH':21,'WIFI-MINI':63,'DOMO-IP2':12,'KIT-UY4':5,'SD-64':88,'SD-256':34,'HDD-2T':19,'NVR-16CH':6,'DVR-4CH':27},
+  qty:{},
   orderStatus:{}, notes:{}, noteDraft:null, noteText:'',
   video:true,
   cId:null, cTitle:'', cCams:'', cDate:'', cText:'', cTags:[], cLive:true, cFile:'',
-  storyList:[
-    {id:'s1',label:'Anor Market',title:'"Anor Market" · Qarshi',meta:'8 kamera · 12-avgust',dur:'0:42',views:'1 284',live:true,file:'anor-market.mp4',tags:['8 × IPC-2410','NVR-8CH 4TB','Kassa ovozli'],text:'Kassa, savdo zali va ombor to’liq yopildi. Arxiv 30 kun, telefondan kuzatiladi.'},
-    {id:'s2',label:'Xususiy uy',title:'2 qavatli uy · Shahrisabz',meta:'4 kamera · 9-avgust',dur:'0:36',views:'912',live:true,file:'uy-shahrisabz.mp4',tags:['4 × 4MP','Domofon','IR 30m'],text:'Darvoza, hovli va kirish qismi. Domofon bilan birga ulandi.'},
-    {id:'s3',label:'Buxoro Textile',title:'"Buxoro Textile" sexi',meta:'16 kamera · 5-avgust',dur:'1:10',views:'2 106',live:true,file:'textile-sex.mp4',tags:['16 kanal','PTZ-5X','4TB arxiv'],text:'Ishlab chiqarish sexi va omborga 16 kamera. PTZ bilan butun sex nazorat qilinadi.'},
-    {id:'s4',label:'Avtomoyka',title:'Avtomoyka · G’uzor',meta:'6 kamera · 1-avgust',dur:'0:28',views:'648',live:true,file:'avtomoyka.mp4',tags:['6 × IP67','PoE'],text:'Yuvish boksi va tashqi maydon. Namlikka chidamli korpus tanlandi.'},
-    {id:'s5',label:'Dorixona',title:'Dorixona tarmog’i',meta:'3 filial · 28-iyul',dur:'0:51',views:'1 037',live:false,file:'dorixona.mp4',tags:['Bulut arxiv','Bitta ilova'],text:'Uch filial bitta ilovaga ulandi — egasi hammasini bir ekrandan ko’radi.'}
-  ]
+  storyList:[],
+  callbacks:[],
+  loading:false, loaded:false
 };
 
 let H=[];
@@ -137,67 +134,172 @@ function moveStory(i,d){ const l=[...S.storyList], j=i+d; if(j<0||j>=l.length) r
 function exportCSV(rows){
   const csv=['ID;MIJOZ;TELEFON;MAHSULOT;SUMMA;O\'RNATISH;STATUS',...rows.map(o=>[o.id,o.client,o.phone,o.item,o.sum,o.install,o.status].join(';'))].join('\n');
   const a=document.createElement('a');
-  a.href='data:text/csv;charset=utf-8,'+encodeURIComponent('﻿'+csv);
+  a.href='data:text/csv;charset=utf-8,'+encodeURIComponent('\uFEFF'+csv);
   a.download='buyurtmalar.csv'; a.click();
   flash('CSV fayl yuklandi');
+}
+
+async function bootstrap(){
+  if (!S.token) return;
+  set({ loading: true });
+  try {
+    const [orders, kpis, stock, settings, stories, callbacks] = await Promise.all([
+      api('/api/admin/orders'),
+      api('/api/admin/kpis'),
+      api('/api/admin/stock'),
+      api('/api/admin/settings'),
+      api('/api/stories'),
+      api('/api/admin/callbacks').catch(()=>[])
+    ]);
+    const promoMap = {};
+    const qtyMap = {};
+    for (const p of (stock || [])) {
+      if (p.promo) promoMap[p.sku] = p.promo;
+      qtyMap[p.sku] = p.qty;
+    }
+    set({
+      orders: orders || [],
+      kpiData: kpis,
+      stockProducts: stock || [],
+      promo: promoMap,
+      qty: qtyMap,
+      mod: (settings && settings.modules) || S.mod,
+      rates: (settings && settings.credit && settings.credit.rates) || S.rates,
+      down: (settings && settings.credit && settings.credit.down) || S.down,
+      storyList: stories || [],
+      callbacks: callbacks || [],
+      loading: false,
+      loaded: true
+    });
+  } catch (err) {
+    set({ loading: false });
+    flash(err.message);
+  }
 }
 
 function vals(){
   const s=S;
   const chip=on=>({border:on?A:'var(--line3)', bg:on?'rgba(47,224,182,.12)':'var(--card)', fg:on?A:'var(--dim3)'});
-  const ST={Yangi:{fg:AMB,bg:'rgba(255,176,32,.12)',border:'rgba(255,176,32,.35)'},Tasdiqlandi:{fg:'#7fb4ff',bg:'rgba(127,180,255,.12)',border:'rgba(127,180,255,.35)'},"O'rnatishda":{fg:A,bg:'rgba(47,224,182,.12)',border:'rgba(47,224,182,.35)'},Yopildi:{fg:'var(--dim)',bg:'var(--fill)',border:'var(--line3)'}};
+  const ST={Yangi:{fg:AMB,bg:'rgba(255,176,32,.12)',border:'rgba(255,176,32,.35)'},Tasdiqlandi:{fg:'#7fb4ff',bg:'rgba(127,180,255,.12)',border:'rgba(127,180,255,.35)'},"O'rnatishda":{fg:A,bg:'rgba(47,224,182,.12)',border:'rgba(47,224,182,.35)'},Yopildi:{fg:'var(--dim)',bg:'var(--fill)',border:'var(--line3)'},Bekor:{fg:RED,bg:'rgba(255,77,61,.12)',border:'rgba(255,77,61,.35)'}};
   const FLOW=['Yangi','Tasdiqlandi',"O'rnatishda",'Yopildi'];
   const NOTE_DEF={'Yangi':'','Tasdiqlandi':'Buyurtmangiz tasdiqlandi. O’lchovchi mutaxassis bugun aloqaga chiqadi.',
     "O'rnatishda":'Usta yo’lda — bugun 10:00 dan 12:00 gacha yetib boradi.',
     'Yopildi':'O’rnatish tugadi. Kafolat taloni ilovada saqlanadi, savollar bo’lsa yozing.'};
-  const rawOrders=[
-    {id:'#KO-4821',client:'Aziz Bekmurodov',phone:'+998 90 123 45 67',item:'Komplekt "Uy 4"',sum:4350000,install:'14-avg · 10:00',st:'Yangi'},
-    {id:'#KO-4820',client:'"Anor Market" MChJ',phone:'+998 71 200 11 03',item:'8 × IPC-2410 + NVR',sum:8970000,install:'15-avg · 09:00',st:'Tasdiqlandi'},
-    {id:'#KO-4819',client:'Nodira Qosimova',phone:'+998 93 774 12 08',item:'WiFi Mini 3MP × 2',sum:780000,install:'Kerak emas',st:'Yopildi'},
-    {id:'#KO-4818',client:'Sardor Yo’ldoshev',phone:'+998 99 501 66 21',item:'PTZ-5X Dome 5MP',sum:1890000,install:'13-avg · 15:30',st:"O'rnatishda"},
-    {id:'#KO-4817',client:'"Buxoro Textile"',phone:'+998 65 223 40 90',item:'Komplekt 16 kamera',sum:19400000,install:'18-avg · 08:00',st:'Tasdiqlandi'},
-    {id:'#KO-4816',client:'Jasur Rahimov',phone:'+998 94 330 55 17',item:'IP Domofon 2MP',sum:1240000,install:'12-avg · 12:00',st:'Yopildi'}
-  ];
-  const orders=rawOrders.map(o=>{const st=s.orderStatus[o.id]||o.st, nt=s.notes[o.id];
-    return {...o,status:st,...ST[st],sum:fmt(o.sum),
-      noteOn:!!nt, note:nt?nt.text:'',
-      next:async ()=>{const ns=FLOW[(FLOW.indexOf(st)+1)%4];
+
+  const orders = s.orders.map(o=>{
+    const st = s.orderStatus[o.id] || o.status || 'Yangi';
+    const nt = s.notes[o.id] || (o.note ? { text: o.note, time: '' } : null);
+    const itemStr = (Array.isArray(o.items) && o.items.length)
+      ? o.items.map(it => (it.name || it.sku) + (it.qty > 1 ? ' × ' + it.qty : '')).join(', ')
+      : (o.region || 'Buyurtma');
+    const rawPh = String(o.phone || '').replace(/[^0-9]/g, '');
+    const phoneStr = rawPh.length === 9 ? ('+998 ' + rawPh.replace(/(\d{2})(\d{3})(\d{2})(\d{2})/, '$1 $2 $3 $4')) : (o.phone || '—');
+    const installStr = o.install ? (o.install_at || (o.created_at ? o.created_at.slice(5,10) + ' · 10:00' : 'Rejalashtirilgan')) : 'Kerak emas';
+    return {
+      id: o.id,
+      client: o.client_name || 'Mijoz',
+      phone: phoneStr,
+      rawPhone: o.phone,
+      item: itemStr,
+      sum: fmt(o.total || o.goods_sum || 0),
+      install: installStr,
+      status: st,
+      ...(ST[st] || ST.Yangi),
+      noteOn: !!nt,
+      note: nt ? nt.text : '',
+      next: async ()=>{
+        const ns = FLOW[(FLOW.indexOf(st)+1)%4];
         try {
-          await api('/api/admin/orders/'+o.id.replace('#','')+'/status',{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({status:ns})});
-          set({orderStatus:{...s.orderStatus,[o.id]:ns}, noteDraft:{id:o.id,client:o.client,phone:o.phone,status:ns}, noteText:NOTE_DEF[ns]||''});
+          const updated = await api('/api/admin/orders/'+o.id.replace('#','')+'/status',{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({status:ns})});
+          set(stt=>({
+            orders: stt.orders.map(x=>x.id===o.id?updated:x),
+            orderStatus:{...stt.orderStatus,[o.id]:ns},
+            noteDraft:{id:o.id,client:o.client_name||'Mijoz',phone:phoneStr,status:ns},
+            noteText:NOTE_DEF[ns]||''
+          }));
+          api('/api/admin/kpis').then(kd=>set({kpiData:kd})).catch(()=>{});
         } catch(err) { flash(err.message); }
-      }};});
+      }
+    };
+  });
 
   const LBL=['HIT','CHEGIRMA','YANGI'];
-  const stock=PRODUCTS.map(p=>{const q=s.qty[p.sku]??0; const state=q===0?'Tugadi':q<10?'Kam qoldi':'Yetarli';
-    return {name:p.name,sku:p.sku,price:fmt(p.price),qty:q,state,
-      fg:q===0?RED:q<10?AMB:A, bg:q===0?'rgba(255,77,61,.12)':q<10?'rgba(255,176,32,.12)':'rgba(47,224,182,.12)',
-      labels:LBL.map(n=>{const on=s.promo[p.sku]===n, st=promoStyle(n);
-        return {name:n, short:n==='CHEGIRMA'?'CHEG':n==='YANGI'?'YANGI':'HIT', fg:on?st.fg:'var(--dim2)', bg:on?st.bg:'var(--fill)', border:on?st.border:'var(--line3)',
-          go:async ()=>{const np={...S.promo}; if(np[p.sku]===n) delete np[p.sku]; else np[p.sku]=n;
+  const stock = s.stockProducts.map(p=>{
+    const q = p.qty ?? 0;
+    const state = q===0?'Tugadi':q<10?'Kam qoldi':'Yetarli';
+    return {
+      name: p.name, sku: p.sku, price: fmt(p.price), qty: q, state,
+      fg: q===0?RED:q<10?AMB:A, bg: q===0?'rgba(255,77,61,.12)':q<10?'rgba(255,176,32,.12)':'rgba(47,224,182,.12)',
+      labels: LBL.map(n=>{
+        const on = (s.promo[p.sku]===n) || (p.promo===n);
+        const st = promoStyle(n);
+        return {
+          name: n, short: n==='CHEGIRMA'?'CHEG':n==='YANGI'?'YANGI':'HIT',
+          fg: on?st.fg:'var(--dim2)', bg: on?st.bg:'var(--fill)', border: on?st.border:'var(--line3)',
+          go: async ()=>{
+            const nextPromo = on ? null : n;
             try {
-              await api('/api/admin/products/'+p.sku,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({promo:np[p.sku]||null})});
-              set({promo:np});
+              await api('/api/admin/products/'+p.sku,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({promo:nextPromo})});
+              set(pr=>({
+                promo: { ...pr.promo, [p.sku]: nextPromo },
+                stockProducts: pr.stockProducts.map(x=>x.sku===p.sku?{...x,promo:nextPromo}:x)
+              }));
             } catch(err) { flash(err.message); }
-          }};}),
-      plus:async ()=>{const q2=(S.qty[p.sku]||0)+1;
+          }
+        };
+      }),
+      plus: async ()=>{
+        const q2 = (p.qty || 0) + 1;
         try {
           await api('/api/admin/products/'+p.sku,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({qty:q2})});
-          set(pr=>({qty:{...pr.qty,[p.sku]:q2}}));
+          set(pr=>({
+            qty:{...pr.qty,[p.sku]:q2},
+            stockProducts: pr.stockProducts.map(x=>x.sku===p.sku?{...x,qty:q2}:x)
+          }));
+          api('/api/admin/kpis').then(kd=>set({kpiData:kd})).catch(()=>{});
         } catch(err) { flash(err.message); }
       },
-      minus:async ()=>{const q2=Math.max(0,(S.qty[p.sku]||0)-1);
+      minus: async ()=>{
+        const q2 = Math.max(0,(p.qty || 0)-1);
         try {
           await api('/api/admin/products/'+p.sku,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({qty:q2})});
-          set(pr=>({qty:{...pr.qty,[p.sku]:q2}}));
+          set(pr=>({
+            qty:{...pr.qty,[p.sku]:q2},
+            stockProducts: pr.stockProducts.map(x=>x.sku===p.sku?{...x,qty:q2}:x)
+          }));
+          api('/api/admin/kpis').then(kd=>set({kpiData:kd})).catch(()=>{});
         } catch(err) { flash(err.message); }
-      }};});
+      }
+    };
+  });
 
-  const aNav=[['orders','Buyurtmalar','6'],['products','Mahsulotlar','48'],['credit',"Muddatli to'lov",'3'],['stories','Ishlarimiz video','5'],['settings','Sozlamalar',''],['stats','Statistika',''],['install',"O'rnatish jadvali",'4'],['clients','Mijozlar','']];
+  const openOrdersCount = String(s.orders.length || 0);
+  const stockCount = String(s.stockProducts.length || 0);
+  const storiesCount = String(s.storyList.length || 0);
+  const installCount = String(s.orders.filter(o=>o.install && !['Yopildi','Bekor'].includes(o.status)).length || 0);
+  const creditCount = String(Object.keys(s.rates||{}).length || 0);
+
+  const aNav=[
+    ['orders','Buyurtmalar',openOrdersCount],
+    ['products','Mahsulotlar',stockCount],
+    ['credit',"Muddatli to'lov",creditCount],
+    ['stories','Ishlarimiz video',storiesCount],
+    ['settings','Sozlamalar',''],
+    ['stats','Statistika',''],
+    ['install',"O'rnatish jadvali",installCount],
+    ['clients','Mijozlar','']
+  ];
   const adminNav=aNav.map(([k,name,badge])=>({name,badge,go:()=>set({adminTab:k==='install'||k==='clients'?'orders':k}),
     bg:s.adminTab===k?'rgba(47,224,182,.12)':'transparent', fg:s.adminTab===k?A:'var(--dim3)', badgeFg:s.adminTab===k?A:'var(--dim5)'}));
 
-  const T={orders:['Buyurtmalar','Bugun 6 yangi · 3 o’rnatish rejalashtirilgan'],products:['Mahsulotlar va ombor','48 pozitsiya · 3 tasi kam qoldi'],credit:["Muddatli to'lov shartlari",'Foizlar mijoz ilovasida darhol ko’rinadi'],stories:['Ishlarimiz · video lenta','Mijoz ilovasidagi bosh sahifada ko’rinadi'],settings:['Sozlamalar · ilova modullari','Har bir tugma mijoz ilovasiga darhol ta’sir qiladi'],stats:['Statistika','1-avgust — 13-avgust']}[s.adminTab];
+  const T={
+    orders:['Buyurtmalar',s.orders.length ? `Jami ${s.orders.length} buyurtma · ${installCount} o’rnatish rejalashtirilgan` : 'Buyurtmalar ro’yxati'],
+    products:['Mahsulotlar va ombor',s.stockProducts.length ? `${s.stockProducts.length} pozitsiya · ${s.stockProducts.filter(p=>(p.qty??0)<10).length} tasi kam qoldi` : 'Ombordagi tovarlar'],
+    credit:["Muddatli to'lov shartlari",'Foizlar mijoz ilovasida darhol ko’rinadi'],
+    stories:['Ishlarimiz · video lenta','Mijoz ilovasidagi bosh sahifada ko’rinadi'],
+    settings:['Sozlamalar · ilova modullari','Har bir tugma mijoz ilovasiga darhol ta’sir qiladi'],
+    stats:['Statistika','Barcha savdo va ko’rsatkichlar']
+  }[s.adminTab] || ['Boshqaruv',''];
 
   const ALLPROV=[{name:'Uzum Nasiya',note:'12 oygacha · ilova ichida ariza'},{name:'Alif Nasiya',note:'Pasport + selfi · 10 daqiqada javob'},{name:'Hamkor Nasiya',note:'24 oygacha · bank kartasi bilan'}];
   const RT=[3,6,12,24];
@@ -205,12 +307,40 @@ function vals(){
   const rateRows=RT.map(m=>{const on=s.rateOn[m]; return {months:m+' oy',rate:(s.rates[m]||0)+' %',w:Math.min(100,(s.rates[m]||0)/30*100)+'%',
     monthly:fmt(monthlyFor(m,4350000))+'/oy', down:s.down[m]?s.down[m]+' % ('+fmt(4350000*s.down[m]/100)+')':'Yo’q',
     trackBg:on?A:'var(--line4)', knob:on?'flex-end':'flex-start', knobBg:on?'#06231d':'var(--dim)',
-    plus:()=>set(p=>({rates:{...p.rates,[m]:Math.min(60,(p.rates[m]||0)+1)}})),
-    minus:()=>set(p=>({rates:{...p.rates,[m]:Math.max(0,(p.rates[m]||0)-1)}})),
+    plus:async ()=>{
+      const nextRate = Math.min(60,(pRate=>pRate+1)(s.rates[m]||0));
+      const nextRates = {...s.rates,[m]:nextRate};
+      try {
+        await api('/api/admin/settings/credit',{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({rates:nextRates})});
+        set({rates:nextRates});
+      } catch(err){ flash(err.message); }
+    },
+    minus:async ()=>{
+      const nextRate = Math.max(0,(pRate=>pRate-1)(s.rates[m]||0));
+      const nextRates = {...s.rates,[m]:nextRate};
+      try {
+        await api('/api/admin/settings/credit',{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({rates:nextRates})});
+        set({rates:nextRates});
+      } catch(err){ flash(err.message); }
+    },
     toggle:()=>set(p=>({rateOn:{...p.rateOn,[m]:!p.rateOn[m]}}))};});
 
   const barVals=[38,44,41,52,49,61,58];
   const bars=barVals.map((v,i)=>({value:v,label:['Fev','Mar','Apr','May','Iyn','Iyl','Avg'][i],h:Math.round(v/61*100)+'%',fill:i===6?A:'rgba(47,224,182,.28)'}));
+
+  const kd = s.kpiData || {};
+  const todayRev = kd.todayRevenue || 0;
+  const revText = todayRev >= 1000000 ? ((todayRev/1000000).toFixed(1) + ' mln') : fmt(todayRev);
+  const lowStockNames = s.stockProducts.filter(p=>(p.qty??0)<10).map(p=>p.sku).slice(0,3).join(' · ') || 'Yetarli';
+
+  const selP = s.stockProducts.find(p=>p.sku==='IPC-2410') || s.stockProducts[0] || {name:'IPC-2410 Bullet 4MP',cat:'Tashqi',price:690000,spec:'4MP · IR 30m · PoE · IP67',qty:0};
+  const formFields=[
+    {label:'NOMI',value:selP.name},
+    {label:'TURKUM',value:selP.cat+' kameralar'},
+    {label:'NARX',value:fmt(selP.price)},
+    {label:'XARAKTERISTIKA',value:selP.spec || (selP.tags ? selP.tags.join(' · ') : '4MP · IR 30m')},
+    {label:'OMBORDA',value:(selP.qty || 0)+' dona'}
+  ];
 
   return {
     adminNav, adminTitle:T[0], adminSub:T[1],
@@ -218,12 +348,13 @@ function vals(){
     exportCsv:()=>exportCSV(orders),
     aOrders:s.adminTab==='orders', aProducts:s.adminTab==='products', aStats:s.adminTab==='stats',
     aCredit:s.adminTab==='credit', aStories:s.adminTab==='stories', aSettings:s.adminTab==='settings',
-    kpis:[{label:'BUGUNGI SAVDO',value:'15.6 mln',delta:'+18% ↑',dFg:A},
-          {label:'YANGI BUYURTMA',value:'6',delta:'2 tasi javob kutmoqda',dFg:AMB},
-          {label:"O'RNATISH REJASI",value:'4',delta:'Bugun 2 usta band',dFg:'var(--dim3)'},
-          {label:'KAM QOLGAN TOVAR',value:'3',delta:'PTZ-5X · KIT-UY4 · DOMO',dFg:RED}],
-    orders, stock,
-    formFields:[{label:'NOMI',value:'IPC-2410 Bullet 4MP'},{label:'TURKUM',value:'Tashqi kameralar'},{label:'NARX',value:fmt(690000)},{label:'XARAKTERISTIKA',value:'4MP · IR 30m · PoE · IP67'},{label:'OMBORDA',value:s.qty['IPC-2410']+' dona'}],
+    kpis:[
+      {label:'BUGUNGI SAVDO',value:s.kpiData?revText:'—',delta:s.kpiData?((kd.todayOrders||0)+' ta buyurtma'):'Yuklanmoqda…',dFg:A},
+      {label:'OCHIQ BUYURTMALAR',value:s.kpiData?String(kd.openOrders||0):'—',delta:s.kpiData?(kd.newCallbacks?kd.newCallbacks+' ta yangi ariza':'Javob kutmoqda'):'Yuklanmoqda…',dFg:AMB},
+      {label:"O'RNATISH REJASI",value:s.kpiData?String(kd.installing||0):'—',delta:s.kpiData?'Jarayondagi montaj':'Yuklanmoqda…',dFg:'var(--dim3)'},
+      {label:'KAM QOLGAN TOVAR',value:s.kpiData?String(kd.lowStock||0):'—',delta:s.kpiData?lowStockNames:'Yuklanmoqda…',dFg:RED}
+    ],
+    orders, stock, formFields,
     videoOn:s.video, videoMeta:'1:24 · 46 MB · asosiy video',
     addVideo:()=>set({video:true}), delVideo:()=>set({video:false}),
     saveProduct:()=>flash('Mahsulot kartochkasi saqlandi va nashr qilindi'),
@@ -278,8 +409,20 @@ function vals(){
       bg:st.live===false?'var(--fill)':'rgba(47,224,182,.12)',
       ring:st.live===false?'var(--line4)':'linear-gradient(140deg,#2fe0b6,#ffb020)',
       playFg:st.live===false?'var(--dim4)':'var(--fg)', labelFg:st.live===false?'var(--dim2)':'var(--fg2)',
-      toggle:()=>set(p=>({storyList:p.storyList.map(x=>x.id===st.id?{...x,live:x.live===false}:x)})),
-      del:()=>{S.storyList=S.storyList.filter(x=>x.id!==st.id); if(S.cId===st.id) S.cId=null; flash(st.label+' lentadan o’chirildi');},
+      toggle:async ()=>{
+        const nextLive = st.live === false;
+        try {
+          await api('/api/admin/stories/'+st.id, {method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({live:nextLive?1:0})});
+          set(p=>({storyList:p.storyList.map(x=>x.id===st.id?{...x,live:nextLive}:x)}));
+        } catch(err){ flash(err.message); }
+      },
+      del:async ()=>{
+        try {
+          await api('/api/admin/stories/'+st.id, {method:'DELETE'});
+          set(p=>({storyList:p.storyList.filter(x=>x.id!==st.id), cId:p.cId===st.id?null:p.cId}));
+          flash(st.label+' lentadan o’chirildi');
+        } catch(err){ flash(err.message); }
+      },
       up:()=>moveStory(i,-1), down:()=>moveStory(i,1),
       edit:()=>set({cId:st.id,cTitle:st.title,cCams:String(parseInt(st.meta)||''),cDate:(st.meta.split('· ')[1]||''),cText:st.text,cTags:st.tags,cLive:st.live!==false,cFile:st.file})})),
     composerTitle:s.cId?'Story tahrirlash':'Yangi story',
@@ -297,16 +440,26 @@ function vals(){
       S.cFile=n+'.mp4'; flash('Video tanlandi · '+n+'.mp4');},
     editing:!!s.cId, saveLabel:s.cId?'Saqlash':'Lentaga qo’shish',
     newStory:()=>set({cId:null,cTitle:'',cCams:'',cDate:'',cText:'',cTags:[],cLive:true,cFile:''}),
-    saveStory:()=>{
+    saveStory:async ()=>{
       if(!S.cTitle.trim()){flash('Obyekt nomini kiriting'); return;}
       if(!S.cFile){flash('Avval video tanlang'); return;}
       const meta=(S.cCams||'—')+' kamera · '+(S.cDate||'bugun');
       const label=S.cTitle.replace(/["'·]/g,'').split(' ').slice(0,2).join(' ').trim();
-      if(S.cId){ S.storyList=S.storyList.map(x=>x.id===S.cId?{...x,title:S.cTitle,meta,label,text:S.cText,tags:S.cTags,live:S.cLive,file:S.cFile}:x);
-        flash('Story yangilandi'); return; }
-      const st={id:'s'+Date.now(),label,title:S.cTitle,meta,dur:'0:'+(28+Math.floor(Math.random()*30)),views:'0',live:S.cLive,file:S.cFile,tags:S.cTags,text:S.cText};
-      S.storyList=[st,...S.storyList]; S.cId=null; S.cTitle=''; S.cCams=''; S.cDate=''; S.cText=''; S.cTags=[]; S.cLive=true; S.cFile='';
-      flash(st.live?'Story nashr qilindi — mijoz ilovasida ko’rinadi':'Story qoralama sifatida saqlandi');},
+      if(S.cId){
+        try {
+          const updated = await api('/api/admin/stories/'+S.cId,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({title:S.cTitle,meta,label,text:S.cText,tags:S.cTags,live:S.cLive?1:0,file:S.cFile})});
+          set(p=>({storyList:p.storyList.map(x=>x.id===S.cId?updated:x), cId:null, cTitle:'', cCams:'', cDate:'', cText:'', cTags:[], cLive:true, cFile:''}));
+          flash('Story yangilandi');
+        } catch(err){ flash(err.message); }
+        return;
+      }
+      const st={id:'s'+Date.now(),label,title:S.cTitle,meta,dur:'0:'+(28+Math.floor(Math.random()*30)),views:0,live:S.cLive?1:0,file:S.cFile,tags:S.cTags,text:S.cText};
+      try {
+        const created = await api('/api/admin/stories',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(st)});
+        set(p=>({storyList:[created,...p.storyList], cId:null, cTitle:'', cCams:'', cDate:'', cText:'', cTags:[], cLive:true, cFile:''}));
+        flash(st.live?'Story nashr qilindi — mijoz ilovasida ko’rinadi':'Story qoralama sifatida saqlandi');
+      } catch(err){ flash(err.message); }
+    },
 
     bars,
     topList:[{name:'IPC-2410 Bullet',qty:'128 dona',w:'92%'},{name:'Komplekt "Uy 4"',qty:'41 dona',w:'64%'},{name:'NVR-8CH 4K',qty:'37 dona',w:'55%'},{name:'WiFi Mini 3MP',qty:'29 dona',w:'43%'}],
@@ -838,7 +991,7 @@ window.set=function(o){ const t=S.adminTab; _origSet(o); if(S.adminTab!==t){ _sc
 async function initAdmin(){
   if (S.token) {
     try {
-      await api('/api/admin/kpis');
+      await bootstrap();
     } catch(e) {
       logout();
       return;

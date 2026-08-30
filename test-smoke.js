@@ -1,8 +1,8 @@
 import fs from 'node:fs';
 import vm from 'node:vm';
 
-function testHtml(filePath) {
-  console.log(`\n=== Testing ${filePath} ===`);
+function testHtml(filePath, options = {}) {
+  console.log(`\n=== Testing ${filePath} ${options.name ? `(${options.name})` : ''} ===`);
   const content = fs.readFileSync(filePath, 'utf8');
   const startIdx = content.indexOf('<script>');
   const endIdx = content.lastIndexOf('</script>');
@@ -17,6 +17,7 @@ function testHtml(filePath) {
 
   // 2. DOM-stub smoke test
   let rootInnerHTML = '';
+  let warnings = [];
   const el = () => ({
     innerHTML: '',
     textContent: '',
@@ -34,18 +35,36 @@ function testHtml(filePath) {
     ...el(),
     set innerHTML(val) {
       rootInnerHTML = val;
-      // Check for undefined, NaN, [object Object]
       if (val.includes('undefined')) {
-        console.warn('⚠️ Warning: innerHTML contains "undefined"');
+        warnings.push('⚠️ innerHTML contains "undefined"');
       }
       if (val.includes('NaN')) {
-        console.warn('⚠️ Warning: innerHTML contains "NaN"');
+        warnings.push('⚠️ innerHTML contains "NaN"');
       }
       if (val.includes('[object Object]')) {
-        console.warn('⚠️ Warning: innerHTML contains "[object Object]"');
+        warnings.push('⚠️ innerHTML contains "[object Object]"');
       }
     },
     get innerHTML() { return rootInnerHTML; }
+  };
+
+  const mockData = {
+    '/api/admin/orders': [
+      { id: '#KO-4821', client_name: 'Aziz Bekmurodov', phone: '901234567', region: 'Qarshi shahri', address: 'Mustaqillik 12', items: [{ sku: 'IPC-2410', name: 'IPC-2410 Bullet 4MP', price: 690000, qty: 1 }], goods_sum: 690000, install: 1, total: 940000, status: 'Yangi', note: '', created_at: '2026-08-30 10:00:00' }
+    ],
+    '/api/admin/kpis': { todayOrders: 1, todayRevenue: 940000, openOrders: 1, installing: 1, lowStock: 2, newCallbacks: 0 },
+    '/api/admin/stock': [
+      { sku: 'IPC-2410', name: 'IPC-2410 Bullet 4MP', cat: 'Tashqi', price: 690000, qty: 46, promo: 'HIT', active: true, low: false }
+    ],
+    '/api/admin/settings': {
+      pricing: { cablePerMeter: 9000, installPerCamera: 250000, cloudPerCameraMonth: 35000 },
+      credit: { rates: { 3: 0, 6: 8, 12: 14, 24: 26 }, down: { 3: 0, 6: 10, 12: 20, 24: 30 } },
+      modules: { banners: true, stories: true, gps: true, memory: true, cable: true, install: true, cloud: true, credit: true, expert: true }
+    },
+    '/api/stories': [
+      { id: 's1', label: 'Anor Market', title: '"Anor Market" · Qarshi', meta: '8 kamera · 12-avgust', dur: '0:42', views: 1284, live: true, file: 'anor-market.mp4', tags: ['8 × IPC-2410'], text: 'Sinov matni' }
+    ],
+    '/api/admin/callbacks': []
   };
 
   const sandbox = {
@@ -57,12 +76,15 @@ function testHtml(filePath) {
       createElement: () => ({ click() {}, style: {} })
     },
     localStorage: {
-      _data: {},
+      _data: options.localStorage || {},
       getItem(k) { return this._data[k] || null; },
       setItem(k, v) { this._data[k] = String(v); },
       removeItem(k) { delete this._data[k]; }
     },
-    fetch: () => Promise.resolve({ ok: true, status: 200, json: () => Promise.resolve({}) }),
+    fetch: (url) => {
+      const data = mockData[url] || {};
+      return Promise.resolve({ ok: true, status: 200, json: () => Promise.resolve(data) });
+    },
     setInterval: () => 0,
     setTimeout: (fn) => { fn(); return 0; },
     clearInterval: () => {},
@@ -89,14 +111,37 @@ function testHtml(filePath) {
 
   const context = vm.createContext(sandbox);
   vm.runInContext(scriptContent, context);
-  console.log('✓ Script initialized without error');
+
+  if (warnings.length > 0) {
+    warnings.forEach(w => console.warn(w));
+    throw new Error('Smoke test warnings detected');
+  }
+
+  console.log('✓ Script initialized and rendered without error');
   console.log(`✓ Rendered HTML length: ${rootInnerHTML.length}`);
+  return sandbox;
 }
 
 try {
-  testHtml('admin.html');
+  // Test 1: admin.html logged out
+  testHtml('admin.html', { name: 'Logged out' });
+
+  // Test 2: admin.html logged in
+  const adminSandbox = testHtml('admin.html', {
+    name: 'Logged in',
+    localStorage: { ko_admin_token: 'fake_jwt_token' }
+  });
+
+  // Test tabs
+  ['orders', 'products', 'credit', 'stories', 'settings', 'stats'].forEach(tab => {
+    adminSandbox.set({ adminTab: tab });
+    console.log(`✓ Admin tab "${tab}" rendered successfully`);
+  });
+
+  // Test 3: app.html
   testHtml('app.html');
-  console.log('\n✅ All smoke tests passed!\n');
+
+  console.log('\n✅ All smoke tests passed with 0 warnings!\n');
 } catch (err) {
   console.error('\n❌ Smoke test failed:', err);
   process.exit(1);

@@ -113,10 +113,49 @@ async function bootstrap(){
     if (config && config.credit && config.credit.down) {
       S.down = config.credit.down;
     }
+    await syncMyOrders();
   } catch(e) {
     DATA.error = 'Ma\'lumot yuklanmadi — internetni tekshiring';
   }
   render();
+}
+
+async function syncMyOrders(){
+  if (!S.myPhone) return;
+  const rawPh = String(S.myPhone).replace(/[^0-9]/g,'');
+  if (rawPh.length !== 9) return;
+  try {
+    const orders = await j('/api/orders/my?phone=' + rawPh);
+    if (Array.isArray(orders)) {
+      const orderStatus = { ...S.orderStatus };
+      const notes = { ...S.notes };
+      const myOrders = orders.map(o => {
+        orderStatus[o.id] = o.status || 'Yangi';
+        if (o.note) {
+          notes[o.id] = { text: o.note, time: o.updated_at ? o.updated_at.slice(5, 16) : 'Menejer xabari' };
+        }
+        const itemStr = (Array.isArray(o.items) && o.items.length)
+          ? o.items.map(it => (it.name || it.sku) + (it.qty > 1 ? ' × ' + it.qty : '')).join(', ')
+          : (o.region || 'Buyurtma');
+        const skus = Array.isArray(o.items) ? o.items.map(it => [it.sku, it.qty]) : [['IPC-2410', 1]];
+        const dStr = o.created_at ? o.created_at.slice(0, 10) : 'Bugun';
+        return {
+          id: o.id,
+          name: itemStr,
+          date: dStr,
+          sum: fmt(o.total || o.goods_sum || 0),
+          status: (o.status || 'Yangi').toUpperCase(),
+          skus,
+          addr: o.address ? `${o.region || ''} · ${o.address}` : (o.region || ''),
+          rcp: o.recipient_name ? `${o.recipient_name} · +998 ${o.recipient_phone}` : `+998 ${o.phone}`,
+          install: o.install,
+          install_at: o.install_at,
+          cloud: o.cloud
+        };
+      });
+      set({ myOrders, orderStatus, notes });
+    }
+  } catch(e) {}
 }
 
 function _loadStorage(key, def) {
@@ -668,14 +707,14 @@ function vals(){
     myPhoneLabel:s.myPhone?'+998 '+s.myPhone:'Raqam kiritilmagan',
     profMenuOn:!s.profPage, profOrdersOn:s.profPage==='orders', profNotifOn:s.profPage==='notif', profAddrOn:s.profPage==='addr',
     profBack:()=>set({profPage:''}),
-    profStats:[{k:'Buyurtma',v:String(4+s.myOrders.length),fg:'var(--fg)'},
+    profStats:[{k:'Buyurtma',v:String(s.myOrders.length || 4),fg:'var(--fg)'},
       {k:'Xabar',v:String(noteKeys.length),fg:noteKeys.length?A:'var(--fg)'},
       {k:'Kafolat',v:'2',fg:AMB}],
     profMenu:[
       {mark:'▤',name:'Buyurtmalarim',note:'Holat, tarkib, chek va qayta buyurtma',
-        tag:(4+s.myOrders.length)+' ta',tagFg:'var(--dim)',tagBg:'var(--fill)',markFg:A,go:()=>set({profPage:'orders'})},
+        tag:(s.myOrders.length || 4)+' ta',tagFg:'var(--dim)',tagBg:'var(--fill)',markFg:A,go:()=>{set({profPage:'orders'});syncMyOrders();}},
       {mark:'✉',name:'Bildirishnomalar',note:'Menejer xabarlari va holat o’zgarishi',
-        tag:'YANGI',tagFg:'#06231d',tagBg:A,tagOn:noteKeys.length>0,markFg:A,go:()=>set({profPage:'notif'})},
+        tag:'YANGI',tagFg:'#06231d',tagBg:A,tagOn:noteKeys.length>0,markFg:A,go:()=>{set({profPage:'notif'});syncMyOrders();}},
       {mark:'◎',name:'Manzil va yetkazish',note:regSel.name+' · '+(regSel.price?fmt(regSel.price):'bepul'),markFg:A,go:()=>set({profPage:'addr'})},
       {mark:'▭',name:"To'lov usullari",note:creditOn?"Naqd, karta · muddatli to'lov yoqilgan":'Naqd va karta',
         markFg:'var(--dim)',go:()=>flash(creditOn?"Muddatli to'lov komplekt bo'limida tanlanadi":"Naqd va karta orqali to'lov")},
@@ -702,13 +741,27 @@ function vals(){
     notifList:noteKeys.map(id=>({id,text:s.notes[id].text,time:s.notes[id].time,go:()=>set({profPage:'orders',openOrd:id})})),
     addrRegion:regSel.name, addrEta:regSel.eta,
     addrPrice:'Yetkazish: '+(regSel.price?fmt(regSel.price):'bepul')+' · '+regSel.eta,
-    pastLabel:(4+s.myOrders.length)+' ta buyurtma',
-    past:[...s.myOrders.map(o=>{const stt=s.orderStatus[o.id]||'Yangi', c=ST[stt]||{};
-        return {...o, status:stt.toUpperCase(), fg:c.fg||A, bg:c.bg||'var(--fill)'};}),
+    pastLabel:(s.myOrders.length || 4)+' ta buyurtma',
+    past:(s.myOrders.length ? s.myOrders : [
       {id:'#KO-4821',name:'Komplekt "Uy 4" · 4 kamera',date:'11-avgust 2026',sum:fmt(4350000),status:"O'RNATISHDA",fg:A,bg:'rgba(47,224,182,.12)',skus:[['IPC-2410',4],['NVR-8CH',1],['HDD-2T',1]]},
       {id:'#KO-4702',name:'WiFi Mini 3MP ichki',date:'2-iyul 2026',sum:fmt(390000),status:'YETKAZILDI',fg:'var(--dim)',bg:'var(--fill)',skus:[['WIFI-MINI',1],['SD-64',1]]},
       {id:'#KO-4611',name:'NVR-8CH 4K + 2TB disk',date:'19-may 2026',sum:fmt(1450000),status:'YETKAZILDI',fg:'var(--dim)',bg:'var(--fill)',skus:[['NVR-8CH',1],['HDD-2T',1]]},
-      {id:'#KO-4390',name:'IPC-2410 Bullet 4MP × 2',date:'8-mart 2026',sum:fmt(1380000),status:'KAFOLATDA',fg:AMB,bg:'rgba(255,176,32,.12)',skus:[['IPC-2410',2]]}]
+      {id:'#KO-4390',name:'IPC-2410 Bullet 4MP × 2',date:'8-mart 2026',sum:fmt(1380000),status:'KAFOLATDA',fg:AMB,bg:'rgba(255,176,32,.12)',skus:[['IPC-2410',2]]}
+    ])
+      .map(o=>{
+        const stt=s.orderStatus[o.id]||o.status||'Yangi';
+        const stUpper=stt.toUpperCase();
+        const c=ST[stt]||ST[stUpper]||ST.Yangi||{};
+        return {
+          ...o,
+          status:stUpper,
+          fg:c.fg||A,
+          bg:c.bg||'var(--fill)',
+          installOn:!!o.install,
+          installAt:o.install_at||'Rejalashtirilgan',
+          cloudOn:!!o.cloud
+        };
+      })
       .map((o,i)=>{const open=s.openOrd===o.id||(s.openOrd===null&&i===0); return {...o,
         open, chev:open?'▴':'▾', addrOn:!!o.addr, addr:o.addr||'', rcp:o.rcp||'',
         cardBorder:open?'rgba(47,224,182,.4)':'var(--line)', cardBg:open?'rgba(47,224,182,.05)':'var(--card)',

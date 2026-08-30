@@ -919,12 +919,12 @@ function vals(){
     profMenuOn:!s.profPage, profOrdersOn:s.profPage==='orders', profNotifOn:s.profPage==='notif', profAddrOn:s.profPage==='addr',
     profPaymentOn:s.profPage==='payment', profWarrantyOn:s.profPage==='warranty', profAboutOn:s.profPage==='about',
     profBack:()=>set({profPage:''}),
-    profStats:[{k:'Buyurtma',v:String(s.myOrders.length || 4),fg:'var(--fg)'},
+    profStats:[{k:'Buyurtma',v:String((s.myOrders||[]).length),fg:'var(--fg)'},
       {k:'Xabar',v:String(noteKeys.length),fg:noteKeys.length?A:'var(--fg)'},
       {k:'Kafolat',v:'2',fg:AMB}],
     profMenu:[
       {mark:'▤',name:'Buyurtmalarim',note:'Holat, tarkib, chek va qayta buyurtma',
-        tag:(s.myOrders.length || 4)+' ta',tagFg:'var(--dim)',tagBg:'var(--fill)',markFg:A,go:()=>{set({profPage:'orders'});syncMyOrders();}},
+        tag:(s.myOrders||[]).length ? ((s.myOrders||[]).length+' ta') : '',tagFg:'var(--dim)',tagBg:'var(--fill)',markFg:A,go:()=>{set({profPage:'orders'});syncMyOrders();}},
       {mark:'✉',name:'Bildirishnomalar',note:'Menejer xabarlari va holat o’zgarishi',
         tag:'YANGI',tagFg:'#06231d',tagBg:A,tagOn:noteKeys.length>0,markFg:A,go:()=>{set({profPage:'notif'});syncMyOrders();}},
       {mark:'◎',name:'Manzil va yetkazish',note:regSel.name+' · '+(regSel.price?fmt(regSel.price):'bepul'),markFg:A,go:()=>set({profPage:'addr'})},
@@ -958,13 +958,12 @@ function vals(){
     notifList:noteKeys.map(id=>({id,text:s.notes[id].text,time:s.notes[id].time,go:()=>set({profPage:'orders',openOrd:id})})),
     addrRegion:regSel.name, addrEta:regSel.eta,
     addrPrice:'Yetkazish: '+(regSel.price?fmt(regSel.price):'bepul')+' · '+regSel.eta,
-    pastLabel:(s.myOrders.length || 4)+' ta buyurtma',
-    past:(s.myOrders.length ? s.myOrders : [
-      {id:'#KO-4821',name:'Komplekt "Uy 4" · 4 kamera',date:'11-avgust 2026',sum:fmt(4350000),status:"O'RNATISHDA",fg:A,bg:'rgba(47,224,182,.12)',skus:[['IPC-2410',4],['NVR-8CH',1],['HDD-2T',1]]},
-      {id:'#KO-4702',name:'WiFi Mini 3MP ichki',date:'2-iyul 2026',sum:fmt(390000),status:'YETKAZILDI',fg:'var(--dim)',bg:'var(--fill)',skus:[['WIFI-MINI',1],['SD-64',1]]},
-      {id:'#KO-4611',name:'NVR-8CH 4K + 2TB disk',date:'19-may 2026',sum:fmt(1450000),status:'YETKAZILDI',fg:'var(--dim)',bg:'var(--fill)',skus:[['NVR-8CH',1],['HDD-2T',1]]},
-      {id:'#KO-4390',name:'IPC-2410 Bullet 4MP × 2',date:'8-mart 2026',sum:fmt(1380000),status:'KAFOLATDA',fg:AMB,bg:'rgba(255,176,32,.12)',skus:[['IPC-2410',2]]}
-    ])
+    pastLabel:(s.myOrders||[]).length+' ta buyurtma',
+    pastEmpty:!(s.myOrders&&s.myOrders.length),
+    hasPhone:!!(s.myPhone&&String(s.myPhone).replace(/[^0-9]/g,'').length===9),
+    openPhoneSheet:()=>set({ph:{what:"Buyurtmalarni ko'rish",sum:''},phVal:s.myPhone||'',phStep:'enter'}),
+    goCatalogFromOrders:()=>set({profPage:'',tab:'catalog'}),
+    past:(s.myOrders || [])
       .map(o=>{
         const stt=s.orderStatus[o.id]||o.status||'Yangi';
         const stUpper=stt.toUpperCase();
@@ -1597,6 +1596,83 @@ function mProfHead(v,title,sub){return `
   </div>
 </div>`;}
 
+function mPastOrders(v){
+  if (v.pastEmpty) {
+    if (!v.hasPhone) {
+      return `
+      <div style="border:1px dashed var(--line4);border-radius:14px;padding:30px 18px;text-align:center">
+        <div style="font:600 13.5px 'Space Grotesk',sans-serif">Buyurtmalaringizni ko'rish uchun telefon raqamingizni kiriting</div>
+        <div style="font:400 11px/1.4 'Space Grotesk',sans-serif;color:var(--dim);margin-top:6px">Raqamingiz orqali buyurtmalar tarixi va holati yuklanadi</div>
+        <div onclick="${h(v.openPhoneSheet)}" style="display:inline-block;margin-top:14px;background:var(--acc);color:#06231d;border-radius:10px;padding:11px 16px;font:600 12px 'Space Grotesk',sans-serif;cursor:pointer">Telefon raqamni kiritish</div>
+      </div>`;
+    }
+    return `
+    <div style="border:1px dashed var(--line4);border-radius:14px;padding:30px 18px;text-align:center">
+      <div style="font:600 13.5px 'Space Grotesk',sans-serif">Hozircha buyurtma yo'q</div>
+      <div style="font:400 11px/1.4 'Space Grotesk',sans-serif;color:var(--dim);margin-top:6px">Katalogdan kamera yoki komplekt tanlab buyurtma bering</div>
+      <div onclick="${h(v.goCatalogFromOrders)}" style="display:inline-block;margin-top:14px;background:var(--acc);color:#06231d;border-radius:10px;padding:11px 16px;font:600 12px 'Space Grotesk',sans-serif;cursor:pointer">Katalogga o'tish</div>
+    </div>`;
+  }
+  return `
+  <div style="display:flex;flex-direction:column;gap:9px">
+    ${v.past.map(o=>`
+      <div style="background:${o.cardBg};border:1px solid ${o.cardBorder};border-radius:13px">
+        <div onclick="${h(o.toggle)}" style="display:flex;align-items:center;gap:10px;padding:12px 13px;cursor:pointer">
+          <div style="flex:1;min-width:0">
+            <div style="display:flex;align-items:center;gap:8px">
+              <span style="font:600 10.5px 'IBM Plex Mono',monospace;color:var(--dim)">${o.id}</span>
+              <span style="font:600 9px 'IBM Plex Mono',monospace;color:${o.fg};background:${o.bg};padding:3px 6px;border-radius:5px">${o.status}</span>
+            </div>
+            <div style="font:600 12.5px/1.3 'Space Grotesk',sans-serif;margin-top:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${o.name}</div>
+            <div style="font:400 10px 'IBM Plex Mono',monospace;color:var(--dim2);margin-top:4px">${o.meta}</div>
+          </div>
+          <div style="flex:none;font:600 11px 'IBM Plex Mono',monospace;color:var(--dim3)">${o.chev}</div>
+        </div>
+        ${o.open?`
+        <div style="padding:0 13px 13px">
+          <div style="display:flex;gap:7px;overflow:auto">
+            ${o.items.map(it=>`
+              <div onclick="${h(it.go)}" style="flex:none;width:62px;cursor:pointer">
+                <div style="position:relative;width:62px;height:62px;border-radius:9px;overflow:hidden;border:1px solid var(--line2);background:repeating-linear-gradient(135deg,var(--hatchA) 0 8px,var(--hatchB) 8px 16px);display:flex;align-items:center;justify-content:center">
+                  <span style="font:500 7px 'IBM Plex Mono',monospace;color:var(--dim5)">RASM</span>
+                  <span style="position:absolute;top:4px;left:4px;font:600 7px 'IBM Plex Mono',monospace;color:var(--bg);background:var(--acc);padding:2px 3px;border-radius:3px">${it.badge}</span>
+                  <span style="position:absolute;bottom:4px;right:4px;font:700 7.5px 'IBM Plex Mono',monospace;color:#eef2f1;background:rgba(0,0,0,.6);padding:2px 4px;border-radius:3px">${it.qty}</span>
+                </div>
+                <div style="font:400 8px/1.25 'IBM Plex Mono',monospace;color:var(--dim2);margin-top:5px;text-align:center">${it.short}</div>
+              </div>`).join('')}
+          </div>
+          ${o.noteOn?`<div style="display:flex;gap:10px;margin-top:10px;padding:11px 12px;border-radius:11px;border:1px solid rgba(47,224,182,.3);background:rgba(47,224,182,.07)">
+            <div style="flex:none;width:24px;height:24px;border-radius:50%;background:var(--acc);color:#06231d;display:flex;align-items:center;justify-content:center;font:600 11px 'IBM Plex Mono',monospace">✉</div>
+            <div style="flex:1;min-width:0">
+              <div style="font:600 9.5px 'IBM Plex Mono',monospace;color:var(--acc)">MENEJERDAN XABAR</div>
+              <div style="font:400 11.5px/1.45 'Space Grotesk',sans-serif;color:var(--fg2);margin-top:4px;text-wrap:pretty">${o.note}</div>
+              <div style="font:400 9px 'IBM Plex Mono',monospace;color:var(--dim2);margin-top:5px">${o.noteTime}</div>
+            </div>
+          </div>`:''}
+          ${o.addrOn?`<div style="margin-top:10px;padding:11px 12px;border-radius:11px;border:1px solid var(--line);background:var(--tile)">
+            <div style="font:400 9px 'IBM Plex Mono',monospace;color:var(--dim2)">MANZIL</div>
+            <div style="font:400 11px/1.4 'Space Grotesk',sans-serif;color:var(--fg2);margin-top:4px">${o.addr}</div>
+            <div style="font:400 9px 'IBM Plex Mono',monospace;color:var(--dim2);margin-top:7px">QABUL QILUVCHI</div>
+            <div style="font:400 11px 'IBM Plex Mono',monospace;color:var(--fg2);margin-top:4px">${o.rcp}</div>
+          </div>`:''}
+          <div style="display:flex;gap:8px;margin-top:11px">
+            <div onclick="${h(o.again)}" style="flex:1;text-align:center;padding:10px;border-radius:9px;border:1px solid rgba(47,224,182,.4);color:var(--acc);font:600 11.5px 'Space Grotesk',sans-serif;cursor:pointer">Qayta buyurtma</div>
+            <div onclick="${h(o.addMore)}" style="flex:none;padding:10px 12px;border-radius:9px;background:var(--acc);color:#06231d;font:600 11px 'Space Grotesk',sans-serif;cursor:pointer">＋ Yana</div>
+            <div onclick="${h(o.receipt)}" style="flex:none;padding:10px 11px;border-radius:9px;border:1px solid var(--line3);color:var(--dim3);font:500 11px 'IBM Plex Mono',monospace;cursor:pointer">Chek</div>
+          </div>
+        </div>`:''}
+      </div>`).join('')}
+  </div>
+  <div onclick="${h(v.addMoreOpen)}" style="margin-top:11px;display:flex;align-items:center;gap:11px;padding:13px;border-radius:13px;border:1px dashed rgba(47,224,182,.4);background:rgba(47,224,182,.05);cursor:pointer">
+    <div style="flex:none;width:30px;height:30px;border-radius:9px;background:var(--acc);color:#06231d;display:flex;align-items:center;justify-content:center;font:700 15px 'IBM Plex Mono',monospace">＋</div>
+    <div style="flex:1;min-width:0">
+      <div style="font:600 12.5px 'Space Grotesk',sans-serif;color:var(--acc)">Yana xarid qo'shish</div>
+      <div style="font:400 10px 'IBM Plex Mono',monospace;color:var(--dim2);margin-top:3px">Mavjud tizimga kamera, xotira yoki registrator</div>
+    </div>
+    <div style="flex:none;font:600 11px 'IBM Plex Mono',monospace;color:var(--acc)">→</div>
+  </div>`;
+}
+
 function mProfile(v){return `
 <div style="padding:0 16px 24px;display:flex;flex-direction:column;gap:16px">
   <div style="display:flex;align-items:center;gap:13px">
@@ -1628,63 +1704,7 @@ function mProfile(v){return `
   ${v.profOrdersOn?`
   <div>
     ${mProfHead(v,'Buyurtmalarim',v.pastLabel)}
-    <div style="display:flex;flex-direction:column;gap:9px">
-      ${v.past.map(o=>`
-        <div style="background:${o.cardBg};border:1px solid ${o.cardBorder};border-radius:13px">
-          <div onclick="${h(o.toggle)}" style="display:flex;align-items:center;gap:10px;padding:12px 13px;cursor:pointer">
-            <div style="flex:1;min-width:0">
-              <div style="display:flex;align-items:center;gap:8px">
-                <span style="font:600 10.5px 'IBM Plex Mono',monospace;color:var(--dim)">${o.id}</span>
-                <span style="font:600 9px 'IBM Plex Mono',monospace;color:${o.fg};background:${o.bg};padding:3px 6px;border-radius:5px">${o.status}</span>
-              </div>
-              <div style="font:600 12.5px/1.3 'Space Grotesk',sans-serif;margin-top:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${o.name}</div>
-              <div style="font:400 10px 'IBM Plex Mono',monospace;color:var(--dim2);margin-top:4px">${o.meta}</div>
-            </div>
-            <div style="flex:none;font:600 11px 'IBM Plex Mono',monospace;color:var(--dim3)">${o.chev}</div>
-          </div>
-          ${o.open?`
-          <div style="padding:0 13px 13px">
-            <div style="display:flex;gap:7px;overflow:auto">
-              ${o.items.map(it=>`
-                <div onclick="${h(it.go)}" style="flex:none;width:62px;cursor:pointer">
-                  <div style="position:relative;width:62px;height:62px;border-radius:9px;overflow:hidden;border:1px solid var(--line2);background:repeating-linear-gradient(135deg,var(--hatchA) 0 8px,var(--hatchB) 8px 16px);display:flex;align-items:center;justify-content:center">
-                    <span style="font:500 7px 'IBM Plex Mono',monospace;color:var(--dim5)">RASM</span>
-                    <span style="position:absolute;top:4px;left:4px;font:600 7px 'IBM Plex Mono',monospace;color:var(--bg);background:var(--acc);padding:2px 3px;border-radius:3px">${it.badge}</span>
-                    <span style="position:absolute;bottom:4px;right:4px;font:700 7.5px 'IBM Plex Mono',monospace;color:#eef2f1;background:rgba(0,0,0,.6);padding:2px 4px;border-radius:3px">${it.qty}</span>
-                  </div>
-                  <div style="font:400 8px/1.25 'IBM Plex Mono',monospace;color:var(--dim2);margin-top:5px;text-align:center">${it.short}</div>
-                </div>`).join('')}
-            </div>
-            ${o.noteOn?`<div style="display:flex;gap:10px;margin-top:10px;padding:11px 12px;border-radius:11px;border:1px solid rgba(47,224,182,.3);background:rgba(47,224,182,.07)">
-              <div style="flex:none;width:24px;height:24px;border-radius:50%;background:var(--acc);color:#06231d;display:flex;align-items:center;justify-content:center;font:600 11px 'IBM Plex Mono',monospace">✉</div>
-              <div style="flex:1;min-width:0">
-                <div style="font:600 9.5px 'IBM Plex Mono',monospace;color:var(--acc)">MENEJERDAN XABAR</div>
-                <div style="font:400 11.5px/1.45 'Space Grotesk',sans-serif;color:var(--fg2);margin-top:4px;text-wrap:pretty">${o.note}</div>
-                <div style="font:400 9px 'IBM Plex Mono',monospace;color:var(--dim2);margin-top:5px">${o.noteTime}</div>
-              </div>
-            </div>`:''}
-            ${o.addrOn?`<div style="margin-top:10px;padding:11px 12px;border-radius:11px;border:1px solid var(--line);background:var(--tile)">
-              <div style="font:400 9px 'IBM Plex Mono',monospace;color:var(--dim2)">MANZIL</div>
-              <div style="font:400 11px/1.4 'Space Grotesk',sans-serif;color:var(--fg2);margin-top:4px">${o.addr}</div>
-              <div style="font:400 9px 'IBM Plex Mono',monospace;color:var(--dim2);margin-top:7px">QABUL QILUVCHI</div>
-              <div style="font:400 11px 'IBM Plex Mono',monospace;color:var(--fg2);margin-top:4px">${o.rcp}</div>
-            </div>`:''}
-            <div style="display:flex;gap:8px;margin-top:11px">
-              <div onclick="${h(o.again)}" style="flex:1;text-align:center;padding:10px;border-radius:9px;border:1px solid rgba(47,224,182,.4);color:var(--acc);font:600 11.5px 'Space Grotesk',sans-serif;cursor:pointer">Qayta buyurtma</div>
-              <div onclick="${h(o.addMore)}" style="flex:none;padding:10px 12px;border-radius:9px;background:var(--acc);color:#06231d;font:600 11px 'Space Grotesk',sans-serif;cursor:pointer">＋ Yana</div>
-              <div onclick="${h(o.receipt)}" style="flex:none;padding:10px 11px;border-radius:9px;border:1px solid var(--line3);color:var(--dim3);font:500 11px 'IBM Plex Mono',monospace;cursor:pointer">Chek</div>
-            </div>
-          </div>`:''}
-        </div>`).join('')}
-    </div>
-    <div onclick="${h(v.addMoreOpen)}" style="margin-top:11px;display:flex;align-items:center;gap:11px;padding:13px;border-radius:13px;border:1px dashed rgba(47,224,182,.4);background:rgba(47,224,182,.05);cursor:pointer">
-      <div style="flex:none;width:30px;height:30px;border-radius:9px;background:var(--acc);color:#06231d;display:flex;align-items:center;justify-content:center;font:700 15px 'IBM Plex Mono',monospace">＋</div>
-      <div style="flex:1;min-width:0">
-        <div style="font:600 12.5px 'Space Grotesk',sans-serif;color:var(--acc)">Yana xarid qo'shish</div>
-        <div style="font:400 10px 'IBM Plex Mono',monospace;color:var(--dim2);margin-top:3px">Mavjud tizimga kamera, xotira yoki registrator</div>
-      </div>
-      <div style="flex:none;font:600 11px 'IBM Plex Mono',monospace;color:var(--acc)">→</div>
-    </div>
+    ${mPastOrders(v)}
   </div>`:''}
 
   ${v.profNotifOn?`

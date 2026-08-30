@@ -206,9 +206,65 @@ let H=[];
 const h=fn=>`_h(${H.push(fn)-1},event)`;
 window._h=(i,e)=>{ const f=H[i]; if(f) f(e); };
 
-let _t=null,_g=null,_sp=null;
+let _t=null,_g=null,_sp=null,_pushingState=false;
+let _storyTimer=null, _storyStartTime=0, _storyRemaining=6000, _storyPaused=false;
+
+function _clearStoryTimer(){
+  if(_storyTimer){ clearTimeout(_storyTimer); _storyTimer=null; }
+}
+function _startStoryTimer(ms=6000){
+  _clearStoryTimer();
+  _storyRemaining=ms;
+  _storyStartTime=Date.now();
+  _storyPaused=false;
+  _storyTimer=setTimeout(()=>{
+    if(S.story!==null){
+      const list=(DATA.stories&&DATA.stories.length)?DATA.stories:(S.storyList||[]);
+      const n=S.story+1;
+      if(n>=list.length){
+        _clearStoryTimer();
+        set({story:null});
+      } else {
+        set(p=>({story:n,seen:{...p.seen,[list[n].id]:true}}));
+        _startStoryTimer(6000);
+      }
+    }
+  }, ms);
+}
+function _pauseStoryTimer(){
+  if(_storyTimer && !_storyPaused){
+    clearTimeout(_storyTimer);
+    _storyTimer=null;
+    const elapsed=Date.now()-_storyStartTime;
+    _storyRemaining=Math.max(200, _storyRemaining-elapsed);
+    _storyPaused=true;
+    render();
+  }
+}
+function _resumeStoryTimer(){
+  if(_storyPaused && S.story!==null){
+    _startStoryTimer(_storyRemaining);
+    render();
+  }
+}
+
+function _hasOverlay(st){
+  return !!(st.sel || st.story !== null || st.ph || st.bagOpen || st.regionOpen || st.filters || st.profPage || st.added || st.ok);
+}
+
 function set(o){
+  const prevOverlay = _hasOverlay(S);
   Object.assign(S, typeof o==='function'?o(S):o);
+  const nextOverlay = _hasOverlay(S);
+
+  if (!prevOverlay && nextOverlay && !_pushingState) {
+    try {
+      if (window.history && window.history.pushState) {
+        window.history.pushState({ koOverlay: true }, '');
+      }
+    } catch(e){}
+  }
+
   try {
     localStorage.setItem('ko_bag', JSON.stringify(S.bag || {}));
     if (S.myPhone) localStorage.setItem('ko_my_phone', S.myPhone);
@@ -222,10 +278,65 @@ function set(o){
   } catch(e){}
   render();
 }
+
+if (typeof window !== 'undefined' && window.addEventListener) {
+  window.addEventListener('popstate', ()=>{
+    _pushingState = true;
+    try {
+      if (S.sel) { set({ sel: null, spinning: false }); return; }
+      if (S.story !== null) { _clearStoryTimer(); set({ story: null }); return; }
+      if (S.ph) { set({ ph: null }); return; }
+      if (S.bagOpen) { set({ bagOpen: false }); return; }
+      if (S.regionOpen) { set({ regionOpen: false }); return; }
+      if (S.filters) { set({ filters: false }); return; }
+      if (S.profPage) { set({ profPage: '' }); return; }
+      if (S.added) { set({ added: null }); return; }
+      if (S.ok) { set({ ok: null }); return; }
+      if (S.tab !== 'home') { set({ tab: 'home' }); return; }
+    } finally {
+      _pushingState = false;
+    }
+  });
+}
 function flash(t){ S.toast=t; clearTimeout(_t); _t=setTimeout(()=>{S.toast=null;render();},2200); render(); }
 function addBag(sku){ set(st=>({ bag: { ...st.bag, [sku]: (st.bag[sku]||0)+1 }, added: sku })); }
 window.addBag = addBag;
 function promoStyle(k){ return ({HIT:{fg:'#2a1a00',bg:'#ffb020',border:'#ffb020'},CHEGIRMA:{fg:'#ffffff',bg:'#ff4d3d',border:'#ff4d3d'},YANGI:{fg:'#06231d',bg:'#2fe0b6',border:'#2fe0b6'}})[k]||{fg:'var(--dim2)',bg:'var(--fill)',border:'var(--line3)'}; }
+
+function prodSvg(p, w=48, h=48){
+  const sku = (p && p.sku) || '';
+  const cat = (p && p.cat) || '';
+  const acc = 'var(--acc, #2fe0b6)';
+  const dim = 'var(--dim3, #9fb0ad)';
+  const bg = 'var(--tile, #14181a)';
+
+  if (cat === 'Tashqi' || sku.startsWith('IPC')) {
+    return `<svg width="${w}" height="${h}" viewBox="0 0 64 64" fill="none"><rect x="8" y="24" width="34" height="16" rx="4" fill="${bg}" stroke="${dim}" stroke-width="2"/><path d="M42 27L54 20V44L42 37V27Z" fill="${bg}" stroke="${dim}" stroke-width="2"/><circle cx="20" cy="32" r="5" fill="${acc}" fill-opacity="0.3" stroke="${acc}" stroke-width="2"/><circle cx="20" cy="32" r="2" fill="${acc}"/><path d="M16 40V50H28" stroke="${dim}" stroke-width="2" stroke-linecap="round"/><circle cx="34" cy="28" r="1.5" fill="#ff4d3d"/></svg>`;
+  }
+  if (cat === 'Aylanuvchi' || sku.startsWith('PTZ')) {
+    return `<svg width="${w}" height="${h}" viewBox="0 0 64 64" fill="none"><path d="M12 24C12 16 20 12 32 12C44 12 52 16 52 24V28H12V24Z" fill="${bg}" stroke="${dim}" stroke-width="2"/><circle cx="32" cy="36" r="16" fill="${bg}" stroke="${dim}" stroke-width="2"/><circle cx="32" cy="36" r="8" fill="${acc}" fill-opacity="0.25" stroke="${acc}" stroke-width="2"/><circle cx="32" cy="36" r="3.5" fill="${acc}"/><path d="M22 28H42" stroke="${dim}" stroke-width="2"/></svg>`;
+  }
+  if (cat === 'Yozuvchi' || sku.startsWith('NVR') || sku.startsWith('DVR')) {
+    return `<svg width="${w}" height="${h}" viewBox="0 0 64 64" fill="none"><rect x="8" y="22" width="48" height="20" rx="3" fill="${bg}" stroke="${dim}" stroke-width="2"/><line x1="14" y1="28" x2="30" y2="28" stroke="${dim}" stroke-width="1.5" stroke-linecap="round"/><line x1="14" y1="34" x2="24" y2="34" stroke="${dim}" stroke-width="1.5" stroke-linecap="round"/><circle cx="42" cy="32" r="2" fill="${acc}"/><circle cx="48" cy="32" r="2" fill="#ffb020"/><rect x="36" y="26" width="16" height="12" rx="2" stroke="${dim}" stroke-width="1" stroke-dasharray="2 2"/></svg>`;
+  }
+  if (cat === 'Ichki' || sku.startsWith('WIFI')) {
+    return `<svg width="${w}" height="${h}" viewBox="0 0 64 64" fill="none"><path d="M22 48H42V52H22V48Z" fill="${dim}"/><path d="M30 42V48H34V42" fill="${dim}"/><circle cx="32" cy="26" r="14" fill="${bg}" stroke="${dim}" stroke-width="2"/><circle cx="32" cy="26" r="7" fill="${acc}" fill-opacity="0.3" stroke="${acc}" stroke-width="2"/><circle cx="32" cy="26" r="2.5" fill="${acc}"/><path d="M42 16C45 19 47 22 47 26" stroke="${acc}" stroke-width="1.5" stroke-linecap="round"/><path d="M46 12C50 16 52 21 52 26" stroke="${acc}" stroke-width="1.5" stroke-linecap="round" stroke-opacity="0.6"/></svg>`;
+  }
+  if (cat === 'Domofon' || sku.startsWith('DOMO')) {
+    return `<svg width="${w}" height="${h}" viewBox="0 0 64 64" fill="none"><rect x="14" y="10" width="36" height="44" rx="4" fill="${bg}" stroke="${dim}" stroke-width="2"/><rect x="18" y="14" width="28" height="20" rx="2" fill="rgba(47,224,182,0.12)" stroke="${acc}" stroke-width="1.5"/><circle cx="32" cy="24" r="4" fill="${acc}"/><circle cx="32" cy="42" r="5" fill="${bg}" stroke="${dim}" stroke-width="2"/><path d="M30 42H34" stroke="${dim}" stroke-width="1.5"/></svg>`;
+  }
+  if (cat === 'Xotira' || sku.startsWith('SD') || sku.startsWith('HDD')) {
+    if (sku.startsWith('HDD')) {
+      return `<svg width="${w}" height="${h}" viewBox="0 0 64 64" fill="none"><rect x="12" y="14" width="40" height="36" rx="4" fill="${bg}" stroke="${dim}" stroke-width="2"/><circle cx="32" cy="32" r="11" stroke="${dim}" stroke-width="1.5"/><circle cx="32" cy="32" r="4" fill="${acc}"/><path d="M32 32L40 24" stroke="${acc}" stroke-width="1.5" stroke-linecap="round"/></svg>`;
+    }
+    return `<svg width="${w}" height="${h}" viewBox="0 0 64 64" fill="none"><path d="M18 16H40L46 22V48H18V16Z" fill="${bg}" stroke="${dim}" stroke-width="2"/><line x1="22" y1="20" x2="22" y2="26" stroke="${acc}" stroke-width="2" stroke-linecap="round"/><line x1="26" y1="20" x2="26" y2="26" stroke="${acc}" stroke-width="2" stroke-linecap="round"/><line x1="30" y1="20" x2="30" y2="26" stroke="${acc}" stroke-width="2" stroke-linecap="round"/><rect x="22" y="34" width="20" height="8" rx="1.5" fill="rgba(47,224,182,0.15)"/></svg>`;
+  }
+  if (cat === 'Komplekt' || sku.startsWith('KIT')) {
+    return `<svg width="${w}" height="${h}" viewBox="0 0 64 64" fill="none"><rect x="14" y="28" width="36" height="18" rx="3" fill="${bg}" stroke="${dim}" stroke-width="2"/><circle cx="42" cy="37" r="2" fill="${acc}"/><path d="M10 16L22 16L28 22L16 22Z" fill="${bg}" stroke="${acc}" stroke-width="1.5"/><path d="M36 16L48 16L54 22L42 22Z" fill="${bg}" stroke="${acc}" stroke-width="1.5"/><circle cx="16" cy="19" r="1.5" fill="${acc}"/><circle cx="42" cy="19" r="1.5" fill="${acc}"/></svg>`;
+  }
+  return `<svg width="${w}" height="${h}" viewBox="0 0 64 64" fill="none"><rect x="12" y="16" width="40" height="32" rx="4" fill="${bg}" stroke="${dim}" stroke-width="2"/><circle cx="32" cy="32" r="8" fill="${acc}" fill-opacity="0.25" stroke="${acc}" stroke-width="2"/></svg>`;
+}
+
 function P(p){
   if (!p) return null;
   const raw=S.promo[p.sku], pk=raw&&S.labelOn[raw]?raw:null, ps=promoStyle(pk);
@@ -595,15 +706,16 @@ function vals(){
     stories:STORY.map((st,i)=>({label:st.label, mark:st.mark,
       ring:s.seen[st.id]?'var(--line4)':'linear-gradient(140deg,#2fe0b6,#ffb020)',
       playFg:s.seen[st.id]?'var(--dim4)':'#eef2f1', labelFg:s.seen[st.id]?'var(--dim2)':'var(--fg2)',
-      go:()=>set(p=>({story:i,seen:{...p.seen,[st.id]:true}}))})),
-    storyOn:s.story!==null, curStory:cur,
-    storyBars:STORY.map((st,i)=>({w:i<=s.story?'100%':'0%', anim:i===s.story?'storyBar 6s linear both':'none'})),
-    closeStory:()=>set({story:null}),
-    nextStory:()=>{const n=(s.story??0)+1; if(n>=STORY.length){set({story:null}); return;}
-      set(p=>({story:n,seen:{...p.seen,[STORY[n].id]:true}}));},
-    prevStory:()=>set({story:Math.max(0,(s.story??0)-1)}),
-    storyToKit:()=>set({story:null,tab:'kit'}),
-    storyToExpert:()=>set({story:null,tab:'expert',expStep:1,topic:'Yangi kamera kerak',cb:'idle'}),
+      go:()=>{ _startStoryTimer(6000); set(p=>({story:i,seen:{...p.seen,[st.id]:true}})); }})),
+    storyOn:s.story!==null, curStory:cur, storyPaused:_storyPaused,
+    pauseStory:()=>_pauseStoryTimer(), resumeStory:()=>_resumeStoryTimer(),
+    storyBars:STORY.map((st,i)=>({w:i<s.story?'100%':i===s.story?'100%':'0%', anim:i===s.story?`storyBar 6s linear both`:i<s.story?'none':'none', playState:_storyPaused?'paused':'running'})),
+    closeStory:()=>{ _clearStoryTimer(); set({story:null}); },
+    nextStory:()=>{const n=(s.story??0)+1; if(n>=STORY.length){ _clearStoryTimer(); set({story:null}); return;}
+      _startStoryTimer(6000); set(p=>({story:n,seen:{...p.seen,[STORY[n].id]:true}}));},
+    prevStory:()=>{ const n=Math.max(0,(s.story??0)-1); _startStoryTimer(6000); set({story:n}); },
+    storyToKit:()=>{ _clearStoryTimer(); set({story:null,tab:'kit'}); },
+    storyToExpert:()=>{ _clearStoryTimer(); set({story:null,tab:'expert',expStep:1,topic:'Yangi kamera kerak',cb:'idle'}); },
     creditOn, expertOn,
     catChips:['Hammasi','Tashqi','Ichki','Aylanuvchi','Yozuvchi','Xotira','Domofon','Komplekt'].map(n=>({name:n,n:String(base.filter(p=>n==='Hammasi'||p.cat===n).length),...chip(s.cat===n),go:()=>set({cat:n})})),
     toggles:[{name:'PoE',...chip(s.poe),go:()=>set({poe:!s.poe})},{name:'4MP+',...chip(s.mp),go:()=>set({mp:!s.mp})},{name:'KECHA KO’RISH',...chip(s.night),go:()=>set({night:!s.night})}],
@@ -646,7 +758,7 @@ function vals(){
     kitBackOn:s.kStep>1, kitBack:()=>set({kStep:Math.max(1,s.kStep-1)}),
     kitNextLabel:s.kStep===4?'Buyurtmani tasdiqlash':(s.kStep===1?'Qo’shimchalarga o’tish':s.kStep===2?"To'lovni tanlash":'Xulosani ko’rish'),
     kitNext:()=>{ if(S.kStep<4){set({kStep:S.kStep+1}); return;}
-      placeOrder(S.cams+' kamera komplekti', fmt(total), [[camSel.sku,S.cams],...kitExtraItems.map(x=>[x.p.sku,x.q]),...(hddActive?[[hddSel.size==='64 GB'?'SD-64':'SD-256',1]]:[])]); },
+      placeOrder(S.cams+' kamera komplekti', fmt(total), [[camSel.sku,S.cams],...kitExtraItems.map(x=>[x.p.sku,x.q]),...(hddActive&&hddSel?[[hddSel.sku||(hddSel.size==='64 GB'?'SD-64':'SD-256'),1]]:[])]); },
     kitCreditNote:s.creditUse&&creditOn, kitCreditText:provSel.name+' · '+curTerm+' oy · '+fmt(monthlyFor(curTerm,total))+'/oy',
     presets:PRESETS.map(p=>{const on=s.preset===p.name; return {name:p.name,note:p.note,mark:p.mark,
       border:on?'rgba(47,224,182,.4)':'var(--line)', bg:on?'rgba(47,224,182,.07)':'var(--card)',
@@ -887,7 +999,7 @@ function mHome(v){return `
       ${v.kits.map(k=>`
         <div onclick="${h(k.go)}" style="flex:none;width:216px;border-radius:15px;overflow:hidden;background:var(--card);border:1px solid var(--line);cursor:pointer">
           <div style="height:112px;background:repeating-linear-gradient(135deg,var(--hatchA) 0 10px,var(--hatchB) 10px 20px);display:flex;align-items:center;justify-content:center;border-bottom:1px solid var(--line2)">
-            <div style="font:500 9.5px 'IBM Plex Mono',monospace;color:var(--dim5);border:1px dashed var(--line4);padding:6px 10px;border-radius:6px">KOMPLEKT RASMI</div>
+            ${prodSvg(k, 54, 54)}
           </div>
           <div style="padding:12px 13px 14px">
             <div style="font:600 13.5px/1.25 'Space Grotesk',sans-serif">${k.name}</div>
@@ -922,7 +1034,9 @@ function mHome(v){return `
     <div style="display:flex;flex-direction:column;gap:10px;margin:0 16px">
       ${v.popular.map(p=>`
         <div onclick="${h(p.go)}" style="display:flex;gap:12px;padding:11px;border-radius:14px;background:var(--card);border:1px solid var(--line);cursor:pointer">
-          <div style="flex:none;width:74px;height:74px;border-radius:10px;background:repeating-linear-gradient(135deg,var(--hatchA) 0 9px,var(--hatchB) 9px 18px);display:flex;align-items:center;justify-content:center;font:500 8px 'IBM Plex Mono',monospace;color:var(--dim5)">RASM</div>
+          <div style="flex:none;width:74px;height:74px;border-radius:10px;background:repeating-linear-gradient(135deg,var(--hatchA) 0 9px,var(--hatchB) 9px 18px);display:flex;align-items:center;justify-content:center">
+            ${prodSvg(p, 46, 46)}
+          </div>
           <div style="flex:1;min-width:0;display:flex;flex-direction:column;justify-content:space-between">
             <div>
               <div style="font:600 13px/1.25 'Space Grotesk',sans-serif">${p.name}</div>
@@ -1010,7 +1124,7 @@ function mCatalog(v){return `
     ${v.filtered.map(p=>`
       <div style="border-radius:14px;overflow:hidden;background:var(--card);border:1px solid var(--line);display:flex;flex-direction:column">
         <div onclick="${h(p.go)}" style="height:104px;background:repeating-linear-gradient(135deg,var(--hatchA) 0 9px,var(--hatchB) 9px 18px);display:flex;align-items:center;justify-content:center;position:relative;cursor:pointer">
-          <span style="font:500 8.5px 'IBM Plex Mono',monospace;color:var(--dim5)">RASM</span>
+          ${prodSvg(p, 52, 52)}
           <span style="position:absolute;top:7px;left:7px;font:600 8.5px 'IBM Plex Mono',monospace;color:var(--bg);background:var(--acc);padding:3px 5px;border-radius:4px">${p.badge}</span>
           ${p.promoOn?`<span style="position:absolute;top:7px;right:7px;font:700 8px 'IBM Plex Mono',monospace;color:${p.promoFg};background:${p.promoBg};border:1px solid ${p.promoBorder};padding:3px 5px;border-radius:4px">${p.promo}</span>`:''}
           <span style="position:absolute;bottom:7px;right:7px;font:600 8.5px 'IBM Plex Mono',monospace;color:${p.stockColor};background:var(--bg);padding:3px 5px;border-radius:4px">${p.stockShort}</span>
@@ -1033,7 +1147,8 @@ function mCatalog(v){return `
   ${v.listView?`<div style="display:flex;flex-direction:column;gap:10px;padding:0 16px">
     ${v.filtered.map(p=>`
       <div style="display:flex;gap:12px;padding:11px;border-radius:14px;background:var(--card);border:1px solid var(--line)">
-        <div onclick="${h(p.go)}" style="position:relative;flex:none;width:82px;height:82px;border-radius:10px;background:repeating-linear-gradient(135deg,var(--hatchA) 0 9px,var(--hatchB) 9px 18px);display:flex;align-items:center;justify-content:center;font:500 8px 'IBM Plex Mono',monospace;color:var(--dim5);cursor:pointer">RASM
+        <div onclick="${h(p.go)}" style="position:relative;flex:none;width:82px;height:82px;border-radius:10px;background:repeating-linear-gradient(135deg,var(--hatchA) 0 9px,var(--hatchB) 9px 18px);display:flex;align-items:center;justify-content:center;cursor:pointer">
+          ${prodSvg(p, 46, 46)}
           ${p.spinOn?`<span style="position:absolute;bottom:5px;left:5px;font:600 7.5px 'IBM Plex Mono',monospace;color:var(--fg);background:rgba(0,0,0,.55);border:1px solid var(--line3);padding:2px 4px;border-radius:9px">⟳ 360°</span>`:''}
         </div>
         <div style="flex:1;min-width:0">
@@ -1613,7 +1728,7 @@ function mDetail(v){const p=v.sel; return `
   <div style="flex:1;overflow:auto;padding:0 16px 16px">
     <div style="position:relative;height:236px;border-radius:16px;overflow:hidden;background:repeating-linear-gradient(135deg,var(--hatchA) 0 12px,var(--hatchB) 12px 24px);border:1px solid var(--line);display:flex;align-items:center;justify-content:center">
       <div style="width:150px;height:150px;border-radius:50%;border:1px dashed var(--line4);display:flex;align-items:center;justify-content:center;transform:rotate(${v.spinRot});transition:transform .25s ease">
-        <div style="font:500 10px 'IBM Plex Mono',monospace;color:var(--dim5);border:1px dashed var(--line4);padding:8px 12px;border-radius:7px;background:var(--bg)">MAHSULOT RASMI</div>
+        ${prodSvg(p, 96, 96)}
       </div>
       ${p.spinOn?`
       <div style="position:absolute;top:11px;right:11px;display:flex;align-items:center;gap:4px;font:600 9.5px 'IBM Plex Mono',monospace;color:var(--fg);background:rgba(0,0,0,.5);border:1px solid var(--line3);padding:5px 8px;border-radius:13px">⟳ 360°</div>
@@ -1624,9 +1739,9 @@ function mDetail(v){const p=v.sel; return `
       </div>`:''}
     </div>
     <div style="display:flex;gap:7px;margin-top:9px">
-      <div style="width:52px;height:52px;border-radius:9px;border:1.5px solid var(--acc);background:var(--hatchA)"></div>
-      <div style="width:52px;height:52px;border-radius:9px;border:1px solid var(--line3);background:var(--hatchB)"></div>
-      <div style="width:52px;height:52px;border-radius:9px;border:1px solid var(--line3);background:var(--hatchB)"></div>
+      <div style="width:52px;height:52px;border-radius:9px;border:1.5px solid var(--acc);background:var(--hatchA);display:flex;align-items:center;justify-content:center">${prodSvg(p, 34, 34)}</div>
+      <div style="width:52px;height:52px;border-radius:9px;border:1px solid var(--line3);background:var(--hatchB);display:flex;align-items:center;justify-content:center">${prodSvg(p, 34, 34)}</div>
+      <div style="width:52px;height:52px;border-radius:9px;border:1px solid var(--line3);background:var(--hatchB);display:flex;align-items:center;justify-content:center">${prodSvg(p, 34, 34)}</div>
     </div>
     ${p.promoOn?`<div style="display:inline-block;margin-top:14px;font:700 9.5px 'IBM Plex Mono',monospace;color:${p.promoFg};background:${p.promoBg};border:1px solid ${p.promoBorder};padding:5px 8px;border-radius:6px">${p.promo}</div>`:''}
     <div style="font:600 19px/1.25 'Space Grotesk',sans-serif;margin-top:10px">${p.name}</div>
@@ -1669,7 +1784,7 @@ function mCart(v){return `
       ${v.cart.map(c=>`
         <div style="display:flex;gap:12px;padding:11px;border-radius:14px;background:var(--card);border:1px solid var(--line)">
           <div style="flex:none;width:88px;height:88px;border-radius:11px;overflow:hidden;background:repeating-linear-gradient(135deg,var(--hatchA) 0 9px,var(--hatchB) 9px 18px);border:1px solid var(--line2);position:relative;display:flex;align-items:center;justify-content:center">
-            <span style="font:500 8px 'IBM Plex Mono',monospace;color:var(--dim5)">MAHSULOT RASMI</span>
+            ${prodSvg(c.p, 48, 48)}
             <span style="position:absolute;top:5px;left:5px;font:600 8px 'IBM Plex Mono',monospace;color:var(--bg);background:var(--acc);padding:2px 4px;border-radius:3px">${c.badge}</span>
           </div>
           <div style="flex:1;min-width:0;display:flex;flex-direction:column">
@@ -1835,7 +1950,7 @@ function mFilters(v){return `
 function mStory(v){const c=v.curStory; return `
 <div style="position:absolute;inset:0;z-index:10;display:flex;flex-direction:column;background:#050707">
   <div style="flex:none;display:flex;gap:4px;padding:12px 12px 0">
-    ${v.storyBars.map(b=>`<div style="flex:1;height:2.5px;border-radius:2px;background:rgba(255,255,255,.22);overflow:hidden"><div style="height:100%;background:#eef2f1;width:${b.w};animation:${b.anim}"></div></div>`).join('')}
+    ${v.storyBars.map(b=>`<div style="flex:1;height:2.5px;border-radius:2px;background:rgba(255,255,255,.22);overflow:hidden"><div style="height:100%;background:#eef2f1;width:${b.w};animation:${b.anim};animation-play-state:${b.playState}"></div></div>`).join('')}
   </div>
   <div style="flex:none;display:flex;align-items:center;gap:11px;padding:13px 14px">
     <div style="flex:none;width:34px;height:34px;border-radius:50%;background:#2fe0b6;color:#06231d;display:flex;align-items:center;justify-content:center;font:700 12px 'IBM Plex Mono',monospace">${c.mark}</div>
@@ -1845,7 +1960,7 @@ function mStory(v){const c=v.curStory; return `
     </div>
     <div onclick="${h(v.closeStory)}" style="flex:none;width:30px;height:30px;border-radius:9px;border:1px solid rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font:600 12px 'IBM Plex Mono',monospace;color:#eef2f1;cursor:pointer">✕</div>
   </div>
-  <div style="flex:1;position:relative;margin:0 0 4px;background:repeating-linear-gradient(135deg,#12181a 0 14px,#0e1416 14px 28px);display:flex;align-items:center;justify-content:center;overflow:hidden">
+  <div onpointerdown="${h(v.pauseStory)}" onpointerup="${h(v.resumeStory)}" onpointercancel="${h(v.resumeStory)}" style="flex:1;position:relative;margin:0 0 4px;background:repeating-linear-gradient(135deg,#12181a 0 14px,#0e1416 14px 28px);display:flex;align-items:center;justify-content:center;overflow:hidden">
     <div style="position:absolute;inset:0;display:flex">
       <div onclick="${h(v.prevStory)}" style="flex:1;cursor:pointer"></div>
       <div onclick="${h(v.nextStory)}" style="flex:1;cursor:pointer"></div>
@@ -1991,7 +2106,7 @@ function mAdded(v){return `
     </div>
     <div style="display:flex;gap:12px;margin-top:14px;padding:11px;border-radius:13px;background:var(--card);border:1px solid var(--line)">
       <div style="flex:none;width:66px;height:66px;border-radius:10px;background:repeating-linear-gradient(135deg,var(--hatchA) 0 9px,var(--hatchB) 9px 18px);border:1px solid var(--line2);position:relative;display:flex;align-items:center;justify-content:center">
-        <span style="font:500 7.5px 'IBM Plex Mono',monospace;color:var(--dim5)">RASM</span>
+        ${prodSvg(v.added, 40, 40)}
         <span style="position:absolute;top:4px;left:4px;font:600 7.5px 'IBM Plex Mono',monospace;color:var(--bg);background:var(--acc);padding:2px 4px;border-radius:3px">${v.addedBadge}</span>
       </div>
       <div style="flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center">

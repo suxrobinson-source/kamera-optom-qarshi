@@ -27,7 +27,13 @@ ordersRouter.post('/orders', (req, res) => {
   const items = [];
   let goodsSum = 0, cams = 0;
   for (const it of b.items) {
-    const p = getP.get(String(it.sku || ''));
+    let p = getP.get(String(it.sku || ''));
+    if (!p && pricing && Array.isArray(pricing.hddOptions)) {
+      const hdd = pricing.hddOptions.find(h => h.sku === it.sku || h.size === it.sku);
+      if (hdd) {
+        p = { sku: hdd.sku || it.sku, name: `microSD ${hdd.size} (${hdd.days})`, price: hdd.price, qty: 999, cat: 'Xotira' };
+      }
+    }
     const qty = Math.max(1, Math.min(999, +it.qty || 1));
     if (!p) return res.status(400).json({ error: `Mahsulot topilmadi: ${it.sku}` });
     if (p.qty < qty) return res.status(409).json({ error: `"${p.name}" omborda yetarli emas (qoldiq: ${p.qty})` });

@@ -101,6 +101,13 @@ function testHtml(filePath, options = {}) {
       setItem(k, v) { this._data[k] = String(v); },
       removeItem(k) { delete this._data[k]; }
     },
+    history: {
+      pushState() {},
+      replaceState() {},
+      state: null
+    },
+    addEventListener: () => {},
+    removeEventListener: () => {},
     fetch: (url) => {
       const data = mockData[url] || {};
       return Promise.resolve({ ok: true, status: 200, json: () => Promise.resolve(data) });

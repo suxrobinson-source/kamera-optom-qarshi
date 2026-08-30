@@ -1,0 +1,21 @@
+{
+  "name": "kamera-optom-backend",
+  "version": "1.0.0",
+  "description": "KAMERA OPTOM QARSHI — mijoz ilovasi va admin panel uchun backend API",
+  "type": "module",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "seed": "node src/seed.js",
+    "admin:reset": "node src/reset-admin.js"
+  },
+  "engines": {
+    "node": ">=22.5"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.2"
+  }
+}

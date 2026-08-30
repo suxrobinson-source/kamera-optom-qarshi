@@ -217,7 +217,7 @@ function vals(){
             noteDraft:{id:o.id,client:o.client_name||'Mijoz',phone:phoneStr,status:ns},
             noteText:NOTE_DEF[ns]||''
           }));
-          api('/api/admin/kpis').then(kd=>set({kpiData:kd})).catch(()=>{});
+          api('/api/admin/kpis').then(kd=>set({kpiData:kd})).catch(err=>flash(err.message));
         } catch(err) { flash(err.message); }
       }
     };
@@ -256,7 +256,7 @@ function vals(){
             qty:{...pr.qty,[p.sku]:q2},
             stockProducts: pr.stockProducts.map(x=>x.sku===p.sku?{...x,qty:q2}:x)
           }));
-          api('/api/admin/kpis').then(kd=>set({kpiData:kd})).catch(()=>{});
+          api('/api/admin/kpis').then(kd=>set({kpiData:kd})).catch(err=>flash(err.message));
         } catch(err) { flash(err.message); }
       },
       minus: async ()=>{
@@ -267,7 +267,7 @@ function vals(){
             qty:{...pr.qty,[p.sku]:q2},
             stockProducts: pr.stockProducts.map(x=>x.sku===p.sku?{...x,qty:q2}:x)
           }));
-          api('/api/admin/kpis').then(kd=>set({kpiData:kd})).catch(()=>{});
+          api('/api/admin/kpis').then(kd=>set({kpiData:kd})).catch(err=>flash(err.message));
         } catch(err) { flash(err.message); }
       }
     };

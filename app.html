@@ -251,42 +251,60 @@ function toggleSpin(){
   S.spinning=true; _sp=setInterval(()=>{S.spinDeg+=15;render();},90); render();
 }
 async function finishOrder(addr,rcp){
-  const o=S.ph||{}, id='#KO-'+(4822+Math.floor(Math.random()*70));
+  const o=S.ph||{};
   const MN=['yanvar','fevral','mart','aprel','may','iyun','iyul','avgust','sentabr','oktabr','noyabr','dekabr'], d=new Date();
-  const rec={id, name:o.what||'Buyurtma', date:d.getDate()+'-'+MN[d.getMonth()]+' '+d.getFullYear(),
-    sum:o.sum||'', skus:(o.skus&&o.skus.length?o.skus:[['IPC-2410',1]]),
-    addr:addr?addr.label+' · '+addr.text:'', rcp:rcp?rcp.name+' · '+rcp.phone:''};
+  const skus=(o.skus&&o.skus.length?o.skus:[['IPC-2410',1]]);
+  let serverOrder=null;
   try {
-    const res = await fetch('/api/orders',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({
-        phone:(S.phVal||'').replace(/[^0-9]/g,''),
-        clientName:rcp?rcp.name:'Mijoz',
-        region:S.region,
-        address:addr?addr.text:S.region,
-        items:rec.skus.map(([sku,q])=>({sku,qty:q})),
-        install:S.bagInstall||S.install
-      })
-    });
+    let res;
+    try {
+      res = await fetch('/api/orders',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({
+          phone:(S.phVal||'').replace(/[^0-9]/g,''),
+          clientName:rcp?rcp.name:'Mijoz',
+          region:S.region,
+          address:addr?addr.text:S.region,
+          items:skus.map(([sku,q])=>({sku,qty:q})),
+          install:S.bagInstall||S.install,
+          cloud:S.bagCloud||S.cloud
+        })
+      });
+    } catch(netErr) {
+      throw new Error('Server bilan aloqa yo\'q — internetni tekshiring');
+    }
     if (!res.ok) {
       const errData = await res.json().catch(()=>({}));
       throw new Error(errData.error || 'Buyurtma yuborilmadi');
     }
+    serverOrder = await res.json().catch(()=>null);
   } catch(err) {
     flash(err.message);
     return;
   }
-  S.myOrders=[rec,...S.myOrders];
+  const id=(serverOrder&&serverOrder.id)?serverOrder.id:('#KO-'+(4822+Math.floor(Math.random()*70)));
+  const totalSum=(serverOrder&&serverOrder.total)?fmt(serverOrder.total):(o.sum||'');
+  const rec={
+    id,
+    name:o.what||'Buyurtma',
+    date:d.getDate()+'-'+MN[d.getMonth()]+' '+d.getFullYear(),
+    sum:totalSum,
+    skus,
+    addr:addr?addr.label+' · '+addr.text:(S.region||''),
+    rcp:rcp?rcp.name+' · '+rcp.phone:('+998 '+S.phVal)
+  };
+  S.myOrders=[rec,...S.myOrders.filter(x=>x.id!==id)];
   S.orderStatus={...S.orderStatus,[id]:'Yangi'};
   set({
     myPhone:S.phVal, ph:null, bag:{},
     ok:{lines:[
-      {k:'BUYURTMA',v:id},{k:'TARKIB',v:o.what||''},{k:'SUMMA',v:o.sum||''},
+      {k:'BUYURTMA',v:id},{k:'TARKIB',v:o.what||''},{k:'SUMMA',v:totalSum},
       {k:'QABUL QILUVCHI',v:rcp?rcp.name+' · '+rcp.phone:'+998 '+S.phVal},
       {k:'MANZIL',v:addr?addr.text:S.region},{k:'HUDUD',v:S.region}
     ]}
   });
+  syncMyOrders();
 }
 
 /* ═══ hisoblangan qiymatlar (design renderVals ning ko'chirmasi) ═══ */
@@ -672,13 +690,16 @@ function vals(){
         go:()=>{if(S.cb!=='done'&&(past||on)) set({expStep:n});}};}),
     nextLabel:s.expStep===3?'Arizani yuborish':(s.expStep===1?'Mavzuni tasdiqlash':'Davom etish'),
     stepBack:()=>set({expStep:Math.max(1,s.expStep-1)}),
-    stepNext:()=>{
+    stepNext:async ()=>{
       if(S.expStep===1){ if(!S.topic){flash('Murojaat mavzusini tanlang'); return;} set({expStep:2}); return; }
       if(S.expStep===2){ set({expStep:3}); return; }
-      if(S.cbPhone.replace(/[^0-9]/g,'').length!==9){flash('Telefon raqamini to’liq kiriting'); return;}
-      fetch('/api/callbacks',{method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({name:S.cbName,phone:'+998 '+S.cbPhone,topic:S.topic,note:S.cbNote})}).catch(()=>{});
-      S.cb='done'; flash('Ariza qabul qilindi — mutaxassis aloqaga chiqadi');},
+      if(S.cbPhone.replace(/[^0-9]/g,'').length!==9){flash('Telefon raqamini to’liq kiriting (9 ta raqam)'); return;}
+      try {
+        await j('/api/callbacks',{method:'POST',headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({name:S.cbName.trim()||'Mijoz',phone:'+998 '+S.cbPhone,topic:S.topic,note:S.cbNote,slot:S.cbSlot,channel:S.channel})});
+        set({cb:'done'}); flash('Ariza qabul qilindi — mutaxassis aloqaga chiqadi');
+      } catch(err){ flash(err.message || 'Ariza yuborilmadi — server bilan aloqa yo\'q'); }
+    },
     restartCb:()=>set({cb:'idle',expStep:1,topic:null,cbNote:''}),
     goHomeFromCb:()=>set({tab:'home'}),
     topicMark:topicSel?topicSel.mark:'?', topicName:topicSel?topicSel.name:'—',

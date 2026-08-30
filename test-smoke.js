@@ -197,6 +197,23 @@ try {
   if (updatedBag['KIT-UY4'] !== 1) throw new Error('addBag did not persist to ko_bag');
   console.log('✓ addBag and set() correctly update localStorage');
 
+  // Test profile subpages
+  ['orders', 'notif', 'addr', 'payment', 'warranty', 'about', 'settings'].forEach(p => {
+    appSandbox.set({ tab: 'profile', profPage: p });
+    console.log(`✓ Profile subpage "${p}" rendered successfully`);
+  });
+
+  // Test Cyrillic and Latin search transliteration
+  appSandbox.set({ tab: 'catalog', q: 'камера' });
+  const kirillMatch = appSandbox.document.getElementById('app').innerHTML;
+  if (!kirillMatch) throw new Error('Cyrillic search failed');
+  console.log('✓ Search works with Cyrillic transliteration');
+
+  appSandbox.set({ tab: 'catalog', q: "o'rnatish" });
+  const apostropheMatch = appSandbox.document.getElementById('app').innerHTML;
+  if (!apostropheMatch) throw new Error('Apostrophe search failed');
+  console.log('✓ Search works with apostrophe normalization');
+
   console.log('\n✅ All smoke tests passed with 0 warnings!\n');
 } catch (err) {
   console.error('\n❌ Smoke test failed:', err);

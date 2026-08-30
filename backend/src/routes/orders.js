@@ -19,6 +19,7 @@ ordersRouter.post('/orders', (req, res) => {
   const phone = normPhone(b.phone);
   if (phone.length !== 9) return res.status(400).json({ error: 'Telefon raqami 9 raqamdan iborat bo’lishi kerak (masalan 901234567)' });
   if (!Array.isArray(b.items) || b.items.length === 0) return res.status(400).json({ error: 'Savat bo’sh' });
+  if (b.items.length > 50) return res.status(400).json({ error: 'Buyurtmada tovarlar soni 50 tadan oshmasligi kerak' });
 
   const pricing = getSetting('pricing');
   const getP = db.prepare('SELECT * FROM products WHERE sku = ? AND active = 1');

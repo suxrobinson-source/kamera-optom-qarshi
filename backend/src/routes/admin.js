@@ -4,10 +4,31 @@ import { login, requireAdmin } from '../auth.js';
 
 export const adminRouter = Router();
 
+const loginAttempts = new Map();
+
 adminRouter.post('/login', (req, res) => {
+  const ip = req.ip || req.socket?.remoteAddress || '127.0.0.1';
+  const now = Date.now();
+  const rec = loginAttempts.get(ip) || { count: 0, resetAt: now + 60000 };
+
+  if (now > rec.resetAt) {
+    rec.count = 0;
+    rec.resetAt = now + 60000;
+  }
+
+  if (rec.count >= 10) {
+    return res.status(429).json({ error: 'Ko\'p urinish bo\'ldi — 1 daqiqadan so\'ng qayta urinib ko\'ring' });
+  }
+
   const { username, password } = req.body || {};
   const result = login(username, password);
-  if (!result) return res.status(401).json({ error: 'Login yoki parol noto’g’ri' });
+  if (!result) {
+    rec.count++;
+    loginAttempts.set(ip, rec);
+    return res.status(401).json({ error: 'Login yoki parol noto’g’ri' });
+  }
+
+  loginAttempts.delete(ip);
   res.json(result);
 });
 

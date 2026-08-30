@@ -2,7 +2,7 @@
 <html lang="uz">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>KAMERA OPTOM QARSHI — Mijoz Ilovasi</title>
 <meta name="description" content="Kuzatuv kameralari, videoregistratorlar va xavfsizlik tizimlari — Qarshi va butun O'zbekiston bo'ylab optom narxlarda.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -12,6 +12,7 @@
 :root{--acc:#2fe0b6;--bg:#0a0c0d;--card:#14181a;--bar:#0d1112;--fg:#eef2f1;--fg2:#c8d3d1;--dim:#8a9694;--dim2:#7f8c8a;--dim3:#9fb0ad;--dim4:#6d7a78;--dim5:#5c6a68;--tile:#0f1416;--panel2:#101618;--thead:#101416;--hatchA:#181e20;--hatchB:#151b1d;--hatchC:#1b2224;--line:rgba(255,255,255,.09);--line2:rgba(255,255,255,.07);--line3:rgba(255,255,255,.12);--line4:rgba(255,255,255,.15);--fill:rgba(255,255,255,.06)}
 [data-theme="day"]{--acc:#0d9e82;--bg:#f2f5f4;--card:#ffffff;--bar:#ffffff;--fg:#0d1213;--fg2:#37413f;--dim:#5f6b69;--dim2:#6d7977;--dim3:#4a5654;--dim4:#96a09e;--dim5:#a3adab;--tile:#e6ebea;--panel2:#ffffff;--thead:#eef1f0;--hatchA:#e9edec;--hatchB:#e0e6e5;--hatchC:#d9e0df;--line:rgba(0,0,0,.1);--line2:rgba(0,0,0,.07);--line3:rgba(0,0,0,.13);--line4:rgba(0,0,0,.16);--fill:rgba(0,0,0,.05)}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
 body{margin:0;background:#e8e6e1;font-family:'Space Grotesk',system-ui,sans-serif;-webkit-font-smoothing:antialiased;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:28px 16px}
 ::-webkit-scrollbar{width:6px;height:6px}::-webkit-scrollbar:horizontal{height:0}::-webkit-scrollbar-thumb{background:var(--line4);border-radius:3px}
 @keyframes rec{0%,100%{opacity:1}50%{opacity:.15}}
@@ -337,6 +338,83 @@ function prodSvg(p, w=48, h=48){
   return `<svg width="${w}" height="${h}" viewBox="0 0 64 64" fill="none"><rect x="12" y="16" width="40" height="32" rx="4" fill="${bg}" stroke="${dim}" stroke-width="2"/><circle cx="32" cy="32" r="8" fill="${acc}" fill-opacity="0.25" stroke="${acc}" stroke-width="2"/></svg>`;
 }
 
+function normText(str){
+  if (!str) return '';
+  return String(str)
+    .replace(/[\u02BC\u02BD\u2018\u2019\u201B'`]/g, "'")
+    .toLowerCase()
+    .trim();
+}
+
+const LOTIN_TO_KIRILL = {
+  "yo'": "йў", "yo": "ё", "yu": "ю", "ya": "я", "ye": "е", "sh": "ш", "ch": "ч", "o'": "ў", "g'": "ғ",
+  "a": "а", "b": "б", "d": "д", "e": "е", "f": "ф", "g": "г", "h": "ҳ", "i": "и", "j": "ж", "k": "к",
+  "l": "л", "m": "м", "n": "н", "o": "о", "p": "п", "q": "қ", "r": "р", "s": "с", "t": "т", "u": "у",
+  "v": "в", "x": "х", "y": "й", "z": "з", "'": "ъ"
+};
+
+const KIRILL_TO_LOTIN = {
+  "ё": "yo", "ю": "yu", "я": "ya", "ш": "sh", "ч": "ch", "ў": "o'", "ғ": "g'", "қ": "q", "ҳ": "h", "ж": "j",
+  "а": "a", "б": "b", "в": "v", "г": "g", "д": "d", "е": "e", "з": "z", "и": "i", "й": "y", "к": "k",
+  "л": "l", "m": "m", "н": "n", "о": "o", "п": "p", "р": "r", "с": "s", "т": "t", "у": "u", "ф": "f",
+  "х": "x", "ц": "ts", "ъ": "'", "ь": "", "э": "e"
+};
+
+function toLotin(str){
+  let s = normText(str);
+  for (const [k, v] of Object.entries(KIRILL_TO_LOTIN)) s = s.replaceAll(k, v);
+  return s;
+}
+
+function toKirill(str){
+  let s = normText(str);
+  for (const [k, v] of Object.entries(LOTIN_TO_KIRILL)) s = s.replaceAll(k, v);
+  return s;
+}
+
+function matchSearch(text, query){
+  if (!query) return true;
+  const nQuery = normText(query);
+  const nText = normText(text);
+  if (nText.includes(nQuery)) return true;
+  const lotQuery = toLotin(nQuery), lotText = toLotin(nText);
+  if (lotText.includes(lotQuery)) return true;
+  const kirQuery = toKirill(nQuery), kirText = toKirill(nText);
+  return kirText.includes(kirQuery);
+}
+
+const I18N = {
+  uz: {
+    nav_home: 'Asosiy', nav_catalog: 'Katalog', nav_kit: 'Komplekt', nav_expert: 'Mutaxassis', nav_profile: 'Profil',
+    search_ph: 'Model, xarakteristika yoki vazifa', popular_cams: 'MASHHUR KAMERALAR', kits_title: 'TAYYOR KOMPLEKTLAR',
+    all: 'HAMMASI', filter: 'Filtr', clear: 'Tozalash', apply: 'Ko\'rsatish',
+    cart: 'Savat', empty_cart: 'Savat bo\'sh', checkout: 'Buyurtma berish',
+    install_service: 'O\'rnatish xizmati', cloud_archive: 'Bulut arxiv',
+    delivery: 'Yetkazish', total: 'JAMI', add: 'Savatga qo\'shish', added_to_cart: 'Savatga qo\'shildi'
+  },
+  kr: {
+    nav_home: 'Асосий', nav_catalog: 'Каталог', nav_kit: 'Комплект', nav_expert: 'Мутахассис', nav_profile: 'Профил',
+    search_ph: 'Модель, характеристика ёки вазифа', popular_cams: 'МАШҲУР КАМЕРАЛАР', kits_title: 'ТАЙЁР КОМПЛЕКТЛАР',
+    all: 'ҲАММАСИ', filter: 'Фильтр', clear: 'Тозалаш', apply: 'Кўрсатиш',
+    cart: 'Сават', empty_cart: 'Сават бўш', checkout: 'Буюртма бериш',
+    install_service: 'Ўрнатиш хизмати', cloud_archive: 'Булут архив',
+    delivery: 'Етказиш', total: 'ЖАМИ', add: 'Саватга қўшиш', added_to_cart: 'Саватга қўшилди'
+  },
+  ru: {
+    nav_home: 'Главная', nav_catalog: 'Каталог', nav_kit: 'Комплект', nav_expert: 'Специалист', nav_profile: 'Профиль',
+    search_ph: 'Модель, характеристика или задача', popular_cams: 'ПОПУЛЯРНЫЕ КАМЕРЫ', kits_title: 'ГОТОВЫЕ КОМПЛЕКТЫ',
+    all: 'ВСЕ', filter: 'Фильтр', clear: 'Очистить', apply: 'Показать',
+    cart: 'Корзина', empty_cart: 'Корзина пуста', checkout: 'Оформить заказ',
+    install_service: 'Установка и монтаж', cloud_archive: 'Облачный архив',
+    delivery: 'Доставка', total: 'ИТОГО', add: 'В корзину', added_to_cart: 'Добавлено в корзину'
+  }
+};
+
+function t(key, def){
+  const lang = S.lang || 'uz';
+  return (I18N[lang] && I18N[lang][key]) || (I18N.uz && I18N.uz[key]) || def || key;
+}
+
 function P(p){
   if (!p) return null;
   const raw=S.promo[p.sku], pk=raw&&S.labelOn[raw]?raw:null, ps=promoStyle(pk);
@@ -441,7 +519,7 @@ function vals(){
     if(s.poe&&!p.poe) return false; if(s.mp&&!p.mp) return false; if(s.night&&!p.night) return false;
     if(band&&(p.price<band.min||p.price>band.max)) return false;
     const tagStr = (p.tags && Array.isArray(p.tags)) ? p.tags.join(' ') : '';
-    if(q&&!(p.name+' '+(p.spec||'')+' '+tagStr+' '+p.sku+' '+p.cat).toLowerCase().includes(q)) return false;
+    if(q && !matchSearch(p.name+' '+(p.spec||'')+' '+tagStr+' '+p.sku+' '+p.cat, q)) return false;
     return true;});
   let list=base.filter(p=>s.cat==='Hammasi'||p.cat===s.cat);
   const SORTS={'price-asc':['Arzon → Qimmat',(a,b)=>a.price-b.price],'price-desc':['Qimmat → Arzon',(a,b)=>b.price-a.price],'new':['Yangi kelganlar',()=>0]};
@@ -839,6 +917,7 @@ function vals(){
     applyCredit:()=>flash(provSel.name+' arizasi yuborildi · '+curTerm+' oy'),
     myPhoneLabel:s.myPhone?'+998 '+s.myPhone:'Raqam kiritilmagan',
     profMenuOn:!s.profPage, profOrdersOn:s.profPage==='orders', profNotifOn:s.profPage==='notif', profAddrOn:s.profPage==='addr',
+    profPaymentOn:s.profPage==='payment', profWarrantyOn:s.profPage==='warranty', profAboutOn:s.profPage==='about',
     profBack:()=>set({profPage:''}),
     profStats:[{k:'Buyurtma',v:String(s.myOrders.length || 4),fg:'var(--fg)'},
       {k:'Xabar',v:String(noteKeys.length),fg:noteKeys.length?A:'var(--fg)'},
@@ -850,18 +929,18 @@ function vals(){
         tag:'YANGI',tagFg:'#06231d',tagBg:A,tagOn:noteKeys.length>0,markFg:A,go:()=>{set({profPage:'notif'});syncMyOrders();}},
       {mark:'◎',name:'Manzil va yetkazish',note:regSel.name+' · '+(regSel.price?fmt(regSel.price):'bepul'),markFg:A,go:()=>set({profPage:'addr'})},
       {mark:'▭',name:"To'lov usullari",note:creditOn?"Naqd, karta · muddatli to'lov yoqilgan":'Naqd va karta',
-        markFg:'var(--dim)',go:()=>flash(creditOn?"Muddatli to'lov komplekt bo'limida tanlanadi":"Naqd va karta orqali to'lov")},
-      {mark:'✓',name:'Kafolat va servis',note:'2 ta aktiv kafolat · 1 ta servis so’rovi',markFg:AMB,go:()=>flash('Kafolat talonlari buyurtma kartasidagi "Chek" tugmasida')},
+        markFg:'var(--dim)',go:()=>set({profPage:'payment'})},
+      {mark:'✓',name:'Kafolat va servis',note:'2 ta aktiv kafolat · 1 ta servis so’rovi',markFg:AMB,go:()=>set({profPage:'warranty'})},
       {mark:'☎',name:'Mutaxassis bilan aloqa',note:'Qo’ng’iroq buyurtma qilish yoki savol berish',markFg:AMB,go:()=>set({tab:'expert',expStep:1,cb:'idle',profPage:''})},
       {mark:'⚙',name:'Ilova sozlamalari',note:'Til, mavzu, bildirishnoma',tag:langTag,tagFg:'var(--dim)',tagBg:'var(--fill)',markFg:'var(--dim)',go:()=>set({profPage:'settings'})},
-      {mark:'?',name:'Yordam va biz haqida',note:'Savol-javob, do’kon manzili, ish vaqti',markFg:'var(--dim)',go:()=>flash('Qarshi, Mustaqillik ko’chasi 12 · 9:00–18:00')}
+      {mark:'?',name:'Yordam va biz haqida',note:'Savol-javob, do’kon manzili, ish vaqti',markFg:'var(--dim)',go:()=>set({profPage:'about'})}
     ].map(m=>({...m,tagOn:m.tagOn!==undefined?m.tagOn:!!m.tag})),
     profSetOn:s.profPage==='settings', setSub:langName+' · '+(day?'kunduzgi':'tungi')+' mavzu',
     langs:[['uz',"O'zbek (lotin)",'Standart til'],['kr','Ўзбек (кирилл)','Кирилл ёзуви'],['ru','Русский','Интерфейс на русском']]
       .map(([k,name,note])=>{const on=s.lang===k; return {name,note,
         border:on?'rgba(47,224,182,.4)':'var(--line)', bg:on?'rgba(47,224,182,.07)':'var(--tile)',
         mark:on?A:'var(--line4)', fill:on?A:'transparent',
-        go:()=>{S.lang=k; flash(name+' tanlandi — interfeys tarjimasi tez orada');}};}),
+        go:()=>{ set({lang:k}); flash(name+' tanlandi'); }};}),
     themes:[['day','Kunduzgi','☀','Yorug’ fon'],['night','Tungi','☾','Qorong’i fon']]
       .map(([k,name,mark,note])=>{const on=s.theme===k; return {name,mark,note,
         border:on?'rgba(47,224,182,.45)':'var(--line)', bg:on?'rgba(47,224,182,.07)':'var(--tile)',
@@ -869,7 +948,12 @@ function vals(){
     pushRows:[{name:'Buyurtma holati',note:'Status o’zgarsa xabar keladi',on:s.pushOn,go:()=>set({pushOn:!s.pushOn})},
       {name:'Chegirma va aksiya',note:'Yangi takliflar haqida',on:s.promoPushOn,go:()=>set({promoPushOn:!s.promoPushOn})}]
       .map(p=>({...p,track:p.on?A:'var(--line4)',knob:p.on?'flex-end':'flex-start',knobBg:p.on?'#06231d':'var(--dim)'})),
-    signOut:()=>flash('Demo rejimida hisobdan chiqish o’chirilgan'),
+    signOut:()=>{
+      try { localStorage.clear(); }catch(e){}
+      set({bag:{}, myPhone:null, phVal:'', myOrders:[], profPage:'', tab:'home',
+        addrList:[{id:'a1',label:'Uy',text:"Qarshi sh., Mustaqillik ko'chasi 12, 4-xonadon",note:'Kirish eshigi kodi 1204'}], addrSel:'a1'});
+      flash('Hisobdan chiqildi — dastur tozalandi');
+    },
     notifLabel:noteKeys.length?noteKeys.length+' ta xabar':'Xabar yo’q', notifEmpty:noteKeys.length===0,
     notifList:noteKeys.map(id=>({id,text:s.notes[id].text,time:s.notes[id].time,go:()=>set({profPage:'orders',openOrd:id})})),
     addrRegion:regSel.name, addrEta:regSel.eta,
@@ -1700,6 +1784,82 @@ function mProfile(v){return `
     </div>
     <div style="margin-top:11px;font:400 9.5px/1.5 'IBM Plex Mono',monospace;color:var(--dim2);text-align:center">Ilova versiyasi 1.4.0 · KAMERA OPTOM QARSHI</div>
   </div>`:''}
+
+  ${v.profPaymentOn?mProfPayment(v):''}
+  ${v.profWarrantyOn?mProfWarranty(v):''}
+  ${v.profAboutOn?mProfAbout(v):''}
+</div>`;}
+
+function mProfPayment(v){return `
+<div>
+  ${mProfHead(v, "To'lov usullari", "Naqd, karta va muddatli to'lov")}
+  <div style="display:flex;flex-direction:column;gap:10px">
+    <div style="background:var(--card);border:1px solid var(--line);border-radius:13px;padding:14px">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="width:34px;height:34px;border-radius:10px;background:rgba(47,224,182,.14);color:var(--acc);display:flex;align-items:center;justify-content:center;font:700 13px 'IBM Plex Mono',monospace">💳</div>
+        <div>
+          <div style="font:600 13px 'Space Grotesk',sans-serif">Bank kartasi orqali</div>
+          <div style="font:400 10px 'IBM Plex Mono',monospace;color:var(--dim2);margin-top:3px">Uzcard, Humo, Visa, MasterCard</div>
+        </div>
+      </div>
+      <div style="font:400 11.5px/1.4 'Space Grotesk',sans-serif;color:var(--dim3);margin-top:10px">Buyurtmani qabul qilganda kuryer terminali orqali yoki Payme/Click orqali to'lash mumkin.</div>
+    </div>
+    <div style="background:var(--card);border:1px solid var(--line);border-radius:13px;padding:14px">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="width:34px;height:34px;border-radius:10px;background:rgba(255,176,32,.14);color:#ffb020;display:flex;align-items:center;justify-content:center;font:700 13px 'IBM Plex Mono',monospace">💵</div>
+        <div>
+          <div style="font:600 13px 'Space Grotesk',sans-serif">Naqd pul orqali</div>
+          <div style="font:400 10px 'IBM Plex Mono',monospace;color:var(--dim2);margin-top:3px">Yetkazib berilganda yoki do'kondan olganda</div>
+        </div>
+      </div>
+      <div style="font:400 11.5px/1.4 'Space Grotesk',sans-serif;color:var(--dim3);margin-top:10px">Tovar yetib borgach tekshirib, chek bilan naqd to'laysiz.</div>
+    </div>
+    <div style="background:var(--card);border:1px solid var(--line);border-radius:13px;padding:14px">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="width:34px;height:34px;border-radius:10px;background:rgba(47,224,182,.14);color:var(--acc);display:flex;align-items:center;justify-content:center;font:700 13px 'IBM Plex Mono',monospace">⏱</div>
+        <div>
+          <div style="font:600 13px 'Space Grotesk',sans-serif">Muddatli to'lov (Nasiya)</div>
+          <div style="font:400 10px 'IBM Plex Mono',monospace;color:var(--acc);margin-top:3px">3, 6, 12, 24 oyga · Uzum / Alif / Hamkor</div>
+        </div>
+      </div>
+      <div style="font:400 11.5px/1.4 'Space Grotesk',sans-serif;color:var(--dim3);margin-top:10px">Boshlang'ich to'lovsiz, 15 daqiqada tasdiqlanadi. Pasport va telefon raqami yetarli.</div>
+    </div>
+  </div>
+</div>`;}
+
+function mProfWarranty(v){return `
+<div>
+  ${mProfHead(v, "Kafolat va servis", "24 oygacha rasmiy kafolat")}
+  <div style="display:flex;flex-direction:column;gap:10px">
+    <div style="background:var(--card);border:1px solid var(--line);border-radius:13px;padding:14px">
+      <div style="font:600 13px 'Space Grotesk',sans-serif;color:var(--acc)">Rasmiy kafolat shartlari</div>
+      <div style="font:400 11.5px/1.5 'Space Grotesk',sans-serif;color:var(--dim3);margin-top:8px">Barcha videokameralar va NVR registratorlar uchun 24 oylik, xotira kartalari uchun 12 oylik to'liq servis kafolati beriladi.</div>
+    </div>
+    <div style="background:var(--card);border:1px solid var(--line);border-radius:13px;padding:14px">
+      <div style="font:600 13px 'Space Grotesk',sans-serif">Servis va ta'mirlash markazi</div>
+      <div style="font:400 11.5px/1.4 'Space Grotesk',sans-serif;color:var(--dim3);margin-top:8px">Nosozlik yuz berganda mutaxassisimiz 24 soat ichida yetib boradi yoki yangisiga almashtirib beradi.</div>
+      <div style="margin-top:12px;display:flex;gap:8px">
+        <div onclick="${h(v.callExpert)}" style="flex:1;text-align:center;padding:11px;border-radius:10px;background:var(--acc);color:#06231d;font:600 11.5px 'Space Grotesk',sans-serif;cursor:pointer">Servis chaqirish</div>
+      </div>
+    </div>
+  </div>
+</div>`;}
+
+function mProfAbout(v){return `
+<div>
+  ${mProfHead(v, "Yordam va biz haqida", "Qarshi shahar bosh do'koni")}
+  <div style="display:flex;flex-direction:column;gap:10px">
+    <div style="background:var(--card);border:1px solid var(--line);border-radius:13px;padding:14px">
+      <div style="font:700 14px 'Space Grotesk',sans-serif">KAMERA OPTOM QARSHI</div>
+      <div style="font:400 11.5px/1.5 'Space Grotesk',sans-serif;color:var(--dim3);margin-top:8px">Qashqadaryo va butun O'zbekiston bo'ylab professional videokuzatuv, domofon va xavfsizlik tizimlarini optom narxlarda yetkazib berish va o'rnatish xizmati.</div>
+    </div>
+    <div style="background:var(--card);border:1px solid var(--line);border-radius:13px;padding:14px">
+      <div style="font:600 11px 'IBM Plex Mono',monospace;color:var(--dim2);letter-spacing:.05em">MANZIL VA ISH VAQTI</div>
+      <div style="font:500 13px 'Space Grotesk',sans-serif;margin-top:6px">Qarshi sh., Mustaqillik ko'chasi 12</div>
+      <div style="font:400 10.5px 'IBM Plex Mono',monospace;color:var(--acc);margin-top:4px">Har kuni: 09:00 – 19:00 (Damsiz)</div>
+      <div style="font:400 10.5px 'IBM Plex Mono',monospace;color:var(--dim2);margin-top:4px">Aloqa: +998 78 120 00 20</div>
+    </div>
+  </div>
 </div>`;}
 
 function mNav(v){return `

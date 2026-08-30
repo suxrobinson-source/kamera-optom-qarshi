@@ -835,8 +835,18 @@ function vals(){
         fg:on?'var(--fg)':'var(--dim2)', go:()=>{if(past||on) set({kStep:n});}};}),
     kitBackOn:s.kStep>1, kitBack:()=>set({kStep:Math.max(1,s.kStep-1)}),
     kitNextLabel:s.kStep===4?'Buyurtmani tasdiqlash':(s.kStep===1?'Qo’shimchalarga o’tish':s.kStep===2?"To'lovni tanlash":'Xulosani ko’rish'),
-    kitNext:()=>{ if(S.kStep<4){set({kStep:S.kStep+1}); return;}
-      placeOrder(S.cams+' kamera komplekti', fmt(total), [[camSel.sku,S.cams],...kitExtraItems.map(x=>[x.p.sku,x.q]),...(hddActive&&hddSel?[[hddSel.sku||(hddSel.size==='64 GB'?'SD-64':'SD-256'),1]]:[])]); },
+    kitNext:()=>{
+      if(S.kStep<4){set({kStep:S.kStep+1}); return;}
+      if(hddActive && hddSel && !hddSel.sku){
+        flash('Xotira turini qayta tanlang');
+        return;
+      }
+      placeOrder(S.cams+' kamera komplekti', fmt(total), [
+        [camSel.sku, S.cams],
+        ...kitExtraItems.map(x=>[x.p.sku, x.q]),
+        ...(hddActive && hddSel && hddSel.sku ? [[hddSel.sku, 1]] : [])
+      ]);
+    },
     kitCreditNote:s.creditUse&&creditOn, kitCreditText:provSel.name+' · '+curTerm+' oy · '+fmt(monthlyFor(curTerm,total))+'/oy',
     presets:PRESETS.map(p=>{const on=s.preset===p.name; return {name:p.name,note:p.note,mark:p.mark,
       border:on?'rgba(47,224,182,.4)':'var(--line)', bg:on?'rgba(47,224,182,.07)':'var(--card)',

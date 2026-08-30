@@ -9,7 +9,10 @@ const products = [
   { sku: 'NVR-8CH', name: 'NVR-8CH 4K registrator', cat: 'Yozuvchi', price: 1450000, badge: '4K', spec: '8 kanal · 2TB HDD', tags: ['8 kanal', '2TB', 'H.265'], poe: 1, qty: 21, specs: [{ k: 'Kanallar', v: '8 · PoE' }, { k: 'Yozuv', v: '4K H.265+' }, { k: 'Disk', v: '2 TB (10 TB gacha)' }, { k: 'Arxiv', v: '~30 kun / 8 kamera' }, { k: 'Kafolat', v: '24 oy' }] },
   { sku: 'WIFI-MINI', spin: 1, name: 'WiFi Mini 3MP ichki', cat: 'Ichki', price: 390000, badge: 'Wi-Fi', spec: 'Ovoz · microSD', tags: ['3MP', 'Wi-Fi', 'Ovozli'], night: 1, qty: 63, specs: [{ k: 'Sensor', v: '3MP' }, { k: 'Ulanish', v: 'Wi-Fi 2.4G' }, { k: 'Xotira', v: 'microSD 256GB' }, { k: 'Aloqa', v: 'Ikki tomonlama ovoz' }, { k: 'Kafolat', v: '12 oy' }] },
   { sku: 'DOMO-IP2', spin: 1, name: 'IP Domofon 2MP', cat: 'Domofon', price: 1240000, badge: 'IP', spec: '7" ekran · qulf', tags: ['2MP', 'Domofon', 'Qulf'], poe: 1, night: 1, qty: 12, specs: [{ k: 'Panel', v: '2MP · 7" monitor' }, { k: 'Funksiya', v: 'Qulfni ochish' }, { k: 'Yozuv', v: 'Tashrif tarixi' }, { k: 'Kafolat', v: '18 oy' }] },
+  { sku: 'SD-16', name: 'microSD 16GB Endurance', cat: 'Xotira', price: 65000, badge: '16GB', spec: '~1 kun uzluksiz yozuv', tags: ['16GB', 'U1', '24/7'], qty: 50, specs: [{ k: 'Hajm', v: '16 GB' }, { k: 'Klass', v: 'Class 10 · U1' }, { k: 'Resurs', v: '24/7 uzluksiz yozuv' }, { k: 'Arxiv', v: '~1 kun' }, { k: 'Kafolat', v: '12 oy' }] },
+  { sku: 'SD-32', name: 'microSD 32GB Endurance', cat: 'Xotira', price: 95000, badge: '32GB', spec: '~2 kun uzluksiz yozuv', tags: ['32GB', 'U1', '24/7'], qty: 70, specs: [{ k: 'Hajm', v: '32 GB' }, { k: 'Klass', v: 'Class 10 · U1' }, { k: 'Resurs', v: '24/7 uzluksiz yozuv' }, { k: 'Arxiv', v: '~2 kun' }, { k: 'Kafolat', v: '12 oy' }] },
   { sku: 'SD-64', name: 'microSD 64GB Endurance', cat: 'Xotira', price: 150000, badge: '64GB', spec: '~4 kun uzluksiz yozuv', tags: ['64GB', 'U3', '24/7'], qty: 88, specs: [{ k: 'Hajm', v: '64 GB' }, { k: 'Klass', v: 'U3 · V30' }, { k: 'Resurs', v: '24/7 uzluksiz yozuv' }, { k: 'Arxiv', v: '~4 kun' }, { k: 'Kafolat', v: '12 oy' }] },
+  { sku: 'SD-128', name: 'microSD 128GB Endurance', cat: 'Xotira', price: 240000, badge: '128GB', spec: '~8 kun uzluksiz yozuv', tags: ['128GB', 'U3', '24/7'], qty: 45, specs: [{ k: 'Hajm', v: '128 GB' }, { k: 'Klass', v: 'U3 · V30' }, { k: 'Resurs', v: '24/7 uzluksiz yozuv' }, { k: 'Arxiv', v: '~8 kun' }, { k: 'Kafolat', v: '12 oy' }] },
   { sku: 'SD-256', name: 'microSD 256GB Endurance', cat: 'Xotira', price: 420000, badge: '256GB', spec: '~16 kun uzluksiz yozuv', tags: ['256GB', 'U3', '24/7'], qty: 34, specs: [{ k: 'Hajm', v: '256 GB' }, { k: 'Klass', v: 'U3 · V30' }, { k: 'Resurs', v: '24/7 uzluksiz yozuv' }, { k: 'Arxiv', v: '~16 kun' }, { k: 'Kafolat', v: '12 oy' }] },
   { sku: 'HDD-2T', name: 'HDD 2TB Surveillance', cat: 'Xotira', price: 620000, badge: '2TB', spec: 'NVR uchun · 30 kun', tags: ['2TB', 'SATA', '24/7'], qty: 19, specs: [{ k: 'Hajm', v: '2 TB' }, { k: 'Turi', v: 'Surveillance SATA' }, { k: 'Arxiv', v: '~30 kun / 8 kamera' }, { k: 'Kafolat', v: '24 oy' }] },
   { sku: 'NVR-16CH', name: 'NVR-16CH 4K registrator', cat: 'Yozuvchi', price: 2380000, badge: '16CH', spec: '16 kanal · 4TB', tags: ['16 kanal', '4TB', 'H.265'], poe: 1, qty: 6, specs: [{ k: 'Kanallar', v: '16 · PoE' }, { k: 'Yozuv', v: '4K H.265+' }, { k: 'Disk', v: '4 TB' }, { k: 'Arxiv', v: '~30 kun / 16 kamera' }, { k: 'Kafolat', v: '24 oy' }] },
@@ -111,6 +114,39 @@ export function runSeed({ force = false } = {}) {
   return { seeded: true };
 }
 
+export function ensureSchemaAndData() {
+  try {
+    db.exec('ALTER TABLE products ADD COLUMN images TEXT;');
+  } catch(e){}
+
+  const insP = db.prepare(`INSERT OR IGNORE INTO products (sku,name,cat,price,badge,spec,tags,specs,poe,mp,night,spin,qty,promo,images)
+    VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`);
+  for (const p of products) {
+    insP.run(p.sku, p.name, p.cat, p.price, p.badge, p.spec, JSON.stringify(p.tags||[]), JSON.stringify(p.specs||[]),
+      p.poe ?? 0, p.mp ?? 0, p.night ?? 0, p.spin ?? 0, p.qty, p.promo ?? null, JSON.stringify(p.images || []));
+  }
+
+  // Ensure pricing setting has sku for hddOptions
+  const row = db.prepare('SELECT value FROM settings WHERE key = ?').get('pricing');
+  if (row) {
+    try {
+      const pricing = JSON.parse(row.value);
+      if (Array.isArray(pricing.hddOptions)) {
+        let changed = false;
+        pricing.hddOptions = pricing.hddOptions.map(opt => {
+          if (!opt.sku) {
+            changed = true;
+            const sMap = { '16 GB': 'SD-16', '32 GB': 'SD-32', '64 GB': 'SD-64', '128 GB': 'SD-128', '256 GB': 'SD-256' };
+            return { ...opt, sku: sMap[opt.size] || ('SD-' + opt.size.replace(/[^0-9]/g,'')) };
+          }
+          return opt;
+        });
+        if (changed) setSetting('pricing', pricing);
+      }
+    } catch(e){}
+  }
+}
+
 export function ensureAdmin() {
   const exists = db.prepare('SELECT COUNT(*) AS n FROM admins').get().n > 0;
   if (exists) return null;
@@ -121,6 +157,8 @@ export function ensureAdmin() {
     .run('admin', hash, salt, 'Dilshod', 'menejer');
   return { username: 'admin', password };
 }
+
+ensureSchemaAndData();
 
 if (process.argv[1] && import.meta.url === new URL(`file:///${process.argv[1].replace(/\\/g, '/')}`).href) {
   const r = runSeed({ force: process.argv.includes('--force') });

@@ -484,8 +484,8 @@ function vals(){
         trackBg:on?A:'var(--line4)', knob:on?'flex-end':'flex-start', knobBg:on?'#06231d':'var(--dim)',
         toggle:async ()=>{
           try {
-            await api('/api/admin/settings/'+k,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({value:!on})});
-            set(p=>({mod:{...p.mod,[k]:!on}}));
+            const updated = await api('/api/admin/settings/modules',{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({[k]:!on})});
+            set(p=>({mod: updated || {...p.mod,[k]:!on}}));
           } catch(err) { flash(err.message); }
         }};}),
 

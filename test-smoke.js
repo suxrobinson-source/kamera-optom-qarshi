@@ -156,12 +156,37 @@ try {
     console.log(`✓ Admin tab "${tab}" rendered successfully`);
   });
 
-  // Test 3: app.html
-  const appSandbox = testHtml('app.html');
+  // Test 3: app.html with empty storage
+  const appSandbox = testHtml('app.html', { name: 'Fresh storage' });
   ['home', 'catalog', 'kit', 'expert', 'profile'].forEach(tab => {
     appSandbox.set({ tab });
     console.log(`✓ App tab "${tab}" rendered successfully`);
   });
+
+  // Test 4: app.html with populated localStorage (F5 test)
+  const populatedStorage = {
+    ko_bag: JSON.stringify({ 'IPC-2410': 2 }),
+    ko_my_phone: '901234567',
+    ko_region: 'Shahrisabz',
+    ko_seen: JSON.stringify({ s1: true }),
+    ko_theme: 'day'
+  };
+  const appPersistedSandbox = testHtml('app.html', {
+    name: 'Persisted localStorage (F5 check)',
+    localStorage: populatedStorage
+  });
+  if (appPersistedSandbox.S.bag['IPC-2410'] !== 2) throw new Error('ko_bag was not loaded properly');
+  if (appPersistedSandbox.S.myPhone !== '901234567') throw new Error('ko_my_phone was not loaded properly');
+  if (appPersistedSandbox.S.region !== 'Shahrisabz') throw new Error('ko_region was not loaded properly');
+  if (!appPersistedSandbox.S.seen['s1']) throw new Error('ko_seen was not loaded properly');
+  if (appPersistedSandbox.S.theme !== 'day') throw new Error('ko_theme was not loaded properly');
+  console.log('✓ App correctly loaded persisted localStorage on startup');
+
+  // Verify that set() updates localStorage
+  appPersistedSandbox.addBag('KIT-UY4');
+  const updatedBag = JSON.parse(appPersistedSandbox.localStorage.getItem('ko_bag'));
+  if (updatedBag['KIT-UY4'] !== 1) throw new Error('addBag did not persist to ko_bag');
+  console.log('✓ addBag and set() correctly update localStorage');
 
   console.log('\n✅ All smoke tests passed with 0 warnings!\n');
 } catch (err) {

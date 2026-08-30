@@ -119,6 +119,23 @@ async function bootstrap(){
   render();
 }
 
+function _loadStorage(key, def) {
+  try {
+    const val = localStorage.getItem(key);
+    return val ? JSON.parse(val) : def;
+  } catch(e) {
+    return def;
+  }
+}
+function _loadStr(key, def) {
+  try {
+    const val = localStorage.getItem(key);
+    return val != null ? val : def;
+  } catch(e) {
+    return def;
+  }
+}
+
 const S={
   tab:'home', sel:null, cat:'Hammasi', poe:false, mp:false, night:false,
   cams:4, cable:60, cableUse:false, kStep:1, preset:null, camSku:'IPC-2410', kitExtra:{},
@@ -128,20 +145,22 @@ const S={
   install:false, cloud:false, toast:null, hdd:'64 GB', creditTerm:12,
   rates:{3:0,6:8,12:14,24:26}, rateOn:{3:true,6:true,12:true,24:true}, down:{3:0,6:10,12:20,24:30},
   q:'', sort:'price-asc', view:'grid', suggest:false, filters:false, band:null,
-  recent:['4MP','PoE','komplekt'], theme:'night', creditService:true, expertService:true,
+  recent:_loadStorage('ko_recent',['4MP','PoE','komplekt']), theme:_loadStr('ko_theme','night'), creditService:true, expertService:true,
   cb:'idle', cbName:'', cbPhone:'', cbNote:'', cbSlot:'Tezroq', topic:null, channel:'Telefon', expStep:1,
-  hddUse:false, creditUse:false, bag:{}, added:null, ok:null, story:null, seen:{},
-  ph:null, phVal:'', phStep:'enter', myPhone:null,
+  hddUse:false, creditUse:false, bag:_loadStorage('ko_bag',{}), added:null, ok:null, story:null, seen:_loadStorage('ko_seen',{}),
+  ph:null, phVal:'', phStep:'enter', myPhone:_loadStr('ko_my_phone',null),
   storyList:[],
   bagOpen:false, bagInstall:false, bagCloud:false, provider:'Uzum Nasiya',
   provOn:{'Uzum Nasiya':true,'Alif Nasiya':true,'Hamkor Nasiya':true},
-  region:'Qarshi shahri', regionOpen:false, bannerIdx:0, rq:'', gpsState:'idle',
-  orderStatus:{}, notes:{}, myOrders:[], openOrd:null, profPage:'', lang:'uz',
+  region:_loadStr('ko_region','Qarshi shahri'), regionOpen:false, bannerIdx:0, rq:'', gpsState:'idle',
+  orderStatus:{}, notes:{}, myOrders:_loadStorage('ko_my_orders',[]), openOrd:null, profPage:'', lang:'uz',
   pushOn:true, promoPushOn:false, spinDeg:0, spinning:false,
-  addrList:[{id:'a1',label:'Uy',text:"Qarshi sh., Mustaqillik ko'chasi 12, 4-xonadon",note:'Kirish eshigi kodi 1204'}],
-  addrSel:'a1', addrForm:false, naLabel:'Uy', naText:'', naNote:'',
+  addrList:_loadStorage('ko_addr_list',[{id:'a1',label:'Uy',text:"Qarshi sh., Mustaqillik ko'chasi 12, 4-xonadon",note:'Kirish eshigi kodi 1204'}]),
+  addrSel:_loadStr('ko_addr_sel','a1'), addrForm:false, naLabel:'Uy', naText:'', naNote:'',
   rcpSelf:true, rcpName:'', rcpPhone:''
 };
+window.S = S;
+window.DATA = DATA;
 
 /* ── handler registry ── */
 let H=[];
@@ -149,9 +168,24 @@ const h=fn=>`_h(${H.push(fn)-1},event)`;
 window._h=(i,e)=>{ const f=H[i]; if(f) f(e); };
 
 let _t=null,_g=null,_sp=null;
-function set(o){ Object.assign(S, typeof o==='function'?o(S):o); render(); }
+function set(o){
+  Object.assign(S, typeof o==='function'?o(S):o);
+  try {
+    localStorage.setItem('ko_bag', JSON.stringify(S.bag || {}));
+    if (S.myPhone) localStorage.setItem('ko_my_phone', S.myPhone);
+    localStorage.setItem('ko_recent', JSON.stringify(S.recent || []));
+    localStorage.setItem('ko_seen', JSON.stringify(S.seen || {}));
+    localStorage.setItem('ko_theme', S.theme || 'night');
+    localStorage.setItem('ko_region', S.region || 'Qarshi shahri');
+    localStorage.setItem('ko_my_orders', JSON.stringify(S.myOrders || []));
+    localStorage.setItem('ko_addr_list', JSON.stringify(S.addrList || []));
+    localStorage.setItem('ko_addr_sel', S.addrSel || 'a1');
+  } catch(e){}
+  render();
+}
 function flash(t){ S.toast=t; clearTimeout(_t); _t=setTimeout(()=>{S.toast=null;render();},2200); render(); }
-function addBag(sku){ S.bag[sku]=(S.bag[sku]||0)+1; S.added=sku; render(); }
+function addBag(sku){ set(st=>({ bag: { ...st.bag, [sku]: (st.bag[sku]||0)+1 }, added: sku })); }
+window.addBag = addBag;
 function promoStyle(k){ return ({HIT:{fg:'#2a1a00',bg:'#ffb020',border:'#ffb020'},CHEGIRMA:{fg:'#ffffff',bg:'#ff4d3d',border:'#ff4d3d'},YANGI:{fg:'#06231d',bg:'#2fe0b6',border:'#2fe0b6'}})[k]||{fg:'var(--dim2)',bg:'var(--fill)',border:'var(--line3)'}; }
 function P(p){
   if (!p) return null;

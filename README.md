@@ -68,6 +68,15 @@ Server standart `http://localhost:3000` portida ishga tushadi:
 
 ---
 
+## 🌐 Internetga joylash: github.io + Heroku
+
+- **Sahifalar (github.io)**: `https://suxrobinson-source.github.io/kamera-optom-qarshi/` — `app.html`, `admin.html`. GitHub Pages `master` tarmog'idan avtomatik yangilanadi.
+- **API (Heroku)**: repo ildizidagi `package.json` va `Procfile` bilan ishga tushadi (`npm start` → `backend/src/server.js`). Heroku Config Vars: `JWT_SECRET`, `ADMIN_PASSWORD`.
+- Heroku ilova manzili `config.js` dagi `KO_API_HOSTED` ga yoziladi. Lokal serverda (`localhost`) bu sozlama ishlatilmaydi.
+- ⚠️ Heroku diski vaqtinchalik: server qayta ishga tushganda SQLite bazasi va yuklangan rasmlar o'chadi. Doimiy saqlash uchun Heroku Postgres yoki doimiy diskli hosting kerak.
+
+---
+
 ## 🧪 Sinov (Smoke Test)
 
 Loyihadagi barcha frontend renderlari, localStorage sinxronizatsiyasi, qidiruv transliteratsiyasi va API routerlarini tekshirish:

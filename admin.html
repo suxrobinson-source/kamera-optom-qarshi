@@ -131,6 +131,7 @@
 
 <body>
   <div id="root"></div>
+  <script src="config.js"></script>
   <script>
     /* ═══ KAMERA OPTOM QARSHI — admin panel (Claude Design "1b" prototipi) ═══ */
     const A = 'var(--acc)', RED = 'var(--red)', AMB = 'var(--warn)';
@@ -1193,7 +1194,7 @@
       return `
 <nav aria-label="Admin menyusi" id="side" class="ad-side ${v.sideOpen ? 'open' : ''}">
   <div style="display:flex;align-items:center;justify-content:space-between">
-    <a href="/" class="ad-brand">${LOGO2}<span><b>Kamera Optom</b><small>ADMIN 2.0</small></span></a>
+    <a href="index.html" class="ad-brand">${LOGO2}<span><b>Kamera Optom</b><small>ADMIN 2.0</small></span></a>
     <button type="button" aria-label="Menyuni yopish" onclick="${h(v.closeSide)}" class="burger-btn ad-icon" style="width:36px;height:36px">${aic('x', 16, 2.2)}</button>
   </div>
   <div class="ad-nav">
@@ -2031,7 +2032,7 @@
         <div style="min-width:0"><h1 class="ad-title">${esc(v.adminTitle)}</h1><div class="ad-sub">${esc(v.adminSub)}</div></div>
       </div>
       <div class="ad-actions">
-        <a href="/app" target="_blank" rel="noopener" class="ad-btn g" style="text-decoration:none">Mijoz ilovasi ${aic('ext', 15, 2)}</a>
+        <a href="app.html" target="_blank" rel="noopener" class="ad-btn g" style="text-decoration:none">Mijoz ilovasi ${aic('ext', 15, 2)}</a>
         <button onclick="${h(v.exportCsv)}" class="ad-btn g">${aic('download', 16, 2)} CSV</button>
         <button onclick="${h(adToggleTheme)}" class="ad-icon" aria-label="Mavzu" title="${night ? 'Kunduzgi' : 'Tungi'} mavzu">${aic(night ? 'sun' : 'moon', 18, 2)}</button>
         <button onclick="${h(v.goProducts)}" class="ad-btn p">${aic('plus', 16, 2.4)} Mahsulot</button>

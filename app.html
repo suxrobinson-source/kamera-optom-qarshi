@@ -4301,6 +4301,7 @@
     <div class="dv-home"></div>
   </div>
 
+  <script src="config.js"></script>
   <script>
     function _showFatalCrash(msg) {
       const el = document.getElementById('app');
@@ -4324,6 +4325,8 @@
        ═══════════════════════════════════════════════════════════ */
     const A = 'var(--acc)', RED = '#ff4d3d', AMB = '#ffb020';
     const M = n => n.toLocaleString('ru-RU').replace(/,/g, ' ');
+    // Statik rasmlar: github.io'da API server manzili qo'shiladi (config.js)
+    const KA = p => ((typeof window !== 'undefined' && window.KO_API) || '') + p;
     const fmt = n => M(n) + " so'm";
     const esc = s => String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
@@ -4920,7 +4923,7 @@
         pinLeft: "15%",
         pinTop: "64%",
         transform: "scale(1.22) translate(18%, -7%)",
-        img: "/assets/tour/h80x-dual-showroom.webp",
+        img: KA("/assets/tour/h80x-dual-showroom.webp"),
         fallbackName: "Ezviz CS-H80X Dual (8MP+2MP)",
         desc: "Hovli va tashqi hududlarni kecha-yu kunduz kuzatish uchun ob-havoga chidamli 4K ikki linzali EZVIZ kamerasi.",
         iconType: "camera",
@@ -4943,7 +4946,7 @@
         pinLeft: "31%",
         pinTop: "75%",
         transform: "scale(1.25) translate(11%, -14%)",
-        img: "/assets/tour/hp7.png",
+        img: KA("/assets/tour/hp7.png"),
         fallbackName: "Ezviz CS-HP7 2-in-1 Video Interkom",
         desc: "Eshik oldini jonli ko‘rish, mehmon bilan gaplashish va darvozani masofadan smartfon orqali ochish uchun video domofon.",
         iconType: "bell",
@@ -4966,7 +4969,7 @@
         pinLeft: "43%",
         pinTop: "62%",
         transform: "scale(1.28) translate(4%, -7%)",
-        img: "/assets/tour/dl50fvs.png",
+        img: KA("/assets/tour/dl50fvs.png"),
         fallbackName: "Ezviz CS-DL50FVS 3D Yuz Tanuvchi Smart Qulf",
         desc: "Kalitsiz va qulay kirish, 3D yuz tanish, xavfsizlik ogohlantirishlari hamda EZVIZ ilovasi orqali boshqaruv.",
         iconType: "fingerprint",
@@ -4989,7 +4992,7 @@
         pinLeft: "51%",
         pinTop: "57%",
         transform: "scale(1.25) translate(-1%, -4%)",
-        img: "/assets/tour/dp2c.png",
+        img: KA("/assets/tour/dp2c.png"),
         fallbackName: "Ezviz CS-DP2C Simsiz Video Ko'zlagich",
         desc: "Eshik ko'zlagichi o'rniga o'rnatiladigan kamera va 4.3 dyuymli rangli ekran. Harakat sezilganda telefonga xabar yuboradi.",
         iconType: "screen",
@@ -5012,7 +5015,7 @@
         pinLeft: "69%",
         pinTop: "55%",
         transform: "scale(1.22) translate(-12%, -3%)",
-        img: "/assets/tour/h6c-pro.png",
+        img: KA("/assets/tour/h6c-pro.png"),
         fallbackName: "Ezviz CS-H6C Pro (1080P) Aylanuvchi Kamera",
         desc: "Uy va ofisni jonli kuzatish, 360° pan/tilt aylanuvchi ko'rish, shovqin va harakatni aniqlash hamda ikki tomonlama aloqa.",
         iconType: "ptz",
@@ -5035,7 +5038,7 @@
         pinLeft: "54%",
         pinTop: "28%",
         transform: "scale(1.28) translate(-2%, 13%)",
-        img: "/assets/tour/c6n-g1.png",
+        img: KA("/assets/tour/c6n-g1.png"),
         fallbackName: "Ezviz CS-C6N G1 (3MP) 2K Wi-Fi Kamera",
         desc: "Yuqori qavat va bolalar xonasi uchun 2K (3MP) o'ta tiniq aylanuvchi kamera. Smart IR tungi ko'rish 10 metrgacha.",
         iconType: "radar",
@@ -5058,7 +5061,7 @@
         pinLeft: "82%",
         pinTop: "28%",
         transform: "scale(1.28) translate(-18%, 13%)",
-        img: "/assets/tour/t36.png",
+        img: KA("/assets/tour/t36.png"),
         fallbackName: "Ezviz CS-T36 Aqlli Wi-Fi Rele",
         desc: "Uy elektr qurilmalarini EZVIZ ilovasidan boshqarish, avtomatik jadvallar tuzish va energiyani nazorat qilish uchun.",
         iconType: "power",
@@ -6133,7 +6136,7 @@
 
   <div class="${rvc('tour')}" data-rv="tour">
     <section class="tour tilt rs">
-      <div class="tour-img sync" style="background-image:url('/assets/ezviz-smart-home-journey-hd.webp')"></div>
+      <div class="tour-img sync" style="background-image:url('${KA('/assets/ezviz-smart-home-journey-hd.webp')}')"></div>
       <div class="tour-shade"></div>
       <i class="tour-scan"></i>
       <i class="tour-dot" style="left:74%;top:34%"></i><i class="tour-dot" style="left:64%;top:62%;--o:.7s"></i><i class="tour-dot" style="left:89%;top:60%;--o:1.4s"></i>

@@ -1,0 +1,13 @@
+{
+  "name": "kamera-optom-qarshi",
+  "private": true,
+  "description": "KAMERA OPTOM QARSHI — mijoz ilovasi, admin panel va Node.js/SQLite backend",
+  "engines": {
+    "node": "24.x"
+  },
+  "scripts": {
+    "start": "node backend/src/server.js",
+    "heroku-postbuild": "npm --prefix backend ci --omit=dev",
+    "test": "node test-smoke.js"
+  }
+}

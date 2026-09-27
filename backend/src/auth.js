@@ -6,8 +6,8 @@ import { db } from './db.js';
 export const JWT_SECRET = process.env.JWT_SECRET || crypto.randomBytes(32).toString('hex');
 const TOKEN_TTL = '12h';
 
-export function login(username, password) {
-  const admin = db.prepare('SELECT * FROM admins WHERE username = ?').get(String(username || ''));
+export async function login(username, password) {
+  const admin = await db.get('SELECT * FROM admins WHERE username = ?', String(username || ''));
   if (!admin) return null;
   const hash = crypto.scryptSync(String(password || ''), admin.salt, 64).toString('hex');
   const ok = crypto.timingSafeEqual(Buffer.from(hash, 'hex'), Buffer.from(admin.pass_hash, 'hex'));

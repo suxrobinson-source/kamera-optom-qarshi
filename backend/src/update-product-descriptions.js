@@ -199,21 +199,20 @@ async function main() {
   }
 
   // 3. Update SQLite database kamera.db
-  const rows = db.prepare('SELECT sku, name, cat, badge, spec, specs FROM products').all();
-  const updStmt = db.prepare('UPDATE products SET desc = ?, specs = ? WHERE sku = ?');
+  const rows = await db.all('SELECT sku, name, cat, badge, spec, specs FROM products');
   let updatedDbCount = 0;
   for (const row of rows) {
     let parsedSpecs = [];
     try { parsedSpecs = JSON.parse(row.specs); } catch (e) { }
     const newSpecs = updateWarrantyInSpecs(parsedSpecs);
     const newDesc = generateModelDescription({ ...row, specs: newSpecs });
-    updStmt.run(newDesc, JSON.stringify(newSpecs), row.sku);
+    await db.run('UPDATE products SET "desc" = ?, specs = ? WHERE sku = ?', newDesc, JSON.stringify(newSpecs), row.sku);
     updatedDbCount++;
   }
-  console.log(`✓ Updated ${updatedDbCount} products in SQLite DB kamera.db`);
+  console.log(`✓ Updated ${updatedDbCount} products in the database (${db.dialect})`);
 
   // Sample check
-  const sample = db.prepare('SELECT sku, name, desc, specs FROM products LIMIT 3').all();
+  const sample = await db.all('SELECT sku, name, "desc", specs FROM products LIMIT 3');
   console.log('\nSample updated records:');
   sample.forEach(s => {
     console.log(`[${s.sku}] ${s.name}\nDesc: ${s.desc}\nSpecs Kafolat: ${JSON.parse(s.specs).find(x => x.k === 'Kafolat')?.v}\n`);

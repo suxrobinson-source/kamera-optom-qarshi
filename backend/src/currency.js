@@ -30,19 +30,19 @@ export function parsePct(v) {
   return Number.isFinite(n) && n >= 0 && n <= MARGIN_MAX ? n : undefined;
 }
 
-export function getMargins() {
-  const m = getSetting('margins') || {};
+export async function getMargins() {
+  const m = (await getSetting('margins')) || {};
   const ok = v => v !== null && v !== undefined && Number.isFinite(+v) && +v >= 0 && +v <= MARGIN_MAX;
   return { default: ok(m.default) ? +m.default : DEFAULT_MARGINS.default, usta: ok(m.usta) ? +m.usta : DEFAULT_MARGINS.usta };
 }
 
-export function getCurrency() {
-  const pricing = getSetting('pricing') || {};
-  const meta = getSetting('currency') || {};
+export async function getCurrency() {
+  const pricing = (await getSetting('pricing')) || {};
+  const meta = (await getSetting('currency')) || {};
   return {
     usdRate: +pricing.usdRate > 0 ? +pricing.usdRate : 0,
     rounding: ROUNDING_STEPS.includes(+meta.rounding) ? +meta.rounding : 1000,
-    margins: getMargins(),
+    margins: await getMargins(),
     marginsApplied: !!meta.marginsApplied,
     updatedAt: meta.updatedAt || null,
     history: Array.isArray(meta.history) ? meta.history : [],
@@ -51,8 +51,8 @@ export function getCurrency() {
 
 export const sellPrice = (cost, marginPct, rate, step) => roundSom(cost * rate * (1 + marginPct / 100), step);
 
-/* Bitta tovarning so'mdagi ikkala narxi (tannarx yoki kurs bo'lmasa — null) */
-export function computeProduct({ price_usd, margin, margin_usta }, cur = getCurrency()) {
+/* Bitta tovarning so'mdagi ikkala narxi (tannarx yoki kurs bo'lmasa — null). cur — await getCurrency() */
+export function computeProduct({ price_usd, margin, margin_usta }, cur) {
   if (!(price_usd > 0) || !(cur.usdRate > 0)) return null;
   return {
     price: sellPrice(price_usd, margin ?? cur.margins.default, cur.usdRate, cur.rounding),
@@ -60,24 +60,16 @@ export function computeProduct({ price_usd, margin, margin_usta }, cur = getCurr
   };
 }
 
-/* Tovar saqlanganda uning narxini joriy kurs va marjalar bo'yicha yangilash */
-export function repriceProduct(sku) {
-  const p = db.prepare('SELECT price_usd, margin, margin_usta FROM products WHERE sku = ?').get(sku);
-  const calc = p ? computeProduct(p) : null;
-  if (calc) db.prepare('UPDATE products SET price = ?, price_usta = ? WHERE sku = ?').run(calc.price, calc.price_usta, sku);
-  return calc;
-}
-
 /* Yangi kurs/marjalarda har bir narx qanday bo'lishini hisoblaydi (bazaga yozmaydi).
    Hali tannarxi yo'q tovarlarda joriy so'm narxi tannarx deb olinadi
    (import skripti diler narxini × kurs qilib yozgan). */
-export function planPricing(opts = {}) {
-  const cur = getCurrency();
+export async function planPricing(opts = {}) {
+  const cur = await getCurrency();
   const rate = opts.usdRate > 0 ? opts.usdRate : cur.usdRate;
   const step = ROUNDING_STEPS.includes(+opts.rounding) ? +opts.rounding : cur.rounding;
   const margins = { ...cur.margins, ...(opts.margins || {}) };
   const baseRate = cur.usdRate > 0 ? cur.usdRate : rate;
-  const items = db.prepare('SELECT sku, name, price, price_usta, price_usd, margin, margin_usta FROM products').all().map(p => {
+  const items = (await db.all('SELECT sku, name, price, price_usta, price_usd, margin, margin_usta FROM products')).map(p => {
     const baselined = !(p.price_usd > 0);
     const cost = baselined ? round4(p.price / baseRate) : p.price_usd;
     return {
@@ -87,7 +79,7 @@ export function planPricing(opts = {}) {
       custom: p.margin !== null || p.margin_usta !== null,
     };
   });
-  const pricing = getSetting('pricing') || {};
+  const pricing = (await getSetting('pricing')) || {};
   const hdd = Array.isArray(pricing.hddOptions)
     ? pricing.hddOptions.map(o => {
       const usd = o.usd > 0 ? o.usd : round4(o.price / baseRate);
@@ -120,27 +112,22 @@ export function summarize(plan) {
 }
 
 /* Kurs va/yoki marjalarni qo'llaydi: barcha narxlar bitta tranzaksiyada qayta yoziladi */
-export function applyPricing(opts = {}, by = '') {
-  const plan = planPricing(opts);
-  const upd = db.prepare('UPDATE products SET price_usd = ?, price = ?, price_usta = ? WHERE sku = ?');
-  db.exec('BEGIN');
-  try {
-    for (const i of plan.items) upd.run(i.cost, i.next, i.nextUsta, i.sku);
-    const pricing = getSetting('pricing') || {};
-    setSetting('pricing', { ...pricing, usdRate: plan.rate, ...(plan.hdd ? { hddOptions: plan.hdd } : {}) });
-    setSetting('margins', plan.margins);
-    const meta = getSetting('currency') || {};
+export async function applyPricing(opts = {}, by = '') {
+  const plan = await db.tx(async () => {
+    const plan = await planPricing(opts);
+    for (const i of plan.items) await db.run('UPDATE products SET price_usd = ?, price = ?, price_usta = ? WHERE sku = ?', i.cost, i.next, i.nextUsta, i.sku);
+    const pricing = (await getSetting('pricing')) || {};
+    await setSetting('pricing', { ...pricing, usdRate: plan.rate, ...(plan.hdd ? { hddOptions: plan.hdd } : {}) });
+    await setSetting('margins', plan.margins);
+    const meta = (await getSetting('currency')) || {};
     const at = new Date().toISOString();
     const entry = { rate: plan.rate, prev: plan.cur.usdRate, margins: plan.margins, at, changed: plan.items.filter(i => i.next !== i.old).length, by };
-    setSetting('currency', {
+    await setSetting('currency', {
       ...meta, rounding: plan.step, marginsApplied: true, updatedAt: at,
       history: [entry, ...(Array.isArray(meta.history) ? meta.history : [])].slice(0, 20),
     });
-    db.exec('COMMIT');
-  } catch (e) {
-    db.exec('ROLLBACK');
-    throw e;
-  }
+    return plan;
+  });
   return summarize(plan);
 }
 

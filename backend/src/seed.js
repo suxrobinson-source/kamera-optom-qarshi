@@ -80,103 +80,87 @@ const otherRegions = [
   'Sirdaryo', 'Surxondaryo', 'Farg\'ona', 'Andijon', 'Namangan', 'Xorazm', 'Qoraqalpog\'iston',
 ];
 
-export function runSeed({ force = false } = {}) {
-  const already = db.prepare('SELECT COUNT(*) AS n FROM products').get().n > 0;
+export async function runSeed({ force = false } = {}) {
+  const already = (await db.get('SELECT COUNT(*) AS n FROM products')).n > 0;
   if (already && !force) return { seeded: false };
 
-  db.exec('DELETE FROM order_events; DELETE FROM orders; DELETE FROM callbacks; DELETE FROM products; DELETE FROM categories; DELETE FROM banners; DELETE FROM stories; DELETE FROM regions;');
+  await db.tx(async () => {
+    await db.exec('DELETE FROM order_events; DELETE FROM orders; DELETE FROM callbacks; DELETE FROM products; DELETE FROM categories; DELETE FROM banners; DELETE FROM stories; DELETE FROM regions;');
 
-  const insP = db.prepare(`INSERT INTO products (sku,name,cat,price,badge,spec,desc,tags,specs,poe,mp,night,spin,qty,promo)
-    VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`);
-  for (const p of products) {
-    insP.run(p.sku, p.name, p.cat, p.price, p.badge, p.spec, p.desc || '', JSON.stringify(p.tags), JSON.stringify(p.specs),
-      p.poe ?? 0, p.mp ?? 0, p.night ?? 0, p.spin ?? 0, p.qty, p.promo ?? null);
-  }
+    const insP = `INSERT INTO products (sku,name,cat,price,badge,spec,"desc",tags,specs,poe,mp,night,spin,qty,promo)
+      VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`;
+    for (const p of products) {
+      await db.run(insP, p.sku, p.name, p.cat, p.price, p.badge, p.spec, p.desc || '', JSON.stringify(p.tags), JSON.stringify(p.specs),
+        p.poe ?? 0, p.mp ?? 0, p.night ?? 0, p.spin ?? 0, p.qty, p.promo ?? null);
+    }
+    for (const p of loadEzvizProducts()) {
+      await db.run(insP, p.sku, p.name, p.cat, p.price, p.badge || '', p.spec || '', p.desc || '', JSON.stringify(p.tags || []), JSON.stringify(p.specs || []),
+        p.poe ? 1 : 0, p.mp ? 1 : 0, p.night ? 1 : 0, p.spin ? 1 : 0, p.qty ?? 0, p.promo || null);
+    }
 
-  const ezList = loadEzvizProducts();
-  for (const p of ezList) {
-    insP.run(p.sku, p.name, p.cat, p.price, p.badge || '', p.spec || '', p.desc || '', JSON.stringify(p.tags || []), JSON.stringify(p.specs || []),
-      p.poe ? 1 : 0, p.mp ? 1 : 0, p.night ? 1 : 0, p.spin ? 1 : 0, p.qty ?? 0, p.promo || null);
-  }
+    await insertCategories();
+    for (const [i, b] of banners.entries()) {
+      await db.run('INSERT INTO banners (tag,title,sub,cta,action,image,sort) VALUES (?,?,?,?,?,?,?)', b.tag, b.title, b.sub, b.cta, b.action, b.image || '', i);
+    }
+    for (const [i, st] of stories.entries()) {
+      await db.run('INSERT INTO stories (id,label,mark,title,meta,dur,views,live,file,tags,text,sort) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)',
+        st.id, st.label, st.mark, st.title, st.meta, st.dur, st.views, st.live, st.file, JSON.stringify(st.tags), st.text, i);
+    }
+    await insertRegions();
 
-  const insC = db.prepare('INSERT INTO categories (name, mark, sort) VALUES (?,?,?)');
-  categories.forEach(([name, mark], i) => insC.run(name, mark, i));
-
-  const insB = db.prepare('INSERT INTO banners (tag,title,sub,cta,action,image,sort) VALUES (?,?,?,?,?,?,?)');
-  banners.forEach((b, i) => insB.run(b.tag, b.title, b.sub, b.cta, b.action, b.image || '', i));
-
-  const insS = db.prepare('INSERT INTO stories (id,label,mark,title,meta,dur,views,live,file,tags,text,sort) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)');
-  stories.forEach((s, i) => insS.run(s.id, s.label, s.mark, s.title, s.meta, s.dur, s.views, s.live, s.file, JSON.stringify(s.tags), s.text, i));
-
-  const insR = db.prepare('INSERT INTO regions (name,note,eta,price,zone,sort) VALUES (?,?,?,?,?,?)');
-  qashqadaryo.forEach(([name, note, eta], i) => insR.run(name, note, eta, 0, 'Qashqadaryo viloyati', i));
-  otherRegions.forEach((name, i) => insR.run(name, 'Pochta / kuryer orqali', '2-3 kun', 30000, 'Boshqa viloyatlar', 100 + i));
-
-  // Biznes sozlamalari — prototipdagi kalkulyator narxlari
-  setSetting('pricing', {
-    cablePerMeter: 9000,
-    installPerCamera: 250000,
-    cloudPerCameraMonth: 35000,
-    usdRate: 12600,
-    hddOptions: [
-      { size: '16 GB', days: '~1 kun', price: 65000, sku: 'SD-16' },
-      { size: '32 GB', days: '~2 kun', price: 95000, sku: 'SD-32' },
-      { size: '64 GB', days: '~4 kun', price: 150000, sku: 'SD-64' },
-      { size: '128 GB', days: '~8 kun', price: 240000, sku: 'SD-128' },
-      { size: '256 GB', days: '~16 kun', price: 420000, sku: 'SD-256' },
-    ],
+    // Biznes sozlamalari — prototipdagi kalkulyator narxlari
+    await setSetting('pricing', DEFAULT_PRICING);
+    await setSetting('credit', DEFAULT_CREDIT);
+    await setSetting('modules', DEFAULT_MODULES);
+    await setSetting('statusFlow', DEFAULT_FLOW);
+    await setSetting('orderSeq', 4822);
   });
-  setSetting('credit', {
-    rates: { 3: 0, 6: 8, 12: 14, 24: 26 },
-    down: { 3: 0, 6: 10, 12: 20, 24: 30 },
-    providers: ['Uzum Nasiya', 'Alif Nasiya', 'Hamkor Nasiya'],
-  });
-  setSetting('modules', { banners: true, stories: true, gps: true, memory: true, cable: true, install: true, cloud: true, credit: true, expert: true });
-  setSetting('statusFlow', ['Yangi', 'Tasdiqlandi', "O'rnatishda", 'Yopildi']);
-  setSetting('orderSeq', 4822);
-
   return { seeded: true };
 }
 
-export function ensureSchema() {
-  try {
-    db.exec('ALTER TABLE products ADD COLUMN images TEXT;');
-  } catch (e) { }
-  try {
-    db.exec('ALTER TABLE products ADD COLUMN is_popular INTEGER DEFAULT 0;');
-  } catch (e) { }
+const DEFAULT_PRICING = {
+  cablePerMeter: 9000,
+  installPerCamera: 250000,
+  cloudPerCameraMonth: 35000,
+  usdRate: 12600,
+  hddOptions: [
+    { size: '16 GB', days: '~1 kun', price: 65000, sku: 'SD-16' },
+    { size: '32 GB', days: '~2 kun', price: 95000, sku: 'SD-32' },
+    { size: '64 GB', days: '~4 kun', price: 150000, sku: 'SD-64' },
+    { size: '128 GB', days: '~8 kun', price: 240000, sku: 'SD-128' },
+    { size: '256 GB', days: '~16 kun', price: 420000, sku: 'SD-256' },
+  ],
+};
+const DEFAULT_CREDIT = {
+  rates: { 3: 0, 6: 8, 12: 14, 24: 26 },
+  down: { 3: 0, 6: 10, 12: 20, 24: 30 },
+  providers: ['Uzum Nasiya', 'Alif Nasiya', 'Hamkor Nasiya'],
+};
+const DEFAULT_MODULES = { banners: true, stories: true, gps: true, memory: true, cable: true, install: true, cloud: true, credit: true, expert: true };
+const DEFAULT_FLOW = ['Yangi', 'Tasdiqlandi', "O'rnatishda", 'Yopildi'];
 
-  // Ensure base categories exist
-  const catCount = db.prepare('SELECT COUNT(*) AS n FROM categories').get().n;
-  if (catCount === 0) {
-    const insC = db.prepare('INSERT INTO categories (name, mark, sort) VALUES (?,?,?)');
-    categories.forEach(([name, mark], i) => insC.run(name, mark, i));
+async function insertCategories() {
+  for (const [i, [name, mark]] of categories.entries()) {
+    await db.run('INSERT INTO categories (name, mark, sort) VALUES (?,?,?) ON CONFLICT DO NOTHING', name, mark, i);
   }
-
-  // Ensure base regions exist
-  const regCount = db.prepare('SELECT COUNT(*) AS n FROM regions').get().n;
-  if (regCount === 0) {
-    const insR = db.prepare('INSERT INTO regions (name,note,eta,price,zone,sort) VALUES (?,?,?,?,?,?)');
-    qashqadaryo.forEach(([name, note, eta], i) => insR.run(name, note, eta, 0, 'Qashqadaryo viloyati', i));
-    otherRegions.forEach((name, i) => insR.run(name, 'Pochta / kuryer orqali', '2-3 kun', 30000, 'Boshqa viloyatlar', 100 + i));
+}
+async function insertRegions() {
+  for (const [i, [name, note, eta]] of qashqadaryo.entries()) {
+    await db.run('INSERT INTO regions (name,note,eta,price,zone,sort) VALUES (?,?,?,?,?,?) ON CONFLICT DO NOTHING', name, note, eta, 0, 'Qashqadaryo viloyati', i);
   }
+  for (const [i, name] of otherRegions.entries()) {
+    await db.run('INSERT INTO regions (name,note,eta,price,zone,sort) VALUES (?,?,?,?,?,?) ON CONFLICT DO NOTHING', name, 'Pochta / kuryer orqali', '2-3 kun', 30000, 'Boshqa viloyatlar', 100 + i);
+  }
+}
 
-  // Ensure basic pricing settings exist
-  const row = db.prepare('SELECT value FROM settings WHERE key = ?').get('pricing');
+export async function ensureSchema() {
+  // Jadvallar va ustunlar db.js da yaratiladi; bu yerda — asosiy ma'lumotnomalar va sozlamalar
+  if ((await db.get('SELECT COUNT(*) AS n FROM categories')).n === 0) await insertCategories();
+  if ((await db.get('SELECT COUNT(*) AS n FROM regions')).n === 0) await insertRegions();
+
+  const row = await db.get('SELECT value FROM settings WHERE key = ?', 'pricing');
   if (!row) {
-    setSetting('pricing', {
-      cablePerMeter: 9000,
-      installPerCamera: 250000,
-      cloudPerCameraMonth: 35000,
-      usdRate: 12600,
-      hddOptions: [
-        { size: '16 GB', days: '~1 kun', price: 65000, sku: 'SD-16' },
-        { size: '32 GB', days: '~2 kun', price: 95000, sku: 'SD-32' },
-        { size: '64 GB', days: '~4 kun', price: 150000, sku: 'SD-64' },
-        { size: '128 GB', days: '~8 kun', price: 240000, sku: 'SD-128' },
-        { size: '256 GB', days: '~16 kun', price: 420000, sku: 'SD-256' },
-      ],
-    });
+    await setSetting('pricing', DEFAULT_PRICING);
   } else {
     try {
       const pricing = JSON.parse(row.value);
@@ -190,49 +174,37 @@ export function ensureSchema() {
           }
           return opt;
         });
-        if (changed) setSetting('pricing', pricing);
+        if (changed) await setSetting('pricing', pricing);
       }
     } catch (e) { }
   }
 
-  if (!db.prepare('SELECT 1 FROM settings WHERE key = ?').get('credit')) {
-    setSetting('credit', {
-      rates: { 3: 0, 6: 8, 12: 14, 24: 26 },
-      down: { 3: 0, 6: 10, 12: 20, 24: 30 },
-      providers: ['Uzum Nasiya', 'Alif Nasiya', 'Hamkor Nasiya'],
-    });
-  }
-  if (!db.prepare('SELECT 1 FROM settings WHERE key = ?').get('modules')) {
-    setSetting('modules', { banners: true, stories: true, gps: true, memory: true, cable: true, install: true, cloud: true, credit: true, expert: true });
-  }
-  if (!db.prepare('SELECT 1 FROM settings WHERE key = ?').get('statusFlow')) {
-    setSetting('statusFlow', ['Yangi', 'Tasdiqlandi', "O'rnatishda", 'Yopildi']);
-  }
-  if (!db.prepare('SELECT 1 FROM settings WHERE key = ?').get('orderSeq')) {
-    setSetting('orderSeq', 1001);
-  }
+  const has = async (key) => !!(await db.get('SELECT 1 AS x FROM settings WHERE key = ?', key));
+  if (!(await has('credit'))) await setSetting('credit', DEFAULT_CREDIT);
+  if (!(await has('modules'))) await setSetting('modules', DEFAULT_MODULES);
+  if (!(await has('statusFlow'))) await setSetting('statusFlow', DEFAULT_FLOW);
+  if (!(await has('orderSeq'))) await setSetting('orderSeq', 1001);
 }
 
-export function ensureAdmin() {
-  const exists = db.prepare('SELECT COUNT(*) AS n FROM admins').get().n > 0;
+export async function ensureAdmin() {
+  const exists = (await db.get('SELECT COUNT(*) AS n FROM admins')).n > 0;
   if (exists) return null;
   const password = process.env.ADMIN_PASSWORD || crypto.randomBytes(6).toString('base64url');
   const salt = crypto.randomBytes(16).toString('hex');
   const hash = crypto.scryptSync(password, salt, 64).toString('hex');
-  db.prepare('INSERT INTO admins (username, pass_hash, salt, name, role) VALUES (?,?,?,?,?)')
-    .run('admin', hash, salt, 'Dilshod', 'menejer');
+  await db.run('INSERT INTO admins (username, pass_hash, salt, name, role) VALUES (?,?,?,?,?)', 'admin', hash, salt, 'Dilshod', 'menejer');
   return { username: 'admin', password };
 }
 
 if (process.argv[1] && import.meta.url === new URL(`file:///${process.argv[1].replace(/\\/g, '/')}`).href) {
   if (process.argv.includes('--force')) {
-    const r = runSeed({ force: true });
-    console.log(r.seeded ? 'Seed bajarildi (demo ma\'lumotlar yuklandi).' : 'Seed o\'tkazib yuborildi.');
+    const r = await runSeed({ force: true });
+    console.log(r.seeded ? "Seed bajarildi (demo ma'lumotlar yuklandi)." : "Seed o'tkazib yuborildi.");
   } else {
-    ensureSchema();
-    console.log('Sxema va asosiy konfiguratsiya tekshirildi (demo ma\'lumotlar yuklanmadi).');
+    await ensureSchema();
+    console.log("Sxema va asosiy konfiguratsiya tekshirildi (demo ma'lumotlar yuklanmadi).");
   }
-  const admin = ensureAdmin();
+  const admin = await ensureAdmin();
   if (admin) console.log(`Admin yaratildi — login: ${admin.username}, parol: ${admin.password}`);
+  await db.close();
 }
-

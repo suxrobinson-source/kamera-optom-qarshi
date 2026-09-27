@@ -6,21 +6,22 @@ import { db, setSetting } from './db.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-export function clearAllData() {
+export async function clearAllData() {
   console.log('🧹 Barcha test ma\'lumotlarini o\'chirish boshlandi...');
 
-  // 1. Truncate test tables in SQLite
-  db.exec(`
+  // 1. Test jadvallarini tozalash
+  await db.exec(`
     DELETE FROM order_events;
     DELETE FROM orders;
     DELETE FROM callbacks;
     DELETE FROM products;
     DELETE FROM banners;
     DELETE FROM stories;
+    DELETE FROM uploads WHERE path LIKE '/assets/products/%';
   `);
 
   // 2. Reset order sequence counter
-  setSetting('orderSeq', 1001);
+  await setSetting('orderSeq', 1001);
 
   // 3. Clean uploaded product images from assets/products
   const prodAssetsDir = path.join(__dirname, '..', 'assets', 'products');
@@ -38,9 +39,9 @@ export function clearAllData() {
     }
   }
 
-  // Vacuum SQLite database to reclaim disk space
+  // Bazadagi bo'sh joyni qaytarish (SQLite va Postgres ikkalasida VACUUM bor)
   try {
-    db.exec('VACUUM;');
+    await db.exec('VACUUM');
   } catch (e) { }
 
   console.log('✅ Barcha test ma\'lumotlari to\'liq o\'chirildi:');
@@ -54,6 +55,7 @@ export function clearAllData() {
 }
 
 if (process.argv[1] && import.meta.url === new URL(`file:///${process.argv[1].replace(/\\/g, '/')}`).href) {
-  clearAllData();
+  await clearAllData();
+  await db.close();
 }
 

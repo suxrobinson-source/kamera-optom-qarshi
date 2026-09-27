@@ -4590,7 +4590,20 @@
     let _swX = null, _swY = null, _reelTouched = 0;
     function reelStep(step) {
       const n = window.__banCount || 3;
-      set({ bannerIdx: ((S.bannerIdx + step) % n + n) % n });
+      S.bannerIdx = ((S.bannerIdx + step) % n + n) % n;
+      renderBanner();
+    }
+    /* Reklama bannerini joyida almashtirish: butun sahifa qayta chizilsa aylantirish (scroll) inersiyasi
+       uziladi va sahifa sakraydi, shuning uchun faqat .bn elementi yangilanadi */
+    function renderBanner() {
+      const old = APP.querySelector && APP.querySelector('.bn');
+      if (!old || typeof document.createElement !== 'function') { render(); return; }
+      const tmp = document.createElement('div');
+      tmp.innerHTML = mBanner(vals()).trim();
+      const nu = tmp.firstElementChild;
+      if (!nu) { render(); return; }
+      old.replaceWith(nu);
+      i18nApply(nu);
     }
     function reelDown(e) {
       const t = (e && e.touches && e.touches[0]) || e;
@@ -5606,8 +5619,8 @@
           _g = setTimeout(() => { S.gpsState = 'done'; S.region = 'Qarshi shahri'; flash('Joylashuv: Qarshi shahri · yetkazish bepul'); }, 1400);
         },
         bn: BAN[s.bannerIdx % BAN.length],
-        dots: BAN.map((b, i) => ({ on: i === s.bannerIdx, w: i === s.bannerIdx ? '16px' : '5px', bg: i === s.bannerIdx ? 'var(--acc)' : 'rgba(255,255,255,.35)', go: () => set({ bannerIdx: i }) })),
-        nextBanner: () => set({ bannerIdx: (s.bannerIdx + 1) % BAN.length }),
+        dots: BAN.map((b, i) => ({ on: i === s.bannerIdx, w: i === s.bannerIdx ? '16px' : '5px', bg: i === s.bannerIdx ? 'var(--acc)' : 'rgba(255,255,255,.35)', go: () => { S.bannerIdx = i; renderBanner(); } })),
+        nextBanner: () => { S.bannerIdx = (s.bannerIdx + 1) % BAN.length; renderBanner(); },
         callExpert: () => set({ tab: 'expert', sel: null, expStep: 1, cb: 'idle' }),
         calcRequest: () => flash('Hisoblash so’rovi yuborildi — obyekt manzilini yozib qoldiring'),
         step1: s.cb !== 'done' && s.expStep === 1, step2: s.cb !== 'done' && s.expStep === 2, step3: s.cb !== 'done' && s.expStep === 3,
@@ -8840,6 +8853,9 @@ ${mProfHead(v, 'Yordam va biz haqida', "Qarshi shahar bosh do'koni")}
         const act = document.activeElement;
         const fk = act && act.dataset ? act.dataset.k : null;
         const fs = fk ? act.selectionStart : null, fe = fk ? act.selectionEnd : null;
+        /* raqamli maydon qayta formatlanadi ("90 123 45 67") — kursor belgilar emas, raqamlar soni bo'yicha tiklanadi */
+        const fdig = fk && act.getAttribute && act.getAttribute('inputmode') === 'numeric' && fs != null
+          ? String(act.value).slice(0, fs).replace(/[^0-9]/g, '').length : null;
 
         H = [];
         if (!DATA.ready && DATA.error) {
@@ -8887,7 +8903,15 @@ ${mProfHead(v, 'Yordam va biz haqida', "Qarshi shahar bosh do'koni")}
         const cr = APP.querySelector && APP.querySelector('[data-keep="cchips"]');
         if (cr && keep.cchips === undefined) { const on = cr.querySelector('.chip.on'); if (on) cr.scrollLeft = Math.max(0, on.offsetLeft - cr.offsetLeft - 18); }
         fxAfterRender();
-        if (fk) { const el = APP.querySelector('[data-k="' + fk + '"]'); if (el) { el.focus(); try { el.setSelectionRange(fs, fe); } catch (e) { } } }
+        if (fk) {
+          const el = APP.querySelector('[data-k="' + fk + '"]');
+          if (el) {
+            el.focus();
+            let a = fs, b = fe;
+            if (fdig != null) { a = 0; for (let n = 0; a < el.value.length && n < fdig; a++) if (/[0-9]/.test(el.value[a])) n++; b = a; }
+            try { el.setSelectionRange(a, b); } catch (e) { }
+          }
+        }
       } catch (err) {
         console.error('Render error:', err);
         APP.innerHTML = mFatal('Ilova yuklanishida xatolik', err && err.message ? err.message : String(err),
@@ -8909,7 +8933,7 @@ ${mProfHead(v, 'Yordam va biz haqida', "Qarshi shahar bosh do'koni")}
       if (!S.ph && !S.ok && S.story === null) {
         if (Date.now() - _reelTouched < 7000) return;
         S.bannerIdx = (S.bannerIdx + 1) % (window.__banCount || 3);
-        if (S.tab === 'home' && !S.sel && !S.bagOpen && !S.smartTour && !S.suggest) render();
+        if (S.tab === 'home' && !S.sel && !S.bagOpen && !S.smartTour && !S.suggest) renderBanner();
       }
     }, 5000);
     render();

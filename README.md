@@ -70,10 +70,13 @@ Server standart `http://localhost:3000` portida ishga tushadi:
 
 ## 🌐 Internetga joylash: github.io + Heroku
 
-- **Sahifalar (github.io)**: `https://suxrobinson-source.github.io/kamera-optom-qarshi/` — `app.html`, `admin.html`. GitHub Pages `master` tarmog'idan avtomatik yangilanadi.
-- **API (Heroku)**: repo ildizidagi `package.json` va `Procfile` bilan ishga tushadi (`npm start` → `backend/src/server.js`). Heroku Config Vars: `JWT_SECRET`, `ADMIN_PASSWORD`.
-- Heroku ilova manzili `config.js` dagi `KO_API_HOSTED` ga yoziladi. Lokal serverda (`localhost`) bu sozlama ishlatilmaydi.
-- ⚠️ Heroku diski vaqtinchalik: server qayta ishga tushganda SQLite bazasi va yuklangan rasmlar o'chadi. Doimiy saqlash uchun Heroku Postgres yoki doimiy diskli hosting kerak.
+- **Sahifalar (github.io)**: https://suxrobinson-source.github.io/kamera-optom-qarshi/ — `app.html`, `admin.html`. GitHub Pages `master` tarmog'idan avtomatik yangilanadi.
+- **API (Heroku)**: https://kamera-optom-qarshi-129c3b4fde7e.herokuapp.com — repo ildizidagi `package.json` va `Procfile` bilan ishga tushadi (`npm start` → `backend/src/server.js`). Heroku manzili `config.js` dagi `KO_API_HOSTED` da.
+- **Baza**: `DATABASE_URL` bo'lsa PostgreSQL (Heroku Postgres), bo'lmasa lokal SQLite (`backend/data/kamera.db`). Kod ikkalasida bir xil ishlaydi (`backend/src/db.js`).
+- **Yuklangan rasmlar** (admin mahsulot rasmlari, usta arizalari) bazada saqlanadi va `/assets/...` manzilidan beriladi — Heroku diski vaqtinchalik bo'lgani uchun.
+- **Heroku Config Vars**: `JWT_SECRET`, `ADMIN_PASSWORD` (birinchi ishga tushishda admin yaratiladi), `DATABASE_URL` (Postgres qo'shimchasi o'zi qo'yadi).
+- **Lokal ma'lumotni serverga ko'chirish**: `DATABASE_URL=<heroku> npm --prefix backend run migrate:pg` (maqsad bazada mahsulot bo'lsa `--force` kerak; adminlar ko'chirilmaydi).
+- **Yangilash**: kodni GitHub'ga push qilish (sahifalar) va Heroku'ga deploy qilish (API).
 
 ---
 

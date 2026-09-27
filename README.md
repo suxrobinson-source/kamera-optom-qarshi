@@ -6,8 +6,12 @@ Qarshi shahri va butun O'zbekiston bo'ylab videokuzatuv kameralari, videoregistr
 
 ## 📁 Loyiha tuzilishi
 
-- `app.html` — Mijoz mobil web-ilovasi (katalog, 360° ko'rish, komplekt kalkulyatori, mutaxassis arizasi, savat, buyurtmalarim va bildirishnomalar).
-- `admin.html` — Admin boshqaruv paneli (buyurtmalar, arizalar, ombor qoldig'i, muddatli to'lov sozlamalari, stories/bannerlar, KPI va tizim sozlamalari).
+- `app.html` — Mijoz mobil web-ilovasi, **"Signal" dizayni** (`/app` manzilida): bento bosh sahifa va illuziyaviy animatsiyalar, asosiy kataloglar → saralash, aqlli komplekt yordamchisi, mutaxassis arizasi, savat, buyurtmalarim, usta arizasi va 3 til (o'zbek lotin / кирилл / русский). Yorug' qog'oz fon, siyoh-qora tugmalar, to'q sariq aksent, Unbounded + Onest shriftlari, SVG ikonkalar, suzuvchi navigatsiya, kunduzgi/tungi mavzu.
+- **Narx dvigateli** (`backend/src/currency.js`): mahsulotning `price_usd` — dollardagi tannarx; sotuv narxi = tannarx × kurs × (1 + marja). Standart marja 15 %, tasdiqlangan ustalar uchun 12 %, har bir tovarga alohida marja qo'yish mumkin. Kurs/marjalar Admin → Sozlamalar → «Narxlar: dollar kursi va marja» dan oldindan ko'rish bilan qo'llanadi (CBU kursini olish tugmasi bor).
+- **Ishlarimiz videolari**: mijoz videoga layk bosadi, izoh yozadi va ulashadi (akkauntsiz — qurilma identifikatori bilan). Izohlar Admin → Stories bo'limida moderatsiya qilinadi (yashirish / o'chirish).
+- **Maxfiy narxlar**: import qilingan xususiyatlardagi diler (optom) va chakana narx qatorlari mijoz API'sidan olib tashlanadi — faqat adminda ko'rinadi.
+- **Ustalar**: mijoz ilovasi Profil → «Usta bo'lish» — o'rnatgan kameralari rasmlari bilan ariza; Admin → Ustalar bo'limida tasdiqlanadi. Tasdiqlangan raqamga ilova va buyurtmalar usta narxida.
+- `admin.html` — **Admin 2.0** boshqaruv paneli (`/admin` manzilida): buyurtmalar, arizalar, ombor qoldig'i, dollar kursi va marjalar, ustalar, muddatli to'lov sozlamalari, stories/bannerlar, KPI va tizim sozlamalari.
 - `backend/` — Node.js REST API serveri:
   - `src/server.js` — Asosiy Express serveri.
   - `src/db.js` — SQLite ma'lumotlar bazasi (WAL rejimi).
@@ -33,8 +37,8 @@ cp backend/.env.example backend/.env
 `.env` fayl parametrlari:
 ```env
 PORT=3000
-JWT_SECRET=super_secret_jwt_key_kamera_optom_qarshi_2026
-ADMIN_PASSWORD=admin
+JWT_SECRET=<64-belgili tasodifiy satr — openssl rand -hex 32>
+ADMIN_PASSWORD=<kuchli parol o'rnating>
 ```
 
 ### 3. Bog'liqliklarni o'rnatish
@@ -58,8 +62,8 @@ node src/reset-admin.js YangiParol123!
 npm start
 ```
 Server standart `http://localhost:3000` portida ishga tushadi:
-- Mijoz ilovasi: `http://localhost:3000/app` yoki `app.html`
-- Admin panel: `http://localhost:3000/admin` yoki `admin.html`
+- Mijoz ilovasi: `http://localhost:3000/app`
+- Admin panel: `http://localhost:3000/admin`
 - API bazasi: `http://localhost:3000/api/...`
 
 ---

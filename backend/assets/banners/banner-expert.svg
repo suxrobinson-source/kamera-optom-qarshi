@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="600" viewBox="0 0 1200 600">
+  <defs>
+    <pattern id="hatch3" width="24" height="24" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+      <rect width="24" height="24" fill="#0f1416"/>
+      <rect width="12" height="24" fill="#12181a"/>
+    </pattern>
+    <linearGradient id="fade3" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="30%" stop-color="#000" stop-opacity=".05"/>
+      <stop offset="100%" stop-color="#000" stop-opacity=".72"/>
+    </linearGradient>
+    <radialGradient id="glow3" cx="76%" cy="38%" r="46%">
+      <stop offset="0%" stop-color="#2fe0b6" stop-opacity=".18"/>
+      <stop offset="100%" stop-color="#2fe0b6" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1200" height="600" fill="url(#hatch3)"/>
+  <rect width="1200" height="600" fill="url(#glow3)"/>
+  <!-- Obyekt chizmasi (blueprint) -->
+  <g stroke="#2fe0b6" stroke-width="2" fill="none" opacity=".8" transform="translate(640 100)">
+    <rect x="0" y="0" width="460" height="330" rx="10" stroke-dasharray="12 8" opacity=".5"/>
+    <rect x="40" y="40" width="180" height="120" rx="6"/>
+    <rect x="250" y="40" width="170" height="250" rx="6"/>
+    <rect x="40" y="190" width="180" height="100" rx="6"/>
+    <line x1="220" y1="100" x2="250" y2="100" opacity=".6"/>
+    <line x1="130" y1="160" x2="130" y2="190" opacity=".6"/>
+  </g>
+  <!-- Kamera qamrov nurlari -->
+  <g transform="translate(690 150)">
+    <g>
+      <circle cx="0" cy="0" r="12" fill="#2fe0b6"/>
+      <path d="M0 0 L130 -45 L130 55 Z" fill="rgba(47,224,182,.14)"/>
+      <circle cx="0" cy="0" r="20" fill="none" stroke="#2fe0b6" stroke-width="2" opacity=".6">
+        <animate attributeName="r" values="14;30" dur="2s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" values=".6;0" dur="2s" repeatCount="indefinite"/>
+      </circle>
+    </g>
+  </g>
+  <g transform="translate(1050 190) rotate(140)">
+    <circle cx="0" cy="0" r="12" fill="#2fe0b6"/>
+    <path d="M0 0 L130 -45 L130 55 Z" fill="rgba(47,224,182,.12)"/>
+  </g>
+  <g transform="translate(700 380) rotate(-40)">
+    <circle cx="0" cy="0" r="12" fill="#2fe0b6"/>
+    <path d="M0 0 L120 -42 L120 50 Z" fill="rgba(47,224,182,.12)"/>
+  </g>
+  <!-- O'lchov belgilari -->
+  <g stroke="#ffb020" stroke-width="2" opacity=".7" transform="translate(640 460)">
+    <line x1="40" y1="0" x2="420" y2="0"/>
+    <line x1="40" y1="-8" x2="40" y2="8"/>
+    <line x1="420" y1="-8" x2="420" y2="8"/>
+    <rect x="200" y="-14" width="60" height="26" rx="6" fill="#0f1416" stroke="#ffb020"/>
+  </g>
+  <rect width="1200" height="600" fill="url(#fade3)"/>
+</svg>

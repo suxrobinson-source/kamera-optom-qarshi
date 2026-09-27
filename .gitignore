@@ -5,3 +5,15 @@ backend/data/*.db*
 backend/server.*.log
 *.log
 .DS_Store
+
+# Lokal vositalar va ichki eslatmalar (maxfiy qiymatlar bo'lishi mumkin)
+everything-claude-code/
+.agents/
+.claude/
+.thumbnail
+test_write.txt
+ANTIGRAVITY-TASK*.md
+
+# Maxfiy ma'lumotlar: diler narxli import fayllari, baza va mijozlar yuklagan rasmlar
+backend/data/
+backend/assets/ustas/

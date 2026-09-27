@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>KAMERA OPTOM QARSHI — Loyiha Boshqaruv Portali</title>
+  <meta name="description" content="Kuzatuv kameralari va xavfsizlik tizimlari — Mijoz ilovasi va Admin panel portali.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --acc: #2fe0b6;
+      --acc-glow: rgba(47, 224, 182, 0.35);
+      --bg: #0a0c0d;
+      --card: #14181a;
+      --card-hover: #1a2022;
+      --bar: #0d1112;
+      --fg: #eef2f1;
+      --fg2: #c8d3d1;
+      --dim: #8a9694;
+      --dim2: #7f8c8a;
+      --line: rgba(255, 255, 255, 0.09);
+      --line2: rgba(255, 255, 255, 0.15);
+      --line3: rgba(47, 224, 182, 0.25);
+      --amb: #ffb020;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--fg);
+      font-family: 'Space Grotesk', system-ui, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 30px 20px;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* Background Ambient Glows */
+    .glow-top {
+      position: absolute;
+      top: -120px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 600px;
+      height: 350px;
+      background: radial-gradient(circle, rgba(47, 224, 182, 0.15) 0%, rgba(0,0,0,0) 70%);
+      pointer-events: none;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 960px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 36px;
+      z-index: 2;
+    }
+
+    /* Header */
+    .portal-header {
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .badge-pill {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--acc);
+      background: rgba(47, 224, 182, 0.1);
+      border: 1px solid var(--line3);
+      padding: 5px 14px;
+      border-radius: 20px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .badge-pill .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--acc);
+      box-shadow: 0 0 8px var(--acc);
+      animation: pulse 1.8s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.8); }
+    }
+
+    .portal-title {
+      font-size: 34px;
+      font-weight: 700;
+      letter-spacing: -0.8px;
+      line-height: 1.2;
+      background: linear-gradient(135deg, #ffffff 40%, #c8d3d1 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .portal-desc {
+      font-size: 15px;
+      color: var(--dim);
+      max-width: 600px;
+      line-height: 1.5;
+    }
+
+    /* Two Cards Grid */
+    .prototypes-grid {
+      width: 100%;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 440px));
+      justify-content: center;
+      gap: 24px;
+    }
+
+    .proto-card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      padding: 32px 28px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      text-decoration: none;
+      color: inherit;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    }
+
+    .proto-card:hover {
+      border-color: var(--acc);
+      transform: translateY(-5px);
+      box-shadow: 0 20px 50px rgba(47, 224, 182, 0.12);
+      background: var(--card-hover);
+    }
+
+    .proto-card.admin-card:hover {
+      border-color: var(--amb);
+      box-shadow: 0 20px 50px rgba(255, 176, 32, 0.12);
+    }
+
+    .proto-icon-wrap {
+      width: 58px;
+      height: 58px;
+      border-radius: 16px;
+      background: rgba(47, 224, 182, 0.12);
+      border: 1px solid var(--line3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+      margin-bottom: 20px;
+    }
+
+    .admin-card .proto-icon-wrap {
+      background: rgba(255, 176, 32, 0.12);
+      border-color: rgba(255, 176, 32, 0.3);
+    }
+
+    .proto-name {
+      font-size: 22px;
+      font-weight: 700;
+      line-height: 1.2;
+    }
+
+    .proto-url-badge {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--acc);
+      margin-top: 6px;
+    }
+
+    .admin-card .proto-url-badge {
+      color: var(--amb);
+    }
+
+    .proto-info {
+      font-size: 13.5px;
+      color: var(--dim);
+      line-height: 1.5;
+      margin-top: 14px;
+      flex: 1;
+    }
+
+    .proto-features {
+      margin-top: 20px;
+      padding-top: 16px;
+      border-top: 1px solid var(--line);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .feature-item {
+      font-size: 12.5px;
+      color: var(--fg2);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .feature-item .check {
+      color: var(--acc);
+      font-weight: 700;
+    }
+
+    .admin-card .feature-item .check {
+      color: var(--amb);
+    }
+
+    .proto-btn {
+      margin-top: 24px;
+      padding: 14px;
+      border-radius: 14px;
+      background: var(--acc);
+      color: #06231d;
+      font-size: 14px;
+      font-weight: 700;
+      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: opacity 0.2s;
+    }
+
+    .admin-card .proto-btn {
+      background: var(--amb);
+      color: #2a1a00;
+    }
+
+    .proto-btn:hover {
+      opacity: 0.92;
+    }
+
+    /* Footer Meta */
+    .portal-footer {
+      text-align: center;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 11px;
+      color: var(--dim2);
+      padding-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="glow-top"></div>
+
+  <div class="container">
+    
+    <!-- Portal Header -->
+    <header class="portal-header">
+      <div class="badge-pill">
+        <span class="dot"></span>
+        <span>KAMERA OPTOM QARSHI v1.4</span>
+      </div>
+      <h1 class="portal-title">Kuzatuv Kameralari Portali</h1>
+      <p class="portal-desc">
+        Mijoz ilovasi va Admin boshqaruv paneli alohida mustaqil URL manzillarda ishga tushirildi. Kerakli tizimni tanlang:
+      </p>
+    </header>
+
+    <!-- Prototypes Grid -->
+    <div class="prototypes-grid">
+
+      <!-- 1. MIJOZ ILOVASI -->
+      <a href="/app" class="proto-card">
+        <div class="proto-icon-wrap">📱</div>
+        <div class="proto-name">Mijoz Ilovasi</div>
+        <div class="proto-url-badge">URL: /app (yoki app.html)</div>
+        <p class="proto-info">
+          Xaridorlar uchun mobil va veb ilova: kameralar katalogi, 360° interaktiv aylantirish, komplekt kalkulyatori, muddatli to'lov va tezkor buyurtma.
+        </p>
+        <div class="proto-features">
+          <div class="feature-item"><span class="check">✓</span> 360° interaktiv kamera ko'rish</div>
+          <div class="feature-item"><span class="check">✓</span> 4 bosqichli komplekt kalkulyatori</div>
+          <div class="feature-item"><span class="check">✓</span> Uzum / Alif / Hamkor Nasiya</div>
+          <div class="feature-item"><span class="check">✓</span> 📱 Telefon va 🖥️ Ekran rejimi</div>
+        </div>
+        <div class="proto-btn">Mijoz Ilovasini ochish →</div>
+      </a>
+
+      <!-- 2. ADMIN PANEL -->
+      <a href="/admin" class="proto-card admin-card">
+        <div class="proto-icon-wrap">💻</div>
+        <div class="proto-name">Admin Paneli</div>
+        <div class="proto-url-badge">URL: /admin (yoki admin.html)</div>
+        <p class="proto-info">
+          Do'kon egasi va menejerlar uchun boshqaruv paneli: jonli buyurtmalar, statuslarni 1-bosish bilan o'zgartirish, ombor qoldiqlari va sozlamalar.
+        </p>
+        <div class="proto-features">
+          <div class="feature-item"><span class="check">✓</span> Buyurtmalar statusini o'zgartirish</div>
+          <div class="feature-item"><span class="check">✓</span> Ombor qoldiqlari & narxlarni tahrirlash</div>
+          <div class="feature-item"><span class="check">✓</span> Nasiya stavkalari & Stories boshqaruvi</div>
+          <div class="feature-item"><span class="check">✓</span> CSV eksport & jonli KPI ko'rsatkichlar</div>
+        </div>
+        <div class="proto-btn">Admin Panelni ochish →</div>
+      </a>
+
+    </div>
+
+    <!-- Portal Footer -->
+    <footer class="portal-footer">
+      Node.js Express Backend · SQLite Baza · Qarshi, O'zbekiston
+    </footer>
+
+  </div>
+
+</body>
+</html>

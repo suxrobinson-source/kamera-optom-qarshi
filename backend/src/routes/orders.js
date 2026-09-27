@@ -8,7 +8,7 @@ const normPhone = (v) => String(v || '').replace(/[^0-9]/g, '').slice(-9);
 const parseOrder = (row) => ({
   ...row,
   items: JSON.parse(row.items),
-  install: !!row.install, cloud: !!row.cloud,
+  install: !!row.install, cloud: !!row.cloud, usta: !!row.usta,
 });
 
 // POST /api/orders — buyurtma yaratish
@@ -23,6 +23,8 @@ ordersRouter.post('/orders', (req, res) => {
 
   const pricing = getSetting('pricing');
   const getP = db.prepare('SELECT * FROM products WHERE sku = ? AND active = 1');
+  // Tasdiqlangan usta — narxlar usta marjasi bo'yicha
+  const isUsta = !!db.prepare("SELECT 1 FROM ustas WHERE phone = ? AND status = 'Tasdiqlangan'").get(phone);
 
   // Tarkibni tekshirish va summani serverda hisoblash
   const items = [];
@@ -32,14 +34,15 @@ ordersRouter.post('/orders', (req, res) => {
     if (!p && pricing && Array.isArray(pricing.hddOptions)) {
       const hdd = pricing.hddOptions.find(h => h.sku === it.sku || h.size === it.sku);
       if (hdd) {
-        p = { sku: hdd.sku || it.sku, name: `microSD ${hdd.size} (${hdd.days})`, price: hdd.price, qty: 999, cat: 'Xotira' };
+        p = { sku: hdd.sku || it.sku, name: `microSD ${hdd.size} (${hdd.days})`, price: hdd.price, price_usta: hdd.priceUsta, qty: 999, cat: 'Xotira' };
       }
     }
     const qty = Math.max(1, Math.min(999, +it.qty || 1));
     if (!p) return res.status(400).json({ error: `Mahsulot topilmadi: ${it.sku}` });
     if (p.qty < qty) return res.status(409).json({ error: `"${p.name}" omborda yetarli emas (qoldiq: ${p.qty})` });
-    items.push({ sku: p.sku, name: p.name, price: p.price, qty });
-    goodsSum += p.price * qty;
+    const unit = isUsta && p.price_usta > 0 ? p.price_usta : p.price;
+    items.push({ sku: p.sku, name: p.name, price: unit, qty });
+    goodsSum += unit * qty;
     if (['Tashqi', 'Ichki', 'Aylanuvchi'].includes(p.cat)) cams += qty;
     if (p.cat === 'Komplekt') cams += qty * 4;
   }
@@ -56,8 +59,8 @@ ordersRouter.post('/orders', (req, res) => {
 
   const insert = db.prepare(`INSERT INTO orders
     (id, client_name, phone, region, address, addr_note, recipient_name, recipient_phone,
-     items, goods_sum, install, install_price, cloud, cloud_price, ship_price, total, status)
-    VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?, 'Yangi')`);
+     items, goods_sum, install, install_price, cloud, cloud_price, ship_price, total, usta, status)
+    VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?, 'Yangi')`);
   const decQty = db.prepare('UPDATE products SET qty = qty - ? WHERE sku = ?');
 
   insert.run(
@@ -65,7 +68,7 @@ ordersRouter.post('/orders', (req, res) => {
     String(b.address || ''), String(b.addrNote || ''),
     String(b.recipient?.name || ''), normPhone(b.recipient?.phone) || '',
     JSON.stringify(items), goodsSum,
-    b.install ? 1 : 0, installPrice, b.cloud ? 1 : 0, cloudPrice, shipPrice, total,
+    b.install ? 1 : 0, installPrice, b.cloud ? 1 : 0, cloudPrice, shipPrice, total, isUsta ? 1 : 0,
   );
   for (const it of items) decQty.run(it.qty, it.sku);
   db.prepare('INSERT INTO order_events (order_id, status) VALUES (?, ?)').run(id, 'Yangi');
@@ -95,8 +98,8 @@ ordersRouter.get('/orders/:id', (req, res) => {
 ordersRouter.post('/callbacks', (req, res) => {
   const b = req.body || {};
   const phone = normPhone(b.phone);
-  if (phone.length !== 9) return res.status(400).json({ error: 'Telefon raqami noto’g’ri' });
+  if (phone.length !== 9) return res.status(400).json({ error: "Telefon raqami noto'g'ri" });
   const info = db.prepare('INSERT INTO callbacks (name, phone, note, slot, topic, channel) VALUES (?,?,?,?,?,?)')
     .run(String(b.name || ''), phone, String(b.note || ''), String(b.slot || 'Tezroq'), String(b.topic || ''), String(b.channel || 'Telefon'));
-  res.status(201).json({ id: info.lastInsertRowid, status: 'Yangi', message: 'Mutaxassis 15 daqiqada qo’ng’iroq qiladi' });
+  res.status(201).json({ id: info.lastInsertRowid, status: 'Yangi', message: "Mutaxassis 15 daqiqada qo'ng'iroq qiladi" });
 });

@@ -5,7 +5,7 @@
  * KO_API_HOSTED ga Heroku ilovasining manzilini yozing, masalan
  *   'https://kamera-optom-qarshi-1a2b3c.herokuapp.com'
  */
-window.KO_API_HOSTED = '';
+window.KO_API_HOSTED = 'https://kamera-optom-qarshi-129c3b4fde7e.herokuapp.com';
 
 (function () {
   var local = /^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname) || location.protocol === 'file:';

@@ -79,6 +79,10 @@ function generateModelDescription(p) {
     return `${name} — 3D strukturalangan yorug'lik texnologiyasiga ega biometrik aqlli eshik qulfi. Foydalanuvchi yuzini 0.5 soniyada taniydi va qorong'ida ham xatosiz ishlaydi. Shuningdek barmoq izi, raqamli parol, RFID karta, mexanik kalit va EZVIZ ilovasi orqali ochiladi. Eshik oldini ko'rsatuvchi o'rnatilgan kamera va ichki rangli ekran mavjud. Zaryadlanuvchi 5000 mAh litiy batareyadan quvvatlanadi. Rasmiy 1 yil kafolat bilan beriladi.`;
   }
 
+  if (sku.startsWith('CS-DL-IC')) {
+    return `${name} — EZVIZ aqlli eshik qulflari uchun shifrlangan IC (CPU) karta-brelok. Qulfga bir tegizish bilan eshikni kontaktsiz ochadi. Nusxa ko'chirishdan himoyalangan EZVIZ shifrlash algoritmi bilan ishlaydi. Oila a'zolari, xodimlar yoki ijarachilar uchun qo'shimcha kalit sifatida qulay: yo'qolgan brelokni qulf menyusi yoki EZVIZ ilovasi orqali ro'yxatdan o'chirib qo'yish mumkin. Ixcham (40 × 32 mm), kalitlar to'plamiga taqish uchun halqa teshigi bor, batareya talab qilmaydi. Rasmiy 1 yil kafolat bilan beriladi.`;
+  }
+
   if (sku.startsWith('CS-DL')) {
     return `${name} — xonadon va ofislar uchun ishonchli biometrik aqlli qulf. Yarimo'tkazgichli barmoq izi skaneri, sensorli raqamli panel, RFID kartalar va favqulodda mexanik kalit orqali ochiladi. EZVIZ ilovasi orqali kim qachon eshikni ochganini kuzatish va vaqtinchalik mehmon parollarini berish mumkin. Rasmiy 1 yil kafolat bilan beriladi.`;
   }

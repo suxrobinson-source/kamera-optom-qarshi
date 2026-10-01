@@ -1,0 +1,1613 @@
+[
+ {
+  "sku": "NEO-NSW638A-E4A",
+  "name": "NEOCAM NEO-NSW638A-E4A",
+  "cat": "Tashqi",
+  "badge": "4MP 2K",
+  "spec": "2K · 2.8 mm · Mikrofon + karnay",
+  "tags": [
+   "4MP",
+   "2K",
+   "Silindrsimon",
+   "ONVIF"
+  ],
+  "flags": {
+   "poe": 0,
+   "mp": 1,
+   "night": 1,
+   "spin": 0
+  },
+  "desc": "NEOCAM NEO-NSW638A-E4A — 2K (4MP) silindrsimon IP kamera. T31N protsessori, 1/3\" kam yorug'likka sezgir CMOS sensor, 2.8 mm linza. 3D DNR shovqin pasaytirish va D-WDR. Kadrda 5 tagacha odamni aniqlaydi. 4 ta LED yoritgich, o'rnatilgan mikrofon va karnay, 20 kadr/s. ONVIF protokolini qo'llaydi. Plastik korpus. Rasmiy 1 yil kafolat bilan beriladi.",
+  "rows": [
+   [
+    "Ruxsat",
+    "2K (4MP)"
+   ],
+   [
+    "Protsessor",
+    "T31N"
+   ],
+   [
+    "Sensor",
+    "1/3\" CMOS, kam yorug'likka sezgir"
+   ],
+   [
+    "Linza",
+    "2.8 mm"
+   ],
+   [
+    "Tasvir",
+    "3D DNR, D-WDR"
+   ],
+   [
+    "Aniqlash",
+    "Odam (kadrda 5 tagacha)"
+   ],
+   [
+    "Yoritgich",
+    "4 ta LED"
+   ],
+   [
+    "Audio",
+    "Mikrofon + karnay"
+   ],
+   [
+    "Kadr tezligi",
+    "20 FPS"
+   ],
+   [
+    "Protokol",
+    "ONVIF"
+   ],
+   [
+    "Korpus",
+    "Plastik"
+   ]
+  ],
+  "cost_som": 241650,
+  "list_som": 268500,
+  "images": [
+   "/assets/products/neo-nsw638a-e4a-1.jpg"
+  ]
+ },
+ {
+  "sku": "NEO-NSW638M-E4A",
+  "name": "NEOCAM NEO-NSW638M-E4A",
+  "cat": "Tashqi",
+  "badge": "4MP 2K",
+  "spec": "2K · 2.8 mm · Yarim metall korpus",
+  "tags": [
+   "4MP",
+   "2K",
+   "Silindrsimon",
+   "ONVIF"
+  ],
+  "flags": {
+   "poe": 0,
+   "mp": 1,
+   "night": 1,
+   "spin": 0
+  },
+  "desc": "NEOCAM NEO-NSW638M-E4A — 2K (4MP) silindrsimon IP kamera. T31N protsessori, 1/3\" kam yorug'likka sezgir CMOS sensor, 2.8 mm linza. 3D DNR shovqin pasaytirish va D-WDR. Kadrda 5 tagacha odamni aniqlaydi. 4 ta LED yoritgich, o'rnatilgan mikrofon va karnay, 20 kadr/s. ONVIF protokolini qo'llaydi. Yarim metall korpus. Rasmiy 1 yil kafolat bilan beriladi.",
+  "rows": [
+   [
+    "Ruxsat",
+    "2K (4MP)"
+   ],
+   [
+    "Protsessor",
+    "T31N"
+   ],
+   [
+    "Sensor",
+    "1/3\" CMOS, kam yorug'likka sezgir"
+   ],
+   [
+    "Linza",
+    "2.8 mm"
+   ],
+   [
+    "Tasvir",
+    "3D DNR, D-WDR"
+   ],
+   [
+    "Aniqlash",
+    "Odam (kadrda 5 tagacha)"
+   ],
+   [
+    "Yoritgich",
+    "4 ta LED"
+   ],
+   [
+    "Audio",
+    "Mikrofon + karnay"
+   ],
+   [
+    "Kadr tezligi",
+    "20 FPS"
+   ],
+   [
+    "Protokol",
+    "ONVIF"
+   ],
+   [
+    "Korpus",
+    "Yarim metall"
+   ]
+  ],
+  "cost_som": 252900,
+  "list_som": 281000,
+  "images": [
+   "/assets/products/neo-nsw638m-e4a-1.jpg"
+  ]
+ },
+ {
+  "sku": "NEO-668-4CA",
+  "name": "NEOCAM NEO-668-4CA",
+  "cat": "Tashqi",
+  "badge": "4MP 2K",
+  "spec": "2K · 8 LED (iliq + sovuq) · Metall",
+  "tags": [
+   "4MP",
+   "2K",
+   "Silindrsimon",
+   "ONVIF"
+  ],
+  "flags": {
+   "poe": 0,
+   "mp": 1,
+   "night": 1,
+   "spin": 0
+  },
+  "desc": "NEOCAM NEO-668-4CA — 2K (4MP) silindrsimon IP kamera. T31N protsessori, 1/3\" kam yorug'likka sezgir CMOS sensor, 2.8 mm linza. 3D DNR va D-WDR. 8 ta LED yoritgich: 4 ta iliq va 4 ta sovuq yorug'lik. O'rnatilgan mikrofon, 20 kadr/s. ONVIF va Hikvision protokollarini qo'llaydi. Metall korpus. Rasmiy 1 yil kafolat bilan beriladi.",
+  "rows": [
+   [
+    "Ruxsat",
+    "2K (4MP)"
+   ],
+   [
+    "Protsessor",
+    "T31N"
+   ],
+   [
+    "Sensor",
+    "1/3\" CMOS, kam yorug'likka sezgir"
+   ],
+   [
+    "Linza",
+    "2.8 mm"
+   ],
+   [
+    "Tasvir",
+    "3D DNR, D-WDR"
+   ],
+   [
+    "Yoritgich",
+    "8 ta LED (4 iliq + 4 sovuq)"
+   ],
+   [
+    "Audio",
+    "Mikrofon"
+   ],
+   [
+    "Kadr tezligi",
+    "20 FPS"
+   ],
+   [
+    "Protokol",
+    "ONVIF, Hikvision"
+   ],
+   [
+    "Korpus",
+    "Metall"
+   ]
+  ],
+  "cost_som": 263700,
+  "list_som": 293000,
+  "images": []
+ },
+ {
+  "sku": "NEO-638-5SN",
+  "name": "NEOCAM NEO-638-5SN",
+  "cat": "Tashqi",
+  "badge": "5MP 3K",
+  "spec": "3K · F1.0 · Black Light · Metall",
+  "tags": [
+   "5MP",
+   "3K",
+   "Silindrsimon",
+   "ONVIF"
+  ],
+  "flags": {
+   "poe": 0,
+   "mp": 1,
+   "night": 1,
+   "spin": 0
+  },
+  "desc": "NEOCAM NEO-638-5SN — 3K (5MP) silindrsimon IP kamera. T41NQ protsessori, 1/1.8\" katta kam yorug'likka sezgir CMOS sensor, F1.0 diafragmali 2.8 mm linza. Black Light texnologiyasi, 3D DNR va D-WDR. O'rnatilgan mikrofon va karnay, 25 kadr/s. ONVIF protokolini qo'llaydi. Metall korpus. Rasmiy 1 yil kafolat bilan beriladi.",
+  "rows": [
+   [
+    "Ruxsat",
+    "3K (5MP)"
+   ],
+   [
+    "Protsessor",
+    "T41NQ"
+   ],
+   [
+    "Sensor",
+    "1/1.8\" CMOS, kam yorug'likka sezgir"
+   ],
+   [
+    "Linza",
+    "2.8 mm F1.0"
+   ],
+   [
+    "Tasvir",
+    "Black Light, 3D DNR, D-WDR"
+   ],
+   [
+    "Audio",
+    "Mikrofon + karnay"
+   ],
+   [
+    "Kadr tezligi",
+    "25 FPS"
+   ],
+   [
+    "Protokol",
+    "ONVIF"
+   ],
+   [
+    "Korpus",
+    "Metall"
+   ]
+  ],
+  "cost_som": 549000,
+  "list_som": 610000,
+  "images": []
+ },
+ {
+  "sku": "NEO-NSW638-E8B",
+  "name": "NEOCAM NEO-NSW638-E8B",
+  "cat": "Tashqi",
+  "badge": "8MP 4K",
+  "spec": "4K · IP66 metall · Mikrofon + karnay",
+  "tags": [
+   "8MP",
+   "4K",
+   "Silindrsimon",
+   "IP66"
+  ],
+  "flags": {
+   "poe": 0,
+   "mp": 1,
+   "night": 1,
+   "spin": 0
+  },
+  "desc": "NEOCAM NEO-NSW638-E8B — 4K (8MP) silindrsimon IP kamera. T41NQ protsessori, 1/2.7\" kam yorug'likka sezgir CMOS sensor, 2.8 mm linza. 3D DNR va D-WDR. 4 ta LED yoritgich, o'rnatilgan mikrofon va karnay, 25 kadr/s. ONVIF protokolini qo'llaydi. IP66 himoyali metall korpus. Rasmiy 1 yil kafolat bilan beriladi.",
+  "rows": [
+   [
+    "Ruxsat",
+    "4K (8MP)"
+   ],
+   [
+    "Protsessor",
+    "T41NQ"
+   ],
+   [
+    "Sensor",
+    "1/2.7\" CMOS, kam yorug'likka sezgir"
+   ],
+   [
+    "Linza",
+    "2.8 mm"
+   ],
+   [
+    "Tasvir",
+    "3D DNR, D-WDR"
+   ],
+   [
+    "Yoritgich",
+    "4 ta LED"
+   ],
+   [
+    "Audio",
+    "Mikrofon + karnay"
+   ],
+   [
+    "Kadr tezligi",
+    "25 FPS"
+   ],
+   [
+    "Protokol",
+    "ONVIF"
+   ],
+   [
+    "Korpus",
+    "Metall, IP66"
+   ]
+  ],
+  "cost_som": 495000,
+  "list_som": 550000,
+  "images": [
+   "/assets/products/neo-nsw638-e8b-1.jpg",
+   "/assets/products/neo-nsw638-e8b-2.jpg",
+   "/assets/products/neo-nsw638-e8b-3.jpg"
+  ]
+ },
+ {
+  "sku": "NEO-NSD68A-E8B",
+  "name": "NEOCAM NEO-NSD68A-E8B",
+  "cat": "Ichki",
+  "badge": "8MP 4K",
+  "spec": "4K turret · Mikrofon + karnay",
+  "tags": [
+   "8MP",
+   "4K",
+   "Turret",
+   "ONVIF"
+  ],
+  "flags": {
+   "poe": 0,
+   "mp": 1,
+   "night": 1,
+   "spin": 0
+  },
+  "desc": "NEOCAM NEO-NSD68A-E8B — 4K (8MP) turret IP kamera. T41NQ protsessori, 1/2.7\" kam yorug'likka sezgir CMOS sensor, 2.8 mm linza. 3D DNR va D-WDR. 4 ta LED yoritgich, o'rnatilgan mikrofon va karnay, 25 kadr/s. ONVIF protokoli, SeeEasy ilovasi. Plastik korpus. Rasmiy 1 yil kafolat bilan beriladi.",
+  "rows": [
+   [
+    "Ruxsat",
+    "4K (8MP)"
+   ],
+   [
+    "Protsessor",
+    "T41NQ"
+   ],
+   [
+    "Sensor",
+    "1/2.7\" CMOS, kam yorug'likka sezgir"
+   ],
+   [
+    "Linza",
+    "2.8 mm"
+   ],
+   [
+    "Tasvir",
+    "3D DNR, D-WDR"
+   ],
+   [
+    "Yoritgich",
+    "4 ta LED"
+   ],
+   [
+    "Audio",
+    "Mikrofon + karnay"
+   ],
+   [
+    "Kadr tezligi",
+    "25 FPS"
+   ],
+   [
+    "Protokol",
+    "ONVIF"
+   ],
+   [
+    "Ilova",
+    "SeeEasy"
+   ],
+   [
+    "Korpus",
+    "Plastik"
+   ]
+  ],
+  "cost_som": 483300,
+  "list_som": 537000,
+  "images": [
+   "/assets/products/neo-nsd68a-e8b-1.jpg"
+  ]
+ },
+ {
+  "sku": "NEO-750-4D-P",
+  "name": "NEOCAM 750-4D-P",
+  "cat": "Tashqi",
+  "badge": "4MP 2K",
+  "spec": "2K · Odam/mashina · IP66 metall",
+  "tags": [
+   "4MP",
+   "2K",
+   "Silindrsimon",
+   "IP66"
+  ],
+  "flags": {
+   "poe": 0,
+   "mp": 1,
+   "night": 1,
+   "spin": 0
+  },
+  "desc": "NEOCAM 750-4D-P — 2K (4MP) silindrsimon IP kamera, 4 mm linza. Odam va mashinalarni aniqlaydi. 6 ta LED yoritgich, o'rnatilgan mikrofon va karnay, 25 kadr/s. ONVIF va Hikvision protokollarini qo'llaydi. IP66 himoyali metall korpus. Rasmiy 1 yil kafolat bilan beriladi.",
+  "rows": [
+   [
+    "Ruxsat",
+    "2K (4MP)"
+   ],
+   [
+    "Linza",
+    "4 mm"
+   ],
+   [
+    "Aniqlash",
+    "Odam va mashina"
+   ],
+   [
+    "Yoritgich",
+    "6 ta LED"
+   ],
+   [
+    "Audio",
+    "Mikrofon + karnay"
+   ],
+   [
+    "Kadr tezligi",
+    "25 FPS"
+   ],
+   [
+    "Protokol",
+    "ONVIF, Hikvision"
+   ],
+   [
+    "Korpus",
+    "Metall, IP66"
+   ]
+  ],
+  "cost_som": 384300,
+  "list_som": 427000,
+  "images": [
+   "/assets/products/neo-750-4d-p-1.jpg",
+   "/assets/products/neo-750-4d-p-2.jpg",
+   "/assets/products/neo-750-4d-p-3.jpg"
+  ]
+ },
+ {
+  "sku": "NEO-750-8D-P",
+  "name": "NEOCAM 750-8D-P",
+  "cat": "Tashqi",
+  "badge": "8MP 4K",
+  "spec": "4K · Odam/mashina · IP66 metall",
+  "tags": [
+   "8MP",
+   "4K",
+   "Silindrsimon",
+   "IP66"
+  ],
+  "flags": {
+   "poe": 0,
+   "mp": 1,
+   "night": 1,
+   "spin": 0
+  },
+  "desc": "NEOCAM 750-8D-P — 4K (8MP) silindrsimon IP kamera, 4 mm linza. Odam va mashinalarni aniqlaydi. 6 ta LED yoritgich, o'rnatilgan mikrofon va karnay, 25 kadr/s. ONVIF va Hikvision protokollarini qo'llaydi. IP66 himoyali metall korpus. Rasmiy 1 yil kafolat bilan beriladi.",
+  "rows": [
+   [
+    "Ruxsat",
+    "4K (8MP)"
+   ],
+   [
+    "Linza",
+    "4 mm"
+   ],
+   [
+    "Aniqlash",
+    "Odam va mashina"
+   ],
+   [
+    "Yoritgich",
+    "6 ta LED"
+   ],
+   [
+    "Audio",
+    "Mikrofon + karnay"
+   ],
+   [
+    "Kadr tezligi",
+    "25 FPS"
+   ],
+   [
+    "Protokol",
+    "ONVIF, Hikvision"
+   ],
+   [
+    "Korpus",
+    "Metall, IP66"
+   ]
+  ],
+  "cost_som": 527400,
+  "list_som": 586000,
+  "images": [
+   "/assets/products/neo-750-8d-p-1.jpg",
+   "/assets/products/neo-750-8d-p-2.jpg",
+   "/assets/products/neo-750-8d-p-3.jpg"
+  ]
+ },
+ {
+  "sku": "NEO-NSD53-E4A",
+  "name": "NEOCAM NEO-NSD53-E4A",
+  "cat": "Ichki",
+  "badge": "4MP 2K",
+  "spec": "2K turret · Odamni aniqlash",
+  "tags": [
+   "4MP",
+   "2K",
+   "Turret",
+   "ONVIF"
+  ],
+  "flags": {
+   "poe": 0,
+   "mp": 1,
+   "night": 1,
+   "spin": 0
+  },
+  "desc": "NEOCAM NEO-NSD53-E4A — 2K (4MP) turret IP kamera. T31N protsessori, 1/3\" kam yorug'likka sezgir CMOS sensor, 2.8 mm linza. 3D DNR shovqin pasaytirish va D-WDR. Kadrda 5 tagacha odamni aniqlaydi. 4 ta LED yoritgich, o'rnatilgan mikrofon va karnay, 20 kadr/s. ONVIF protokolini qo'llaydi. Plastik korpus. Rasmiy 1 yil kafolat bilan beriladi.",
+  "rows": [
+   [
+    "Ruxsat",
+    "2K (4MP)"
+   ],
+   [
+    "Protsessor",
+    "T31N"
+   ],
+   [
+    "Sensor",
+    "1/3\" CMOS, kam yorug'likka sezgir"
+   ],
+   [
+    "Linza",
+    "2.8 mm"
+   ],
+   [
+    "Tasvir",
+    "3D DNR, D-WDR"
+   ],
+   [
+    "Aniqlash",
+    "Odam (kadrda 5 tagacha)"
+   ],
+   [
+    "Yoritgich",
+    "4 ta LED"
+   ],
+   [
+    "Audio",
+    "Mikrofon + karnay"
+   ],
+   [
+    "Kadr tezligi",
+    "20 FPS"
+   ],
+   [
+    "Protokol",
+    "ONVIF"
+   ],
+   [
+    "Korpus",
+    "Plastik"
+   ]
+  ],
+  "cost_som": 230580,
+  "list_som": 256200,
+  "images": [
+   "/assets/products/neo-nsd53-e4a-1.jpg",
+   "/assets/products/neo-nsd53-e4a-2.jpg",
+   "/assets/products/neo-nsd53-e4a-3.jpg"
+  ]
+ },
+ {
+  "sku": "NEO-360-4M-B",
+  "name": "NEOCAM 360-4M-B",
+  "cat": "Aylanuvchi",
+  "badge": "4MP",
+  "spec": "Aylanuvchi · 355°/90° · Mikrofon + karnay",
+  "tags": [
+   "4MP",
+   "Aylanadi",
+   "ONVIF"
+  ],
+  "flags": {
+   "poe": 0,
+   "mp": 1,
+   "night": 1,
+   "spin": 1
+  },
+  "desc": "NEOCAM 360-4M-B — 4MP aylanuvchi IP kamera: gorizontal 355° va vertikal 90° buriladi. T31X + S4W protsessori, 1/2.7\" kam yorug'likka sezgir CMOS sensor, 3.6 mm linza. 3D DNR va D-WDR. 4 ta LED yoritgich, o'rnatilgan mikrofon va karnay. ONVIF protokolini qo'llaydi. Metall-plastik korpus. Rasmiy 1 yil kafolat bilan beriladi.",
+  "rows": [
+   [
+    "Ruxsat",
+    "4MP"
+   ],
+   [
+    "Protsessor",
+    "T31X + S4W"
+   ],
+   [
+    "Sensor",
+    "1/2.7\" CMOS, kam yorug'likka sezgir"
+   ],
+   [
+    "Linza",
+    "3.6 mm"
+   ],
+   [
+    "Aylanish",
+    "355° gorizontal, 90° vertikal"
+   ],
+   [
+    "Tasvir",
+    "3D DNR, D-WDR"
+   ],
+   [
+    "Yoritgich",
+    "4 ta LED"
+   ],
+   [
+    "Audio",
+    "Mikrofon + karnay"
+   ],
+   [
+    "Protokol",
+    "ONVIF"
+   ],
+   [
+    "Korpus",
+    "Metall-plastik"
+   ]
+  ],
+  "cost_som": 439200,
+  "list_som": 488000,
+  "images": [
+   "/assets/products/neo-360-4m-b-1.jpg"
+  ]
+ },
+ {
+  "sku": "NEO-BS9-4GEU",
+  "name": "NEOCAM NEO-BS9-4GEU",
+  "cat": "Aylanuvchi",
+  "badge": "3MP",
+  "spec": "4G · Quyosh paneli · 12000 mAh",
+  "tags": [
+   "3MP",
+   "4G",
+   "Quyosh paneli",
+   "Aylanadi"
+  ],
+  "flags": {
+   "poe": 0,
+   "mp": 0,
+   "night": 1,
+   "spin": 1
+  },
+  "desc": "NEOCAM NEO-BS9-4GEU — quyosh panelli akkumulyatorli aylanuvchi kamera: elektr kabeli shart emas. 3MP, 120° keng ko'rish burchagi, gorizontal 355° va vertikal 90° buriladi. 12000 mAh batareya va 3 Vt quyosh paneli. 4G SIM-karta orqali ishlaydi — Wi-Fi kerak emas. 12 metrgacha PIR harakat datchigi, signal (trevoga) funksiyasi, o'rnatilgan mikrofon va karnay, 5 dBi antenna. SD-karta, Alexa, O-KAM ilovasi. IP65 himoya. Rasmiy 1 yil kafolat bilan beriladi.",
+  "rows": [
+   [
+    "Ruxsat",
+    "3MP"
+   ],
+   [
+    "Ko'rish burchagi",
+    "120°"
+   ],
+   [
+    "Aylanish",
+    "355° gorizontal, 90° vertikal"
+   ],
+   [
+    "Batareya",
+    "12000 mAh"
+   ],
+   [
+    "Quyosh paneli",
+    "3 Vt"
+   ],
+   [
+    "Ulanish",
+    "4G SIM"
+   ],
+   [
+    "Aniqlash",
+    "PIR, 12 m gacha"
+   ],
+   [
+    "Audio",
+    "Mikrofon + karnay"
+   ],
+   [
+    "Xotira",
+    "SD-karta"
+   ],
+   [
+    "Himoya",
+    "IP65"
+   ],
+   [
+    "Ilova",
+    "O-KAM, Alexa"
+   ]
+  ],
+  "cost_som": 571500,
+  "list_som": 635000,
+  "images": [
+   "/assets/products/neo-bs9-4geu-1.jpg"
+  ]
+ },
+ {
+  "sku": "NEO-BS16-4GEU",
+  "name": "NEOCAM NEO-BS16-4GEU",
+  "cat": "Aylanuvchi",
+  "badge": "3MP",
+  "spec": "4G · Quyosh paneli · 8000 mAh",
+  "tags": [
+   "3MP",
+   "4G",
+   "Quyosh paneli",
+   "Aylanadi"
+  ],
+  "flags": {
+   "poe": 0,
+   "mp": 0,
+   "night": 1,
+   "spin": 1
+  },
+  "desc": "NEOCAM NEO-BS16-4GEU — quyosh panelli akkumulyatorli aylanuvchi kamera: elektr kabeli shart emas. 3MP, 120° keng ko'rish burchagi, gorizontal 355° va vertikal 90° buriladi. 8000 mAh batareya va 3 Vt quyosh paneli. 4G SIM-karta orqali ishlaydi — Wi-Fi kerak emas. 12 metrgacha PIR harakat datchigi, signal (trevoga) funksiyasi, o'rnatilgan mikrofon va karnay, 5 dBi antenna. SD-karta, Alexa, O-KAM ilovasi. IP65 himoya. Rasmiy 1 yil kafolat bilan beriladi.",
+  "rows": [
+   [
+    "Ruxsat",
+    "3MP"
+   ],
+   [
+    "Ko'rish burchagi",
+    "120°"
+   ],
+   [
+    "Aylanish",
+    "355° gorizontal, 90° vertikal"
+   ],
+   [
+    "Batareya",
+    "8000 mAh"
+   ],
+   [
+    "Quyosh paneli",
+    "3 Vt"
+   ],
+   [
+    "Ulanish",
+    "4G SIM"
+   ],
+   [
+    "Aniqlash",
+    "PIR, 12 m gacha"
+   ],
+   [
+    "Audio",
+    "Mikrofon + karnay"
+   ],
+   [
+    "Xotira",
+    "SD-karta"
+   ],
+   [
+    "Himoya",
+    "IP65"
+   ],
+   [
+    "Ilova",
+    "O-KAM, Alexa"
+   ]
+  ],
+  "cost_som": 494100,
+  "list_som": 549000,
+  "images": [
+   "/assets/products/neo-bs16-4geu-1.jpg"
+  ]
+ },
+ {
+  "sku": "NEO-BS19-4GEU",
+  "name": "NEOCAM NEO-BS19-4GEU",
+  "cat": "Aylanuvchi",
+  "badge": "3MP ×2",
+  "spec": "4G · Quyosh paneli · 9000 mAh",
+  "tags": [
+   "3MP",
+   "4G",
+   "Quyosh paneli",
+   "Aylanadi",
+   "Ikki linza"
+  ],
+  "flags": {
+   "poe": 0,
+   "mp": 0,
+   "night": 1,
+   "spin": 1
+  },
+  "desc": "NEOCAM NEO-BS19-4GEU — quyosh panelli akkumulyatorli aylanuvchi kamera: elektr kabeli shart emas. Ikki linza 3MP + 3MP, 120° keng ko'rish burchagi, gorizontal 355° va vertikal 90° buriladi. 9000 mAh batareya va 5 Vt quyosh paneli. 4G SIM-karta orqali ishlaydi — Wi-Fi kerak emas. 12 metrgacha PIR harakat datchigi, signal (trevoga) funksiyasi, o'rnatilgan mikrofon va karnay, 5 dBi antenna. SD-karta va bulutli xotira, Alexa, O-KAM ilovasi. IP65 himoya. Rasmiy 1 yil kafolat bilan beriladi.",
+  "rows": [
+   [
+    "Ruxsat",
+    "Ikki linza 3MP + 3MP"
+   ],
+   [
+    "Ko'rish burchagi",
+    "120°"
+   ],
+   [
+    "Aylanish",
+    "355° gorizontal, 90° vertikal"
+   ],
+   [
+    "Batareya",
+    "9000 mAh"
+   ],
+   [
+    "Quyosh paneli",
+    "5 Vt"
+   ],
+   [
+    "Ulanish",
+    "4G SIM"
+   ],
+   [
+    "Aniqlash",
+    "PIR, 12 m gacha"
+   ],
+   [
+    "Audio",
+    "Mikrofon + karnay"
+   ],
+   [
+    "Xotira",
+    "SD-karta + bulut"
+   ],
+   [
+    "Himoya",
+    "IP65"
+   ],
+   [
+    "Ilova",
+    "O-KAM, Alexa"
+   ]
+  ],
+  "cost_som": 593100,
+  "list_som": 659000,
+  "images": [
+   "/assets/products/neo-bs19-4geu-1.jpg",
+   "/assets/products/neo-bs19-4geu-2.jpg",
+   "/assets/products/neo-bs19-4geu-3.jpg"
+  ]
+ },
+ {
+  "sku": "NEO-BS19-WIFI",
+  "name": "NEOCAM NEO-BS19-WIFI",
+  "cat": "Aylanuvchi",
+  "badge": "3MP ×2",
+  "spec": "Wi-Fi · Quyosh paneli · 9000 mAh",
+  "tags": [
+   "3MP",
+   "Wi-Fi",
+   "Quyosh paneli",
+   "Aylanadi",
+   "Ikki linza"
+  ],
+  "flags": {
+   "poe": 0,
+   "mp": 0,
+   "night": 1,
+   "spin": 1
+  },
+  "desc": "NEOCAM NEO-BS19-WIFI — quyosh panelli akkumulyatorli aylanuvchi kamera: elektr kabeli shart emas. Ikki linza 3MP + 3MP, 120° keng ko'rish burchagi, gorizontal 355° va vertikal 90° buriladi. 9000 mAh batareya va 5 Vt quyosh paneli. Wi-Fi orqali ulanadi. 12 metrgacha PIR harakat datchigi, signal (trevoga) funksiyasi, o'rnatilgan mikrofon va karnay, 5 dBi antenna. SD-karta va bulutli xotira, Alexa, O-KAM ilovasi. IP65 himoya. Rasmiy 1 yil kafolat bilan beriladi.",
+  "rows": [
+   [
+    "Ruxsat",
+    "Ikki linza 3MP + 3MP"
+   ],
+   [
+    "Ko'rish burchagi",
+    "120°"
+   ],
+   [
+    "Aylanish",
+    "355° gorizontal, 90° vertikal"
+   ],
+   [
+    "Batareya",
+    "9000 mAh"
+   ],
+   [
+    "Quyosh paneli",
+    "5 Vt"
+   ],
+   [
+    "Ulanish",
+    "Wi-Fi"
+   ],
+   [
+    "Aniqlash",
+    "PIR, 12 m gacha"
+   ],
+   [
+    "Audio",
+    "Mikrofon + karnay"
+   ],
+   [
+    "Xotira",
+    "SD-karta + bulut"
+   ],
+   [
+    "Himoya",
+    "IP65"
+   ],
+   [
+    "Ilova",
+    "O-KAM, Alexa"
+   ]
+  ],
+  "cost_som": 571500,
+  "list_som": 635000,
+  "images": [
+   "/assets/products/neo-bs19-wifi-1.jpg",
+   "/assets/products/neo-bs19-wifi-2.jpg",
+   "/assets/products/neo-bs19-wifi-3.jpg"
+  ]
+ },
+ {
+  "sku": "NEO-BS16-M4GEU",
+  "name": "NEOCAM NEO-BS16-M4GEU",
+  "cat": "Aylanuvchi",
+  "badge": "3MP",
+  "spec": "4G · Quyosh paneli · 8000 mAh",
+  "tags": [
+   "3MP",
+   "4G",
+   "Quyosh paneli",
+   "Aylanadi"
+  ],
+  "flags": {
+   "poe": 0,
+   "mp": 0,
+   "night": 1,
+   "spin": 1
+  },
+  "desc": "NEOCAM NEO-BS16-M4GEU — quyosh panelli akkumulyatorli aylanuvchi kamera: elektr kabeli shart emas. 3MP, 120° keng ko'rish burchagi, gorizontal 355° va vertikal 90° buriladi. 8000 mAh batareya va 3 Vt quyosh paneli. 4G SIM-karta orqali ishlaydi — Wi-Fi kerak emas. 12 metrgacha PIR harakat datchigi, signal (trevoga) funksiyasi, o'rnatilgan mikrofon va karnay, 5 dBi antenna. SD-karta, Alexa, O-KAM ilovasi. IP65 himoya. Kamuflyaj rangdagi korpus. Rasmiy 1 yil kafolat bilan beriladi.",
+  "rows": [
+   [
+    "Ruxsat",
+    "3MP"
+   ],
+   [
+    "Ko'rish burchagi",
+    "120°"
+   ],
+   [
+    "Aylanish",
+    "355° gorizontal, 90° vertikal"
+   ],
+   [
+    "Batareya",
+    "8000 mAh"
+   ],
+   [
+    "Quyosh paneli",
+    "3 Vt"
+   ],
+   [
+    "Ulanish",
+    "4G SIM"
+   ],
+   [
+    "Aniqlash",
+    "PIR, 12 m gacha"
+   ],
+   [
+    "Audio",
+    "Mikrofon + karnay"
+   ],
+   [
+    "Xotira",
+    "SD-karta"
+   ],
+   [
+    "Himoya",
+    "IP65"
+   ],
+   [
+    "Ilova",
+    "O-KAM, Alexa"
+   ],
+   [
+    "Rang",
+    "Kamuflyaj"
+   ]
+  ],
+  "cost_som": 538200,
+  "list_som": 598000,
+  "images": [
+   "/assets/products/neo-bs16-m4geu-1.jpg"
+  ]
+ },
+ {
+  "sku": "NEO-WSW653-W3A",
+  "name": "NEOCAM NEO-WSW653-W3A",
+  "cat": "Aylanuvchi",
+  "badge": "3MP",
+  "spec": "Wi-Fi · PTZ 180°/70° · Odamni kuzatish",
+  "tags": [
+   "3MP",
+   "Wi-Fi",
+   "Aylanadi"
+  ],
+  "flags": {
+   "poe": 0,
+   "mp": 0,
+   "night": 1,
+   "spin": 1
+  },
+  "desc": "NEOCAM NEO-WSW653-W3A — 3MP Wi-Fi kamera: gorizontal 180° va vertikal 70° buriladi, odamni avtomatik kuzatadi. 8 ta LED yoritgich (4 + 4), ikki tomonlama ovozli aloqa. Wi-Fi 2.4 GHz, 256 GB gacha microSD karta, O-KAM ilovasi, ONVIF va RTSP. Quvvat: DC 5V 2A. Rasmiy 1 yil kafolat bilan beriladi.",
+  "rows": [
+   [
+    "Ruxsat",
+    "3MP"
+   ],
+   [
+    "Aylanish",
+    "180° gorizontal, 70° vertikal"
+   ],
+   [
+    "Aniqlash",
+    "Odamni kuzatish"
+   ],
+   [
+    "Yoritgich",
+    "8 ta LED (4 + 4)"
+   ],
+   [
+    "Audio",
+    "Ikki tomonlama"
+   ],
+   [
+    "Ulanish",
+    "Wi-Fi 2.4 GHz"
+   ],
+   [
+    "Xotira",
+    "microSD 256 GB gacha"
+   ],
+   [
+    "Protokol",
+    "ONVIF, RTSP"
+   ],
+   [
+    "Ilova",
+    "O-KAM"
+   ],
+   [
+    "Quvvat",
+    "DC 5V 2A"
+   ]
+  ],
+  "cost_som": 242100,
+  "list_som": 269000,
+  "images": [
+   "/assets/products/neo-wsw653-w3a-1.jpg"
+  ]
+ },
+ {
+  "sku": "NEO-N61016A",
+  "name": "NEOCAM NEO-N61016A",
+  "cat": "Yozuvchi",
+  "badge": "16 kanal",
+  "spec": "NVR · 16 kanal · 4K · 1 SATA",
+  "tags": [
+   "16 kanal",
+   "NVR",
+   "4K"
+  ],
+  "flags": {
+   "poe": 0,
+   "mp": 0,
+   "night": 0,
+   "spin": 0
+  },
+  "desc": "NEOCAM NEO-N61016A — 16 kanalli tarmoq video registratori (NVR): 16 tagacha 4K IP kamerani ulaydi. H.265+ / H.265 / H.264+ / H.264 video siqish, kiruvchi oqim 80 Mbit/s gacha, 8 MP gacha ruxsatda yozadi. 1 ta SATA uyasi (8 TB gacha qattiq disk). VMYCAM ilovasi orqali telefondan ko'rish mumkin. Rasmiy 1 yil kafolat bilan beriladi.",
+  "rows": [
+   [
+    "Kanallar",
+    "16 ta IP kamera (4K)"
+   ],
+   [
+    "Kodek",
+    "H.265+ / H.265 / H.264+ / H.264"
+   ],
+   [
+    "Kiruvchi oqim",
+    "80 Mbit/s gacha"
+   ],
+   [
+    "Yozish ruxsati",
+    "8 MP gacha"
+   ],
+   [
+    "Disk",
+    "1 × SATA, 8 TB gacha"
+   ],
+   [
+    "Ilova",
+    "VMYCAM"
+   ]
+  ],
+  "cost_som": 396000,
+  "list_som": 440000,
+  "images": [
+   "/assets/products/neo-n61016a-1.jpg",
+   "/assets/products/neo-n61016a-2.jpg",
+   "/assets/products/neo-n61016a-3.jpg"
+  ]
+ },
+ {
+  "sku": "NEO-N61016B",
+  "name": "NEOCAM NEO-N61016B",
+  "cat": "Yozuvchi",
+  "badge": "16 kanal",
+  "spec": "NVR · 16 kanal · 4K · 1 SATA",
+  "tags": [
+   "16 kanal",
+   "NVR",
+   "4K"
+  ],
+  "flags": {
+   "poe": 0,
+   "mp": 0,
+   "night": 0,
+   "spin": 0
+  },
+  "desc": "NEOCAM NEO-N61016B — 16 kanalli tarmoq video registratori (NVR): 16 tagacha 4K IP kamerani ulaydi. H.265+ / H.265 / H.264+ / H.264 video siqish, kiruvchi oqim 80 Mbit/s gacha, 8 MP gacha ruxsatda yozadi. 1 ta SATA uyasi (8 TB gacha qattiq disk). VMYCAM ilovasi orqali telefondan ko'rish mumkin. Rasmiy 1 yil kafolat bilan beriladi.",
+  "rows": [
+   [
+    "Kanallar",
+    "16 ta IP kamera (4K)"
+   ],
+   [
+    "Kodek",
+    "H.265+ / H.265 / H.264+ / H.264"
+   ],
+   [
+    "Kiruvchi oqim",
+    "80 Mbit/s gacha"
+   ],
+   [
+    "Yozish ruxsati",
+    "8 MP gacha"
+   ],
+   [
+    "Disk",
+    "1 × SATA, 8 TB gacha"
+   ],
+   [
+    "Ilova",
+    "VMYCAM"
+   ]
+  ],
+  "cost_som": 648000,
+  "list_som": 720000,
+  "images": []
+ },
+ {
+  "sku": "NEO-N61004A1-P",
+  "name": "NEOCAM NEO-N61004A1-P",
+  "cat": "Yozuvchi",
+  "badge": "4 kanal",
+  "spec": "NVR · 4 kanal · 4K · 1 SATA",
+  "tags": [
+   "4 kanal",
+   "NVR",
+   "4K",
+   "PoE"
+  ],
+  "flags": {
+   "poe": 1,
+   "mp": 0,
+   "night": 0,
+   "spin": 0
+  },
+  "desc": "NEOCAM NEO-N61004A1-P — 4 kanalli tarmoq video registratori (NVR): 4 tagacha 4K IP kamerani ulaydi. Kameralarni to'g'ridan-to'g'ri ulash uchun 4 ta PoE port va 4 ta IP LAN. H.265+ / H.265 / H.264+ / H.264 video siqish, kiruvchi oqim 80 Mbit/s gacha, 8 MP gacha ruxsatda yozadi. 1 ta SATA uyasi (8 TB gacha qattiq disk). VMYCAM ilovasi orqali telefondan ko'rish mumkin. Rasmiy 1 yil kafolat bilan beriladi.",
+  "rows": [
+   [
+    "Kanallar",
+    "4 ta IP kamera (4K)"
+   ],
+   [
+    "PoE",
+    "4 ta PoE port + 4 ta IP LAN"
+   ],
+   [
+    "Kodek",
+    "H.265+ / H.265 / H.264+ / H.264"
+   ],
+   [
+    "Kiruvchi oqim",
+    "80 Mbit/s gacha"
+   ],
+   [
+    "Yozish ruxsati",
+    "8 MP gacha"
+   ],
+   [
+    "Disk",
+    "1 × SATA, 8 TB gacha"
+   ],
+   [
+    "Ilova",
+    "VMYCAM"
+   ]
+  ],
+  "cost_som": 603900,
+  "list_som": 671000,
+  "images": [
+   "/assets/products/neo-n61004a1-p-1.jpg",
+   "/assets/products/neo-n61004a1-p-2.jpg",
+   "/assets/products/neo-n61004a1-p-3.jpg"
+  ]
+ },
+ {
+  "sku": "NEO-N81036A2",
+  "name": "NEOCAM NEO-N81036A2",
+  "cat": "Yozuvchi",
+  "badge": "36 kanal",
+  "spec": "NVR · 36 kanal · 4K · 2 SATA",
+  "tags": [
+   "36 kanal",
+   "NVR",
+   "4K"
+  ],
+  "flags": {
+   "poe": 0,
+   "mp": 0,
+   "night": 0,
+   "spin": 0
+  },
+  "desc": "NEOCAM NEO-N81036A2 — 36 kanalli tarmoq video registratori (NVR): 36 tagacha 4K IP kamerani ulaydi. H.265+ / H.265 / H.264+ / H.264 video siqish, kiruvchi oqim 150 Mbit/s gacha, 8 MP gacha ruxsatda yozadi. 2 ta SATA uyasi (har biriga 8 TB gacha qattiq disk). VMYCAM ilovasi orqali telefondan ko'rish mumkin. Rasmiy 1 yil kafolat bilan beriladi.",
+  "rows": [
+   [
+    "Kanallar",
+    "36 ta IP kamera (4K)"
+   ],
+   [
+    "Kodek",
+    "H.265+ / H.265 / H.264+ / H.264"
+   ],
+   [
+    "Kiruvchi oqim",
+    "150 Mbit/s gacha"
+   ],
+   [
+    "Yozish ruxsati",
+    "8 MP gacha"
+   ],
+   [
+    "Disk",
+    "2 × SATA, har biri 8 TB gacha"
+   ],
+   [
+    "Ilova",
+    "VMYCAM"
+   ]
+  ],
+  "cost_som": 852300,
+  "list_som": 947000,
+  "images": [
+   "/assets/products/neo-n81036a2-1.jpg",
+   "/assets/products/neo-n81036a2-2.jpg",
+   "/assets/products/neo-n81036a2-3.jpg"
+  ]
+ },
+ {
+  "sku": "NEO-NR-4-64-C",
+  "name": "NEOCAM NEO-NR-4-64-C",
+  "cat": "Yozuvchi",
+  "badge": "64 kanal",
+  "spec": "NVR · 64 kanal · 4K · 4 SATA",
+  "tags": [
+   "64 kanal",
+   "NVR",
+   "4K"
+  ],
+  "flags": {
+   "poe": 0,
+   "mp": 0,
+   "night": 0,
+   "spin": 0
+  },
+  "desc": "NEOCAM NEO-NR-4-64-C — 64 kanalli tarmoq video registratori (NVR): 64 tagacha 4K IP kamerani ulaydi. H.265+ / H.265 / H.264+ / H.264 video siqish, kiruvchi oqim 380 Mbit/s gacha, 8 MP gacha ruxsatda yozadi. 4 ta SATA uyasi (har biriga 16 TB gacha qattiq disk). VMYCAM ilovasi orqali telefondan ko'rish mumkin. Rasmiy 1 yil kafolat bilan beriladi.",
+  "rows": [
+   [
+    "Kanallar",
+    "64 ta IP kamera (4K)"
+   ],
+   [
+    "Kodek",
+    "H.265+ / H.265 / H.264+ / H.264"
+   ],
+   [
+    "Kiruvchi oqim",
+    "380 Mbit/s gacha"
+   ],
+   [
+    "Yozish ruxsati",
+    "8 MP gacha"
+   ],
+   [
+    "Disk",
+    "4 × SATA, har biri 16 TB gacha"
+   ],
+   [
+    "Ilova",
+    "VMYCAM"
+   ]
+  ],
+  "cost_som": 3074400,
+  "list_som": 3416000,
+  "images": []
+ },
+ {
+  "sku": "NEO-POE-1006B-J",
+  "name": "NEOCAM POE-1006B-J PoE Switch",
+  "cat": "Tarmoq",
+  "badge": "4 PoE",
+  "spec": "PoE switch · 4+2 port · 65 Vt",
+  "tags": [
+   "4 PoE",
+   "Switch",
+   "PoE"
+  ],
+  "flags": {
+   "poe": 1,
+   "mp": 0,
+   "night": 0,
+   "spin": 0
+  },
+  "desc": "NEOCAM POE-1006B-J — 4 ta PoE portli (RJ45, 10/100 Mbit/s) va 2 ta uplink portli (10/100 Mbit/s) switch. IP kameralarga bitta tarmoq kabeli orqali ham internet, ham quvvat beradi. Quvvat manbai 52V, umumiy quvvati 65 Vt. Rasmiy 1 yil kafolat bilan beriladi.",
+  "rows": [
+   [
+    "PoE portlar",
+    "4 × RJ45 10/100 Mbit/s"
+   ],
+   [
+    "Uplink",
+    "2 × 10/100 Mbit/s"
+   ],
+   [
+    "Quvvat",
+    "52V, 65 Vt"
+   ]
+  ],
+  "cost_som": 164700,
+  "list_som": 183000,
+  "images": [
+   "/assets/products/neo-poe-1006b-j-1.jpg",
+   "/assets/products/neo-poe-1006b-j-2.jpg",
+   "/assets/products/neo-poe-1006b-j-3.jpg"
+  ]
+ },
+ {
+  "sku": "NEO-POE-1010B-J",
+  "name": "NEOCAM POE-1010B-J PoE Switch",
+  "cat": "Tarmoq",
+  "badge": "8 PoE",
+  "spec": "PoE switch · 8+2 port · 120 Vt",
+  "tags": [
+   "8 PoE",
+   "Switch",
+   "PoE"
+  ],
+  "flags": {
+   "poe": 1,
+   "mp": 0,
+   "night": 0,
+   "spin": 0
+  },
+  "desc": "NEOCAM POE-1010B-J — 8 ta PoE portli (RJ45, 10/100 Mbit/s) va 2 ta uplink portli (10/100 Mbit/s) switch. IP kameralarga bitta tarmoq kabeli orqali ham internet, ham quvvat beradi. Quvvat manbai 52V, umumiy quvvati 120 Vt. Rasmiy 1 yil kafolat bilan beriladi.",
+  "rows": [
+   [
+    "PoE portlar",
+    "8 × RJ45 10/100 Mbit/s"
+   ],
+   [
+    "Uplink",
+    "2 × 10/100 Mbit/s"
+   ],
+   [
+    "Quvvat",
+    "52V, 120 Vt"
+   ]
+  ],
+  "cost_som": 219600,
+  "list_som": 244000,
+  "images": [
+   "/assets/products/neo-poe-1010b-j-1.jpg"
+  ]
+ },
+ {
+  "sku": "WD-PURPLE-500GB",
+  "name": "WD Purple 500 GB HDD",
+  "cat": "Xotira",
+  "badge": "500 GB",
+  "spec": "HDD · 500 GB · Videokuzatuv uchun",
+  "tags": [
+   "500 GB",
+   "HDD",
+   "WD Purple"
+  ],
+  "flags": {
+   "poe": 0,
+   "mp": 0,
+   "night": 0,
+   "spin": 0
+  },
+  "desc": "Western Digital WD Purple 500 GB — videokuzatuv uchun mo'ljallangan professional qattiq disk (HDD). NVR va DVR registratorlarda uzluksiz yozib borish uchun ishlatiladi. Rasmiy 1 yil kafolat bilan beriladi.",
+  "rows": [
+   [
+    "Hajm",
+    "500 GB"
+   ],
+   [
+    "Seriya",
+    "WD Purple (videokuzatuv uchun)"
+   ],
+   [
+    "Ishlab chiqaruvchi",
+    "Western Digital"
+   ],
+   [
+    "Turi",
+    "HDD"
+   ]
+  ],
+  "cost_som": 187200,
+  "list_som": 208000,
+  "images": [
+   "/assets/products/wd-purple-500gb-1.jpg",
+   "/assets/products/wd-purple-500gb-2.jpg",
+   "/assets/products/wd-purple-500gb-3.jpg"
+  ]
+ },
+ {
+  "sku": "WD-PURPLE-1TB",
+  "name": "WD Purple 1 TB HDD",
+  "cat": "Xotira",
+  "badge": "1 TB",
+  "spec": "HDD · 1 TB · Videokuzatuv uchun",
+  "tags": [
+   "1 TB",
+   "HDD",
+   "WD Purple"
+  ],
+  "flags": {
+   "poe": 0,
+   "mp": 0,
+   "night": 0,
+   "spin": 0
+  },
+  "desc": "Western Digital WD Purple 1 TB — videokuzatuv uchun mo'ljallangan professional qattiq disk (HDD). NVR va DVR registratorlarda uzluksiz yozib borish uchun ishlatiladi. Rasmiy 1 yil kafolat bilan beriladi.",
+  "rows": [
+   [
+    "Hajm",
+    "1 TB"
+   ],
+   [
+    "Seriya",
+    "WD Purple (videokuzatuv uchun)"
+   ],
+   [
+    "Ishlab chiqaruvchi",
+    "Western Digital"
+   ],
+   [
+    "Turi",
+    "HDD"
+   ]
+  ],
+  "cost_som": 571500,
+  "list_som": 635000,
+  "images": [
+   "/assets/products/wd-purple-1tb-1.jpg",
+   "/assets/products/wd-purple-1tb-2.jpg",
+   "/assets/products/wd-purple-1tb-3.jpg"
+  ]
+ },
+ {
+  "sku": "WD-PURPLE-2TB",
+  "name": "WD Purple 2 TB HDD",
+  "cat": "Xotira",
+  "badge": "2 TB",
+  "spec": "HDD · 2 TB · Videokuzatuv uchun",
+  "tags": [
+   "2 TB",
+   "HDD",
+   "WD Purple"
+  ],
+  "flags": {
+   "poe": 0,
+   "mp": 0,
+   "night": 0,
+   "spin": 0
+  },
+  "desc": "Western Digital WD Purple 2 TB — videokuzatuv uchun mo'ljallangan professional qattiq disk (HDD). NVR va DVR registratorlarda uzluksiz yozib borish uchun ishlatiladi. Rasmiy 1 yil kafolat bilan beriladi.",
+  "rows": [
+   [
+    "Hajm",
+    "2 TB"
+   ],
+   [
+    "Seriya",
+    "WD Purple (videokuzatuv uchun)"
+   ],
+   [
+    "Ishlab chiqaruvchi",
+    "Western Digital"
+   ],
+   [
+    "Turi",
+    "HDD"
+   ]
+  ],
+  "cost_som": 780300,
+  "list_som": 867000,
+  "images": [
+   "/assets/products/wd-purple-2tb-1.jpg",
+   "/assets/products/wd-purple-2tb-2.jpg",
+   "/assets/products/wd-purple-2tb-3.jpg"
+  ]
+ },
+ {
+  "sku": "WD-PURPLE-4TB",
+  "name": "WD Purple 4 TB HDD",
+  "cat": "Xotira",
+  "badge": "4 TB",
+  "spec": "HDD · 4 TB · Videokuzatuv uchun",
+  "tags": [
+   "4 TB",
+   "HDD",
+   "WD Purple"
+  ],
+  "flags": {
+   "poe": 0,
+   "mp": 0,
+   "night": 0,
+   "spin": 0
+  },
+  "desc": "Western Digital WD Purple 4 TB — videokuzatuv uchun mo'ljallangan professional qattiq disk (HDD). NVR va DVR registratorlarda uzluksiz yozib borish uchun ishlatiladi. Rasmiy 1 yil kafolat bilan beriladi.",
+  "rows": [
+   [
+    "Hajm",
+    "4 TB"
+   ],
+   [
+    "Seriya",
+    "WD Purple (videokuzatuv uchun)"
+   ],
+   [
+    "Ishlab chiqaruvchi",
+    "Western Digital"
+   ],
+   [
+    "Turi",
+    "HDD"
+   ]
+  ],
+  "cost_som": 1262700,
+  "list_som": 1403000,
+  "images": [
+   "/assets/products/wd-purple-4tb-1.jpg",
+   "/assets/products/wd-purple-4tb-2.jpg",
+   "/assets/products/wd-purple-4tb-3.jpg"
+  ]
+ }
+]

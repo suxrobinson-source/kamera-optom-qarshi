@@ -2195,6 +2195,19 @@
     }
 
     /* ── Katalog ── */
+    .rail[data-keep="cchips"] {
+      gap: 7px;
+      -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 16px, #000 calc(100% - 34px), transparent);
+      mask-image: linear-gradient(90deg, transparent 0, #000 16px, #000 calc(100% - 34px), transparent)
+    }
+
+    .rail[data-keep="cchips"] .chip {
+      height: 36px;
+      padding: 0 12px;
+      gap: 5px;
+      font-size: 13px
+    }
+
     .ctop {
       position: sticky;
       top: 0;
@@ -5109,8 +5122,8 @@
       const sel = PRODUCTS.find(p => p.sku === s.sel) || null;
       const chip = on => ({ on, border: on ? A : 'var(--line3)', bg: on ? 'rgba(47,224,182,.12)' : 'var(--card)', fg: on ? A : 'var(--dim3)' });
 
-      const catNames = ['★ Ommabop', 'Tashqi', 'Ichki', 'Aylanuvchi', 'Yozuvchi', 'Xotira', 'Domofon', 'Komplekt'];
-      const catMarks = { '★ Ommabop': '★', Tashqi: '▭', Ichki: '◍', Aylanuvchi: '◉', Yozuvchi: '▤', Xotira: '◰', Domofon: '⌸', Komplekt: '▦' };
+      const catNames = ['★ Ommabop', 'Tashqi', 'Ichki', 'Aylanuvchi', 'Yozuvchi', 'Xotira', 'Domofon', 'Komplekt', 'Tarmoq', 'Aksessuar'];
+      const catMarks = { '★ Ommabop': '★', Tashqi: '▭', Ichki: '◍', Aylanuvchi: '◉', Yozuvchi: '▤', Xotira: '◰', Domofon: '⌸', Komplekt: '▦', Tarmoq: '⌁', Aksessuar: '⚙' };
       const withImg = p => Array.isArray(p.images) && p.images.length > 0;
       const cats = catNames.map(cn => {
         const pool = cn === '★ Ommabop' ? PRODUCTS.filter(p => p.is_popular) : PRODUCTS.filter(p => p.cat === cn);
@@ -5499,7 +5512,7 @@
         storyToKit: () => { _clearStoryTimer(); set({ story: null, tab: 'kit' }); },
         storyToExpert: () => { _clearStoryTimer(); set({ story: null, tab: 'expert', expStep: 1, topic: 'Yangi kamera kerak', cb: 'idle' }); },
         creditOn, expertOn,
-        catChips: ['★ Ommabop', 'Hammasi', 'Tashqi', 'Ichki', 'Aylanuvchi', 'Yozuvchi', 'Xotira', 'Domofon', 'Komplekt'].map(n => {
+        catChips: ['★ Ommabop', 'Hammasi', 'Tashqi', 'Ichki', 'Aylanuvchi', 'Yozuvchi', 'Xotira', 'Domofon', 'Komplekt', 'Tarmoq', 'Aksessuar'].map(n => {
           let count = 0;
           if (n === 'Hammasi') count = base.length;
           else if (n === '★ Ommabop') count = base.filter(p => p.is_popular).length;
@@ -5876,7 +5889,7 @@
     function ic(n, s = 20, w = 1.8) {
       return `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${IC[n] || IC.info}</svg>`;
     }
-    const CAT_IC = { '★ Ommabop': 'star', Hammasi: 'grid', Tashqi: 'cam', Ichki: 'dome', Aylanuvchi: 'ptz', Yozuvchi: 'nvr', Xotira: 'sd', Domofon: 'intercom', Komplekt: 'box' };
+    const CAT_IC = { '★ Ommabop': 'star', Hammasi: 'grid', Tashqi: 'cam', Ichki: 'dome', Aylanuvchi: 'ptz', Yozuvchi: 'nvr', Xotira: 'sd', Domofon: 'intercom', Komplekt: 'box', Tarmoq: 'cable', Aksessuar: 'gear' };
     const MARK_IC = { '▤': 'store', '▭': 'cam', '◉': 'ptz', '◍': 'dome', '⌸': 'intercom', '▦': 'box', '▢': 'building', '⌂': 'home', '★': 'star', '◰': 'sd', '◐': 'moon', '⌁': 'cable', '＋': 'plus', '?': 'help', '!': 'tool', '☎': 'phone', '✈': 'send', '✉': 'mail', '◎': 'pin', '✓': 'shield', '⚙': 'gear' };
     const NAV_IC = { home: 'home', catalog: 'grid', expert: 'headset', kit: 'layers', profile: 'user' };
     const TOUR_IC = { camera: 'cam', bell: 'bell', fingerprint: 'lock', screen: 'screen', ptz: 'ptz', radar: 'radar', power: 'power' };
@@ -6222,8 +6235,8 @@
 </div>`;
     }
 
-    const CAT_TITLE = { '★ Ommabop': 'Ommabop', Hammasi: 'Barcha mahsulotlar', Tashqi: 'Tashqi kameralar', Ichki: 'Ichki kameralar', Aylanuvchi: 'Aylanuvchi (PTZ)', Yozuvchi: 'Registratorlar', Xotira: 'Xotira', Domofon: 'Domofon va qulflar', Komplekt: 'Komplektlar' };
-    const CAT_NOTE = { '★ Ommabop': 'Qarshi optom bozorining eng xaridorgir modellari', Tashqi: 'Ko‘cha, hovli va darvoza uchun', Ichki: 'Uy, ofis va do‘kon ichi', Aylanuvchi: '360° aylanib kuzatadi', Yozuvchi: 'NVR / DVR arxivlash', Xotira: 'microSD va HDD disklar', Domofon: 'Video domofon, aqlli qulf', Komplekt: 'Kamera + registrator to‘plami' };
+    const CAT_TITLE = { '★ Ommabop': 'Ommabop', Hammasi: 'Barcha mahsulotlar', Tashqi: 'Tashqi kameralar', Ichki: 'Ichki kameralar', Aylanuvchi: 'Aylanuvchi (PTZ)', Yozuvchi: 'Registratorlar', Xotira: 'Xotira', Domofon: 'Domofon va qulflar', Komplekt: 'Komplektlar', Tarmoq: 'Tarmoq jihozlari', Aksessuar: 'Aksessuarlar va aqlli uy' };
+    const CAT_NOTE = { '★ Ommabop': 'Qarshi optom bozorining eng xaridorgir modellari', Tashqi: 'Ko‘cha, hovli va darvoza uchun', Ichki: 'Uy, ofis va do‘kon ichi', Aylanuvchi: '360° aylanib kuzatadi', Yozuvchi: 'NVR / DVR arxivlash', Xotira: 'microSD va HDD disklar', Domofon: 'Video domofon, aqlli qulf', Komplekt: 'Kamera + registrator to‘plami', Tarmoq: 'PoE switch va tarmoq', Aksessuar: 'Quyosh paneli, quvvat, rozetka, rele' };
 
     /* Katalogga kirilganda: avval asosiy kataloglar, tanlanganda — shu turkum mahsulotlari */
     function mCatLanding(v) {
@@ -6307,7 +6320,7 @@
     </div>` : ''}
 
     ${landing ? '' : `<div class="rail" data-keep="cchips">
-      ${v.catChips.map(c => `<button class="chip ${c.on ? 'on' : ''}" onclick="${h(c.go)}">${ic(CAT_IC[c.name] || 'grid', 16)}${esc(c.name.replace('★ ', ''))}<i>${c.n}</i></button>`).join('')}
+      ${v.catChips.filter(c => c.n !== '0' || c.on).map(c => `<button class="chip ${c.on ? 'on' : ''}" onclick="${h(c.go)}">${ic(CAT_IC[c.name] || 'grid', 15)}${esc(c.name.replace('★ ', ''))}<i>${c.n}</i></button>`).join('')}
     </div>`}
   </div>
 
@@ -7975,6 +7988,12 @@ ${mProfHead(v, 'Yordam va biz haqida', "Qarshi shahar bosh do'koni")}
       "Avtoturargoh":"Автостоянка",
       "Avtoturargoh · raqam o'qish":"Автостоянка · чтение номеров",
       "Aylanuvchi":"Поворотные",
+      "Aksessuar":"Аксессуары",
+      "Aksessuarlar va aqlli uy":"Аксессуары и умный дом",
+      "Quyosh paneli, quvvat, rozetka, rele":"Солнечные панели, питание, розетки, реле",
+      "Tarmoq":"Сеть",
+      "Tarmoq jihozlari":"Сетевое оборудование",
+      "PoE switch va tarmoq":"PoE-коммутаторы и сеть",
       "Aylanuvchi (PTZ)":"Поворотные (PTZ)",
       "Aylanuvchi kamera":"Поворотная камера",
       "BOSHQA VILOYATLAR":"ДРУГИЕ ОБЛАСТИ",
@@ -8899,9 +8918,10 @@ ${mProfHead(v, 'Yordam va biz haqida', "Qarshi shahar bosh do'koni")}
         i18nApply(APP);
         const sc = document.getElementById('scroller'); if (sc) sc.scrollTop = _scroll;
         if (APP.querySelectorAll) APP.querySelectorAll('[data-keep]').forEach(n => { if (keep[n.dataset.keep]) n.scrollLeft = keep[n.dataset.keep]; });
-        /* turkumga endi kirilgan bo'lsa — tanlangan chipni ko'rinadigan joyga surish */
+        /* turkum almashganda — tanlangan chipni qator o'rtasiga surish */
         const cr = APP.querySelector && APP.querySelector('[data-keep="cchips"]');
-        if (cr && keep.cchips === undefined) { const on = cr.querySelector('.chip.on'); if (on) cr.scrollLeft = Math.max(0, on.offsetLeft - cr.offsetLeft - 18); }
+        if (cr && (keep.cchips === undefined || _chipCat !== S.cat)) { const on = cr.querySelector('.chip.on'); if (on) cr.scrollLeft = Math.max(0, on.offsetLeft - cr.offsetLeft - (cr.clientWidth - on.offsetWidth) / 2); }
+        _chipCat = S.cat;
         fxAfterRender();
         if (fk) {
           const el = APP.querySelector('[data-k="' + fk + '"]');
@@ -8919,12 +8939,12 @@ ${mProfHead(v, 'Yordam va biz haqida', "Qarshi shahar bosh do'koni")}
       }
     }
 
-    let _scroll = 0;
+    let _scroll = 0, _chipCat = null;
     if (APP && APP.addEventListener) APP.addEventListener('scroll', e => { if (e.target.id === 'scroller') _scroll = e.target.scrollTop; }, true);
 
     /* tab almashganda tepaga qaytish */
     const _origSet = set;
-    window.set = function (o) { const t = S.tab, p = S.profPage, sl = S.sel; _origSet(o); if (S.tab !== t || S.profPage !== p || S.sel !== sl) { _scroll = 0; const sc = document.getElementById('scroller'); if (sc) sc.scrollTop = 0; } };
+    window.set = function (o) { const t = S.tab, p = S.profPage, sl = S.sel, ct = S.cat; _origSet(o); if (S.tab !== t || S.profPage !== p || S.sel !== sl || S.cat !== ct) { _scroll = 0; const sc = document.getElementById('scroller'); if (sc) sc.scrollTop = 0; } };
 
     /* soat */
     function tick() { const d = new Date(); const clk = document.getElementById('clk'); if (clk) clk.textContent = d.getHours() + ':' + String(d.getMinutes()).padStart(2, '0'); }

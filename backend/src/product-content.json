@@ -461,7 +461,8 @@
     "Ish harorati",
     "-10°C … +45°C"
    ]
-  ]
+  ],
+  "cat": "Ichki"
  },
  "CS-S10-4MP": {
   "badge": "2K+",
@@ -2992,7 +2993,8 @@
     "Joylashuv",
     "Tashqi"
    ]
-  ]
+  ],
+  "cat": "Aksessuar"
  },
  "VI-K46P": {
   "badge": "Domofon",
@@ -3046,7 +3048,8 @@
     "Joylashuv",
     "Tashqi"
    ]
-  ]
+  ],
+  "cat": "Aksessuar"
  },
  "CS-DP2C": {
   "badge": "1080p",
@@ -3473,7 +3476,8 @@
     "Ish harorati",
     "0°C … +40°C"
    ]
-  ]
+  ],
+  "cat": "Aksessuar"
  },
  "CS-DL03-PRO": {
   "badge": "Qulf",
@@ -3708,7 +3712,8 @@
     "Turi",
     "Boshqarilmaydigan (unmanaged)"
    ]
-  ]
+  ],
+  "cat": "Tarmoq"
  },
  "CS-DL06-WBCP": {
   "badge": "Qulf",
@@ -3867,7 +3872,8 @@
     "Moslik",
     "EZVIZ kameralari va ilovasi"
    ]
-  ]
+  ],
+  "cat": "Xotira"
  },
  "CS-X5S-4W": {
   "badge": "4 kanal",
@@ -4005,7 +4011,8 @@
     "51.6 × 82.9 × 26.9 mm, 150 g"
    ]
   ],
-  "name": "Ezviz CS-PB18 Power Partner"
+  "name": "Ezviz CS-PB18 Power Partner",
+  "cat": "Aksessuar"
  },
  "CS-T36": {
   "badge": "Wi-Fi rele",
@@ -4047,7 +4054,8 @@
     "Ish harorati",
     "-10°C … +45°C"
    ]
-  ]
+  ],
+  "cat": "Aksessuar"
  },
  "CS-T30-10B-EU": {
   "badge": "10A",
@@ -4089,7 +4097,8 @@
     "Ulanish",
     "Wi-Fi 2.4 GHz"
    ]
-  ]
+  ],
+  "cat": "Aksessuar"
  },
  "CS-T31-16E-EU": {
   "badge": "16A",
@@ -4135,7 +4144,8 @@
     "Ish harorati",
     "-20°C … +40°C"
    ]
-  ]
+  ],
+  "cat": "Aksessuar"
  },
  "IPC-B469HAD-LUF-SL": {
   "badge": "6MP 180°",
@@ -5924,7 +5934,8 @@
     "Quvvat",
     "PoE / 12V DC"
    ]
-  ]
+  ],
+  "cat": "Ichki"
  },
  "IPC-T221HE-UC": {
   "badge": "2MP",
@@ -5971,7 +5982,8 @@
     "Quvvat",
     "12V DC / PoE"
    ]
-  ]
+  ],
+  "cat": "Ichki"
  },
  "IPC-D140HA-LUC": {
   "badge": "4MP",
@@ -8573,7 +8585,8 @@
     "Turi",
     "Boshqarilmaydigan (unmanaged)"
    ]
-  ]
+  ],
+  "cat": "Tarmoq"
  },
  "NS-0105P-35": {
   "badge": "4 PoE",
@@ -8607,7 +8620,8 @@
     "Turi",
     "Boshqarilmaydigan (unmanaged)"
    ]
-  ]
+  ],
+  "cat": "Tarmoq"
  },
  "NS-0106P-35": {
   "badge": "4 PoE",
@@ -8641,7 +8655,8 @@
     "Turi",
     "Boshqarilmaydigan (unmanaged)"
    ]
-  ]
+  ],
+  "cat": "Tarmoq"
  },
  "NS-0109P-58": {
   "badge": "8 PoE",
@@ -8675,7 +8690,8 @@
     "Turi",
     "Boshqarilmaydigan (unmanaged)"
    ]
-  ]
+  ],
+  "cat": "Tarmoq"
  },
  "NS-0310P-60": {
   "badge": "8 PoE",
@@ -8709,7 +8725,8 @@
     "Turi",
     "Boshqarilmaydigan (unmanaged)"
    ]
-  ]
+  ],
+  "cat": "Tarmoq"
  },
  "NS-0318P-135": {
   "badge": "16 PoE",
@@ -8743,7 +8760,8 @@
     "Turi",
     "Boshqarilmaydigan (unmanaged)"
    ]
-  ]
+  ],
+  "cat": "Tarmoq"
  },
  "NS-0326P-225": {
   "badge": "24 PoE",
@@ -8777,7 +8795,8 @@
     "Turi",
     "Boshqarilmaydigan (unmanaged)"
    ]
-  ]
+  ],
+  "cat": "Tarmoq"
  },
  "NS-0105D": {
   "badge": "5 port",
@@ -8815,7 +8834,8 @@
     "5V DC, 0.6A"
    ]
   ],
-  "name": "HiLook NS-0105D Switch"
+  "name": "HiLook NS-0105D Switch",
+  "cat": "Tarmoq"
  },
  "NS-0108D": {
   "badge": "8 port",
@@ -8853,6 +8873,7 @@
     "5V DC, 0.6A"
    ]
   ],
-  "name": "HiLook NS-0108D Switch"
+  "name": "HiLook NS-0108D Switch",
+  "cat": "Tarmoq"
  }
 }

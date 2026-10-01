@@ -11,7 +11,12 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const content = JSON.parse(fs.readFileSync(path.join(__dirname, 'product-content.json'), 'utf8'));
 const WARRANTY = { k: 'Kafolat', v: '1 yil (12 oy) rasmiy kafolat' };
 
+const NEW_CATEGORIES = [['Tarmoq', '⌁', 7], ['Aksessuar', '⚙', 8]];
+
 async function main() {
+  for (const [name, mark, sort] of NEW_CATEGORIES) {
+    await db.run('INSERT INTO categories (name, mark, sort) VALUES (?,?,?) ON CONFLICT DO NOTHING', name, mark, sort);
+  }
   let updated = 0;
   const missing = [];
   for (const [sku, c] of Object.entries(content)) {
@@ -22,8 +27,8 @@ async function main() {
     const priceRows = old.filter((s) => /narx/i.test(s.k || ''));
     const specs = [...c.rows.map(([k, v]) => ({ k, v })), ...priceRows, WARRANTY];
     await db.run(
-      `UPDATE products SET name = ?, badge = ?, spec = ?, tags = ?, specs = ?, "desc" = ?, poe = ?, mp = ?, night = ?, spin = ? WHERE sku = ?`,
-      c.name || row.name, c.badge, c.spec, JSON.stringify(c.tags), JSON.stringify(specs), c.desc,
+      `UPDATE products SET name = ?, cat = COALESCE(?, cat), badge = ?, spec = ?, tags = ?, specs = ?, "desc" = ?, poe = ?, mp = ?, night = ?, spin = ? WHERE sku = ?`,
+      c.name || row.name, c.cat || null, c.badge, c.spec, JSON.stringify(c.tags), JSON.stringify(specs), c.desc,
       c.flags.poe, c.flags.mp, c.flags.night, c.flags.spin, sku,
     );
     updated++;

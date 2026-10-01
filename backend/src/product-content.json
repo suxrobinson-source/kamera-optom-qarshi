@@ -1876,7 +1876,7 @@
    "night": 1,
    "spin": 1
   },
-  "desc": "Tashqi aylanuvchi (pan & tilt) Wi-Fi kamera H8c: 4MP 2K+ (2560×1440) tasvir, 4 mm linza (6 mm varianti ham bor). Gorizontal 350° va vertikal 80° aylanadi, 30 metrgacha tungi ko'rish (rangli rejim ham bor). AI odam siluetini aniqlaydi, avtomatik kuzatadi, bitta bosishda oldindan belgilangan nuqtaga qaytadi. Sirena va strob chiroq bilan faol himoya, ikki tomonlama ovozli aloqa. Ob-havoga chidamli korpus, -30°C … +50°C. microSD (512 GB gacha) va EZVIZ bulutini qo'llaydi. Quvvat: DC 12V/1A. 2K+ versiyasida avtomatik zum bilan kuzatish bor. Rasmiy 1 yil kafolat bilan beriladi.",
+  "desc": "Tashqi aylanuvchi (pan & tilt) Wi-Fi kamera H8c: 4MP 2K+ (2560×1440) tasvir, 4 mm linza (6 mm varianti ham bor). Gorizontal 350° va vertikal 80° aylanadi, 30 metrgacha tungi ko'rish (rangli rejim ham bor). AI odam siluetini aniqlaydi, avtomatik kuzatadi, bitta bosishda oldindan belgilangan nuqtaga qaytadi. Sirena va strob chiroq bilan faol himoya, ikki tomonlama ovozli aloqa. Ob-havoga chidamli korpus. microSD (512 GB gacha) va EZVIZ bulutini qo'llaydi. 2K+ versiyasida avtomatik zum bilan kuzatish bor. Rasmiy 1 yil kafolat bilan beriladi.",
   "rows": [
    [
     "Ruxsat",
@@ -1913,10 +1913,6 @@
    [
     "Ulanish",
     "Wi-Fi 2.4 GHz"
-   ],
-   [
-    "Quvvat",
-    "DC 12V / 1A"
    ]
   ]
  },
@@ -2292,7 +2288,7 @@
    "night": 1,
    "spin": 1
   },
-  "desc": "Tashqi aylanuvchi Wi-Fi kamera H8x: 2K+ (2560×1440), 1/1.8\" katta sensor va F1.0 diafragmali 4 mm linza — kam yorug'likda ham tiniq rangli tasvir. Gorizontal 340° va vertikal 70° aylanadi. AI odam va transport siluetini aniqlaydi, avtomatik zum bilan kuzatadi, ikki tomonlama ovozli aloqa. IP65, -30°C … +50°C. microSD (512 GB gacha). Quvvat: DC 12V/1A. Rasmiy 1 yil kafolat bilan beriladi.",
+  "desc": "Tashqi aylanuvchi Wi-Fi kamera H8x: 2K+ (2560×1440), 1/1.8\" katta sensor va F1.0 diafragmali 4 mm linza — kam yorug'likda ham tiniq tasvir. Gorizontal 340° va vertikal 70° aylanadi. AI odam va transport siluetini aniqlaydi, avtomatik zum bilan kuzatadi, ikki tomonlama ovozli aloqa. IP65, -30°C … +50°C. microSD (512 GB gacha). Quvvat: DC 12V/1A. Rasmiy 1 yil kafolat bilan beriladi.",
   "rows": [
    [
     "Ruxsat",
@@ -2861,7 +2857,7 @@
    "night": 1,
    "spin": 1
   },
-  "desc": "HB90 Dual to'plami: ikki linzali akkumulyatorli tashqi kamera va 8 Vt quyosh paneli. Yuqori 2.8 mm keng linza (110°, 220° buriladi) va pastki 6 mm aylanuvchi linza (60°, 324° gorizontal, 90° vertikal), har biri 2K+ (2560×1440). 10400 mAh batareya, doimiy video (AOV) rejimi. Rangli tungi ko'rish, AI odam va transportni ikkala linzada aniqlaydi, sirena va strob chiroq bilan faol himoya, ikki tomonlama ovozli aloqa. IP65. microSD (512 GB gacha) va EZVIZ bulutini qo'llaydi. Rasmiy 1 yil kafolat bilan beriladi.",
+  "desc": "HB90 Dual to'plami: ikki linzali akkumulyatorli tashqi kamera va 8 Vt quyosh paneli. Yuqori 2.8 mm keng linza (110°, 220° buriladi) va pastki 6 mm aylanuvchi linza (60°, 324° gorizontal, 90° vertikal), har biri 2K+ (2560×1440). 10400 mAh batareya, doimiy video (AOV) rejimi. Rangli tungi ko'rish, AI odam va transportni ikkala linzada aniqlaydi, sirena va strob chiroq bilan faol himoya, ikki tomonlama ovozli aloqa. Ob-havoga chidamli korpus. microSD (512 GB gacha) va EZVIZ bulutini qo'llaydi. Rasmiy 1 yil kafolat bilan beriladi.",
   "rows": [
    [
     "Ruxsat",
@@ -2897,7 +2893,7 @@
    ],
    [
     "Himoya",
-    "IP65"
+    "Ob-havoga chidamli"
    ],
    [
     "Xotira",
@@ -2921,7 +2917,7 @@
    "night": 1,
    "spin": 1
   },
-  "desc": "HB90x Dual 4G to'plami: ikki linzali akkumulyatorli tashqi kamera va 8 Vt quyosh paneli. 4G SIM-karta orqali ham ishlaydi. Yuqori 2.8 mm keng linza (122°, 220° buriladi) va pastki 6 mm aylanuvchi linza (65°, 324° gorizontal, 90° vertikal), har biri 2K+ (2560×1440). 10400 mAh batareya, doimiy video (AOV) rejimi. Rangli tungi ko'rish, AI odam va transportni ikkala linzada aniqlaydi, sirena va strob chiroq bilan faol himoya, ikki tomonlama ovozli aloqa. IP65. microSD (512 GB gacha) va EZVIZ bulutini qo'llaydi. Rasmiy 1 yil kafolat bilan beriladi.",
+  "desc": "HB90x Dual 4G to'plami: ikki linzali akkumulyatorli tashqi kamera va 8 Vt quyosh paneli. 4G SIM-karta orqali ham ishlaydi. Yuqori 2.8 mm keng linza (122°, 220° buriladi) va pastki 6 mm aylanuvchi linza (65°, 324° gorizontal, 90° vertikal), har biri 2K+ (2560×1440). 10400 mAh batareya, doimiy video (AOV) rejimi. Tungi ko'rish 35 metrgacha (ikki linza bir tomonga qaraganda). AI odam va transportni aniqlaydi, avtomatik kuzatadi, ikki tomonlama ovozli aloqa. IP65. microSD (512 GB gacha) va EZVIZ bulutini qo'llaydi. Rasmiy 1 yil kafolat bilan beriladi.",
   "rows": [
    [
     "Ruxsat",
@@ -2945,15 +2941,11 @@
    ],
    [
     "Tungi ko'rish",
-    "Rangli"
+    "35 m gacha"
    ],
    [
     "Aniqlash",
-    "AI odam va transport"
-   ],
-   [
-    "Faol himoya",
-    "Sirena + strob chiroq"
+    "AI odam va transport; avto-kuzatish"
    ],
    [
     "Himoya",
@@ -3404,11 +3396,15 @@
    "night": 1,
    "spin": 0
   },
-  "desc": "Aqlli video domofon to'plami (HP7 2K): 2K (2048×1296) tashqi panel, 162° keng burchak, va 7 dyuymli sensorli ichki monitor (1024×600). 2 simli ulanish, telefondan eshik yoki darvozani masofadan ochish, RFID kartochka bilan ochish (3 ta kartochka to'plamda). Odam harakatini aniqlaydi, ovozni o'zgartirish funksiyali ikki tomonlama suhbat, o'rnatilgan qo'ng'iroq. Ob-havoga chidamli panel, Wi-Fi 2.4/5 GHz. microSD (512 GB gacha) va EZVIZ bulut. Rasmiy 1 yil kafolat bilan beriladi.",
+  "desc": "Aqlli video domofon to'plami (HP7 2K): 2K (2048×1296) tashqi panel, 162° keng burchak, 6 metrgacha infraqizil tungi ko'rish, va 7 dyuymli sensorli ichki monitor (1024×600). 2 simli ulanish, telefondan eshik yoki darvozani masofadan ochish, RFID kartochka bilan ochish (3 ta kartochka to'plamda). Odam harakatini aniqlaydi, ovozni o'zgartirish funksiyali ikki tomonlama suhbat, o'rnatilgan qo'ng'iroq. Ob-havoga chidamli panel, Wi-Fi 2.4/5 GHz. microSD (512 GB gacha) va EZVIZ bulut. Rasmiy 1 yil kafolat bilan beriladi.",
   "rows": [
    [
     "Panel kamerasi",
     "2K, 2048×1296, 162°"
+   ],
+   [
+    "Tungi ko'rish",
+    "IR, 6 m gacha"
    ],
    [
     "Monitor",
@@ -3988,7 +3984,7 @@
    "night": 0,
    "spin": 0
   },
-  "desc": "EZVIZ Power Partner (PB18) — kameralar uchun 5200 mAh ko'chma quvvat manbai. USB-A chiqishi (5V/1A) orqali kamerani elektr tarmog'isiz quvvatlaydi, kam tokli qurilmalarni qo'llaydi. Type-C (5V/2A) orqali zaryadlanadi. O'lchami 51.6×82.9×26.9 mm, og'irligi 150 g; o'rnatish uchun metall plastinka va vintlar bilan keladi. Rasmiy 1 yil kafolat bilan beriladi.",
+  "desc": "EZVIZ Power Partner (PB18) — kameralar uchun 5200 mAh ko'chma quvvat manbai. USB-A chiqishi (5V/1A) orqali kamerani elektr tarmog'isiz quvvatlaydi, kam tokli qurilmalarni qo'llaydi. Type-C (5V/2A) orqali zaryadlanadi. O'lchami 51.6×82.9×26.85 mm, og'irligi 150 g; o'rnatish uchun metall plastinka va vintlar bilan keladi. Rasmiy 1 yil kafolat bilan beriladi.",
   "rows": [
    [
     "Sig'im",
@@ -4008,7 +4004,7 @@
    ],
    [
     "O'lcham",
-    "51.6 × 82.9 × 26.9 mm, 150 g"
+    "51.6 × 82.9 × 26.85 mm, 150 g"
    ]
   ],
   "name": "Ezviz CS-PB18 Power Partner",
@@ -4367,7 +4363,7 @@
    ],
    [
     "Faol himoya",
-    "Karnay orqali ovozli ogohlantirish"
+    "Ogohlantirish chirog'i (/SRB)"
    ],
    [
     "Aniqlash",
@@ -4402,7 +4398,7 @@
    "night": 1,
    "spin": 0
   },
-  "desc": "HiLook IPC-B149HAA-LU — 4MP (2560×1440) ruxsatli silindrsimon (bullet) IP kamera. 1/3\" CMOS sensor, 2.8 mm (101.5°) yoki 4 mm (84°) linza. Smart Hybrid Light: tunda IR (qora-oq) yoki oq chiroq (rangli tasvir) rejimi, 30 m gacha. O'rnatilgan mikrofon — ovozni ham yozib boradi. Harakat aniqlanganda odam va transportni ajratib signal beradi. H.265+ video siqish, IP67 himoya, PoE (bitta kabel orqali quvvat va tarmoq). Rasmiy 1 yil kafolat bilan beriladi.",
+  "desc": "HiLook IPC-B149HAA-LU — 4MP (2560×1440) ruxsatli silindrsimon (bullet) IP kamera. 1/3\" CMOS sensor, 2.8 mm (101.5°) yoki 4 mm (84.1°) linza. Smart Hybrid Light: tunda IR (qora-oq) yoki oq chiroq (rangli tasvir) rejimi, 30 m gacha. O'rnatilgan mikrofon — ovozni ham yozib boradi. Harakat aniqlanganda odam va transportni ajratib signal beradi. H.265+ video siqish, IP67 himoya, PoE (bitta kabel orqali quvvat va tarmoq). Rasmiy 1 yil kafolat bilan beriladi.",
   "rows": [
    [
     "Ruxsat",
@@ -4414,7 +4410,7 @@
    ],
    [
     "Linza",
-    "2.8 mm (101.5°) yoki 4 mm (84°) linza"
+    "2.8 mm (101.5°) yoki 4 mm (84.1°) linza"
    ],
    [
     "Tungi ko'rish",
@@ -5592,10 +5588,10 @@
  },
  "IPC-B141H-UC": {
   "badge": "4MP",
-  "spec": "4MP · IR · PoE",
+  "spec": "4MP · IR 20 m · PoE · IP67",
   "tags": [
    "4MP",
-   "IR",
+   "IR 20 m",
    "Silindrsimon",
    "PoE"
   ],
@@ -5605,36 +5601,44 @@
    "night": 1,
    "spin": 0
   },
-  "desc": "HiLook IPC-B141H-UC — 4MP ruxsatli silindrsimon (bullet) IP kamera. Infraqizil (IR) tungi ko'rish, o'rnatilgan mikrofon. H.265+ video siqish, PoE orqali bitta kabel bilan quvvat va tarmoq oladi. Rasmiy 1 yil kafolat bilan beriladi.",
+  "desc": "HiLook IPC-B141H-UC — 4MP (2560×1440) ruxsatli silindrsimon (bullet) IP kamera. 1/2.8\" CMOS sensor, 2.8 mm (104°) yoki 4 mm linza. Infraqizil (IR) tungi ko'rish, 20 m gacha. O'rnatilgan mikrofon (U versiya). Plastik korpus. H.265+ video siqish, IP67 himoya, PoE (bitta kabel orqali quvvat va tarmoq). Rasmiy 1 yil kafolat bilan beriladi.",
   "rows": [
    [
     "Ruxsat",
-    "4MP"
+    "4MP, 2560×1440"
    ],
    [
-    "Turi",
-    "Silindrsimon (bullet) IP kamera"
+    "Sensor",
+    "1/2.8\" CMOS"
+   ],
+   [
+    "Linza",
+    "2.8 mm (104°) yoki 4 mm linza"
    ],
    [
     "Tungi ko'rish",
-    "IR"
+    "IR, 20 m gacha"
    ],
    [
     "Kodek",
-    "H.265+ / H.265"
+    "H.265+ / H.265 / H.264+ / H.264"
+   ],
+   [
+    "Himoya",
+    "IP67"
    ],
    [
     "Quvvat",
-    "PoE / 12V DC"
+    "12V DC (maks. 5 Vt) / PoE"
    ]
   ]
  },
  "IPC-B121HE-UC": {
   "badge": "2MP",
-  "spec": "2MP · IR · PoE",
+  "spec": "2MP · IR 20 m · PoE · IP67",
   "tags": [
    "2MP",
-   "IR",
+   "IR 20 m",
    "Silindrsimon",
    "PoE"
   ],
@@ -5644,27 +5648,35 @@
    "night": 1,
    "spin": 0
   },
-  "desc": "HiLook IPC-B121HE-UC — 2MP ruxsatli silindrsimon (bullet) IP kamera. Infraqizil (IR) tungi ko'rish, o'rnatilgan mikrofon. H.265+ video siqish, PoE orqali bitta kabel bilan quvvat va tarmoq oladi. Rasmiy 1 yil kafolat bilan beriladi.",
+  "desc": "HiLook IPC-B121HE-UC — 2MP (1920×1080) ruxsatli silindrsimon (bullet) IP kamera. 1/2.9\" CMOS sensor, 2.8 mm (94°) yoki 4 mm linza. Infraqizil (IR) tungi ko'rish, 20 m gacha. O'rnatilgan mikrofon (U versiya). Plastik korpus. H.265+ video siqish, IP67 himoya, PoE (bitta kabel orqali quvvat va tarmoq). Rasmiy 1 yil kafolat bilan beriladi.",
   "rows": [
    [
     "Ruxsat",
-    "2MP"
+    "2MP, 1920×1080"
    ],
    [
-    "Turi",
-    "Silindrsimon (bullet) IP kamera"
+    "Sensor",
+    "1/2.9\" CMOS"
+   ],
+   [
+    "Linza",
+    "2.8 mm (94°) yoki 4 mm linza"
    ],
    [
     "Tungi ko'rish",
-    "IR"
+    "IR, 20 m gacha"
    ],
    [
     "Kodek",
-    "H.265+ / H.265"
+    "H.265+ / H.265 / H.264+ / H.264"
+   ],
+   [
+    "Himoya",
+    "IP67"
    ],
    [
     "Quvvat",
-    "PoE / 12V DC"
+    "12V DC (maks. 5 Vt) / PoE"
    ]
   ]
  },
@@ -5899,10 +5911,10 @@
  },
  "IPC-T241H-UC": {
   "badge": "4MP",
-  "spec": "4MP · IR · PoE",
+  "spec": "4MP · IR 20 m · PoE · IP67",
   "tags": [
    "4MP",
-   "IR",
+   "IR 20 m",
    "Turret",
    "PoE"
   ],
@@ -5912,27 +5924,35 @@
    "night": 1,
    "spin": 0
   },
-  "desc": "HiLook IPC-T241H-UC — 4MP ruxsatli turret IP kamera. Infraqizil (IR) tungi ko'rish, o'rnatilgan mikrofon. H.265+ video siqish, PoE orqali bitta kabel bilan quvvat va tarmoq oladi. Rasmiy 1 yil kafolat bilan beriladi.",
+  "desc": "HiLook IPC-T241H-UC — 4MP (2560×1440) ruxsatli turret IP kamera. 1/2.8\" CMOS sensor, 2.8 mm (104°) yoki 4 mm linza. Infraqizil (IR) tungi ko'rish, 20 m gacha. O'rnatilgan mikrofon (U versiya). Plastik korpus. H.265+ video siqish, IP67 himoya, PoE (bitta kabel orqali quvvat va tarmoq). Rasmiy 1 yil kafolat bilan beriladi.",
   "rows": [
    [
     "Ruxsat",
-    "4MP"
+    "4MP, 2560×1440"
    ],
    [
-    "Turi",
-    "Turret IP kamera"
+    "Sensor",
+    "1/2.8\" CMOS"
+   ],
+   [
+    "Linza",
+    "2.8 mm (104°) yoki 4 mm linza"
    ],
    [
     "Tungi ko'rish",
-    "IR"
+    "IR, 20 m gacha"
    ],
    [
     "Kodek",
-    "H.265+ / H.265"
+    "H.265+ / H.265 / H.264+ / H.264"
+   ],
+   [
+    "Himoya",
+    "IP67"
    ],
    [
     "Quvvat",
-    "PoE / 12V DC"
+    "12V DC (maks. 5 Vt) / PoE"
    ]
   ],
   "cat": "Ichki"
@@ -6317,9 +6337,9 @@
  },
  "IPC-T280HA-LUF-SL": {
   "badge": "8MP 4K",
-  "spec": "8MP 4K · Smart Hybrid · PoE",
+  "spec": "8MP 4K · Smart Hybrid · Mikrofon · PoE · IP67",
   "tags": [
-   "8MP 4K",
+   "8MP",
    "Smart Hybrid",
    "Turret",
    "PoE"
@@ -6330,27 +6350,43 @@
    "night": 1,
    "spin": 0
   },
-  "desc": "HiLook IPC-T280HA-LUF-SL — 8MP 4K ruxsatli turret IP kamera. Smart Hybrid Light: tunda IR yoki oq chiroq (rangli tasvir) rejimi. O'rnatilgan mikrofon va karnay orqali ovozli ogohlantirish (/SL). H.265+ video siqish, PoE orqali bitta kabel bilan quvvat va tarmoq oladi. Rasmiy 1 yil kafolat bilan beriladi.",
+  "desc": "HiLook IPC-T280HA-LUF-SL — 8MP 4K (3840×2160) ruxsatli turret IP kamera. 1/2.7\" CMOS sensor, 2.8 mm (113°) linza. Smart Hybrid Light: tunda IR (qora-oq) yoki oq chiroq (rangli tasvir) rejimi, 30 m gacha. O'rnatilgan mikrofon va karnay. Faol himoya: o'rnatilgan karnay orqali ovozli ogohlantirish (/SL versiya). Metall korpus. H.265+ video siqish, IP67 himoya, PoE (bitta kabel orqali quvvat va tarmoq). Rasmiy 1 yil kafolat bilan beriladi.",
   "rows": [
    [
     "Ruxsat",
-    "8MP 4K"
+    "8MP 4K, 3840×2160"
    ],
    [
-    "Turi",
-    "Turret IP kamera"
+    "Sensor",
+    "1/2.7\" CMOS"
+   ],
+   [
+    "Linza",
+    "2.8 mm (113°) linza"
    ],
    [
     "Tungi ko'rish",
-    "Smart Hybrid"
+    "IR + oq chiroq, 30 m gacha"
+   ],
+   [
+    "Audio",
+    "Mikrofon + karnay"
+   ],
+   [
+    "Faol himoya",
+    "Karnay orqali ovozli ogohlantirish"
    ],
    [
     "Kodek",
-    "H.265+ / H.265"
+    "H.265+ / H.265 / H.264+ / H.264"
+   ],
+   [
+    "Himoya",
+    "IP67"
    ],
    [
     "Quvvat",
-    "PoE / 12V DC"
+    "12V DC (maks. 8 Vt) / PoE"
    ]
   ]
  },
@@ -6877,7 +6913,7 @@
    ],
    [
     "Quvvat",
-    "12V DC (maks. 4.6 Vt)"
+    "12V DC (maks. 4.56 Vt)"
    ],
    [
     "Xotira",
@@ -8379,11 +8415,10 @@
   "spec": "Panoramik + PTZ · Optik zum",
   "tags": [
    "PTZ",
-   "Panorama",
-   "PoE"
+   "Panorama"
   ],
   "flags": {
-   "poe": 1,
+   "poe": 0,
    "mp": 0,
    "night": 1,
    "spin": 1

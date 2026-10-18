@@ -5122,8 +5122,8 @@
       const sel = PRODUCTS.find(p => p.sku === s.sel) || null;
       const chip = on => ({ on, border: on ? A : 'var(--line3)', bg: on ? 'rgba(47,224,182,.12)' : 'var(--card)', fg: on ? A : 'var(--dim3)' });
 
-      const catNames = ['★ Ommabop', 'Tashqi', 'Ichki', 'Aylanuvchi', 'Yozuvchi', 'Xotira', 'Domofon', 'Komplekt', 'Tarmoq', 'Aksessuar'];
-      const catMarks = { '★ Ommabop': '★', Tashqi: '▭', Ichki: '◍', Aylanuvchi: '◉', Yozuvchi: '▤', Xotira: '◰', Domofon: '⌸', Komplekt: '▦', Tarmoq: '⌁', Aksessuar: '⚙' };
+      const catNames = ['★ Ommabop', 'Tashqi', 'Ichki', 'Aylanuvchi', 'Yozuvchi', 'Xotira', 'Domofon', 'Kirish nazorati', 'Signalizatsiya', 'Komplekt', 'Tarmoq', 'Aksessuar'];
+      const catMarks = { '★ Ommabop': '★', Tashqi: '▭', Ichki: '◍', Aylanuvchi: '◉', Yozuvchi: '▤', Xotira: '◰', Domofon: '⌸', 'Kirish nazorati': '⚿', Signalizatsiya: '⚑', Komplekt: '▦', Tarmoq: '⌁', Aksessuar: '⚙' };
       const withImg = p => Array.isArray(p.images) && p.images.length > 0;
       const cats = catNames.map(cn => {
         const pool = cn === '★ Ommabop' ? PRODUCTS.filter(p => p.is_popular) : PRODUCTS.filter(p => p.cat === cn);
@@ -5512,7 +5512,7 @@
         storyToKit: () => { _clearStoryTimer(); set({ story: null, tab: 'kit' }); },
         storyToExpert: () => { _clearStoryTimer(); set({ story: null, tab: 'expert', expStep: 1, topic: 'Yangi kamera kerak', cb: 'idle' }); },
         creditOn, expertOn,
-        catChips: ['★ Ommabop', 'Hammasi', 'Tashqi', 'Ichki', 'Aylanuvchi', 'Yozuvchi', 'Xotira', 'Domofon', 'Komplekt', 'Tarmoq', 'Aksessuar'].map(n => {
+        catChips: ['★ Ommabop', 'Hammasi', 'Tashqi', 'Ichki', 'Aylanuvchi', 'Yozuvchi', 'Xotira', 'Domofon', 'Kirish nazorati', 'Signalizatsiya', 'Komplekt', 'Tarmoq', 'Aksessuar'].map(n => {
           let count = 0;
           if (n === 'Hammasi') count = base.length;
           else if (n === '★ Ommabop') count = base.filter(p => p.is_popular).length;
@@ -5889,8 +5889,8 @@
     function ic(n, s = 20, w = 1.8) {
       return `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${IC[n] || IC.info}</svg>`;
     }
-    const CAT_IC = { '★ Ommabop': 'star', Hammasi: 'grid', Tashqi: 'cam', Ichki: 'dome', Aylanuvchi: 'ptz', Yozuvchi: 'nvr', Xotira: 'sd', Domofon: 'intercom', Komplekt: 'box', Tarmoq: 'cable', Aksessuar: 'gear' };
-    const MARK_IC = { '▤': 'store', '▭': 'cam', '◉': 'ptz', '◍': 'dome', '⌸': 'intercom', '▦': 'box', '▢': 'building', '⌂': 'home', '★': 'star', '◰': 'sd', '◐': 'moon', '⌁': 'cable', '＋': 'plus', '?': 'help', '!': 'tool', '☎': 'phone', '✈': 'send', '✉': 'mail', '◎': 'pin', '✓': 'shield', '⚙': 'gear' };
+    const CAT_IC = { '★ Ommabop': 'star', Hammasi: 'grid', Tashqi: 'cam', Ichki: 'dome', Aylanuvchi: 'ptz', Yozuvchi: 'nvr', Xotira: 'sd', Domofon: 'intercom', 'Kirish nazorati': 'lock', Signalizatsiya: 'bell', Komplekt: 'box', Tarmoq: 'cable', Aksessuar: 'gear' };
+    const MARK_IC = { '▤': 'store', '▭': 'cam', '◉': 'ptz', '◍': 'dome', '⌸': 'intercom', '▦': 'box', '▢': 'building', '⌂': 'home', '★': 'star', '◰': 'sd', '◐': 'moon', '⌁': 'cable', '＋': 'plus', '?': 'help', '!': 'tool', '☎': 'phone', '✈': 'send', '✉': 'mail', '◎': 'pin', '✓': 'shield', '⚙': 'gear', '⚿': 'lock', '⚑': 'bell' };
     const NAV_IC = { home: 'home', catalog: 'grid', expert: 'headset', kit: 'layers', profile: 'user' };
     const TOUR_IC = { camera: 'cam', bell: 'bell', fingerprint: 'lock', screen: 'screen', ptz: 'ptz', radar: 'radar', power: 'power' };
     const markIc = (m, fb = 'play') => MARK_IC[m] || fb;
@@ -6235,8 +6235,8 @@
 </div>`;
     }
 
-    const CAT_TITLE = { '★ Ommabop': 'Ommabop', Hammasi: 'Barcha mahsulotlar', Tashqi: 'Tashqi kameralar', Ichki: 'Ichki kameralar', Aylanuvchi: 'Aylanuvchi (PTZ)', Yozuvchi: 'Registratorlar', Xotira: 'Xotira', Domofon: 'Domofon va qulflar', Komplekt: 'Komplektlar', Tarmoq: 'Tarmoq jihozlari', Aksessuar: 'Aksessuarlar va aqlli uy' };
-    const CAT_NOTE = { '★ Ommabop': 'Qarshi optom bozorining eng xaridorgir modellari', Tashqi: 'Ko‘cha, hovli va darvoza uchun', Ichki: 'Uy, ofis va do‘kon ichi', Aylanuvchi: '360° aylanib kuzatadi', Yozuvchi: 'NVR / DVR arxivlash', Xotira: 'microSD va HDD disklar', Domofon: 'Video domofon, aqlli qulf', Komplekt: 'Kamera + registrator to‘plami', Tarmoq: 'PoE switch va tarmoq', Aksessuar: 'Quyosh paneli, quvvat, rozetka, rele' };
+    const CAT_TITLE = { '★ Ommabop': 'Ommabop', Hammasi: 'Barcha mahsulotlar', Tashqi: 'Tashqi kameralar', Ichki: 'Ichki kameralar', Aylanuvchi: 'Aylanuvchi (PTZ)', Yozuvchi: 'Registratorlar', Xotira: 'Xotira', Domofon: 'Domofon va qulflar', 'Kirish nazorati': 'Kirish nazorati', Signalizatsiya: 'Signalizatsiya', Komplekt: 'Komplektlar', Tarmoq: 'Tarmoq jihozlari', Aksessuar: 'Aksessuarlar va aqlli uy' };
+    const CAT_NOTE = { '★ Ommabop': 'Qarshi optom bozorining eng xaridorgir modellari', Tashqi: 'Ko‘cha, hovli va darvoza uchun', Ichki: 'Uy, ofis va do‘kon ichi', Aylanuvchi: '360° aylanib kuzatadi', Yozuvchi: 'NVR / DVR arxivlash', Xotira: 'microSD va HDD disklar', Domofon: 'Video domofon, aqlli qulf', 'Kirish nazorati': 'Yuzni tanish, karta, turniket, shlagbaum', Signalizatsiya: 'Simsiz datchiklar, sirena, hub', Komplekt: 'Kamera + registrator to‘plami', Tarmoq: 'PoE switch va tarmoq', Aksessuar: 'Quyosh paneli, quvvat, rozetka, rele' };
 
     /* Katalogga kirilganda: avval asosiy kataloglar, tanlanganda — shu turkum mahsulotlari */
     function mCatLanding(v) {
@@ -7992,6 +7992,10 @@ ${mProfHead(v, 'Yordam va biz haqida', "Qarshi shahar bosh do'koni")}
       "Aksessuarlar va aqlli uy":"Аксессуары и умный дом",
       "Quyosh paneli, quvvat, rozetka, rele":"Солнечные панели, питание, розетки, реле",
       "Tarmoq":"Сеть",
+      "Kirish nazorati":"Контроль доступа",
+      "Yuzni tanish, karta, turniket, shlagbaum":"Распознавание лиц, карты, турникеты, шлагбаумы",
+      "Signalizatsiya":"Сигнализация",
+      "Simsiz datchiklar, sirena, hub":"Беспроводные датчики, сирены, хаб",
       "Tarmoq jihozlari":"Сетевое оборудование",
       "PoE switch va tarmoq":"PoE-коммутаторы и сеть",
       "Aylanuvchi (PTZ)":"Поворотные (PTZ)",

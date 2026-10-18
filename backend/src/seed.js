@@ -41,6 +41,7 @@ const products = [
 const categories = [
   ['Tashqi', '▭'], ['Ichki', '◍'], ['Aylanuvchi', '◉'], ['Yozuvchi', '▤'],
   ['Xotira', '◰'], ['Domofon', '⌸'], ['Komplekt', '▦'], ['Tarmoq', '⌁'], ['Aksessuar', '⚙'],
+  ['Kirish nazorati', '⚿'], ['Signalizatsiya', '⚑'],
 ];
 
 const banners = [

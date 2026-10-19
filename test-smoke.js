@@ -247,18 +247,21 @@ async function testAppV2() {
   sb.set({ suggest: false, q: 'zzzz' }); check('catalog empty', 'Mos mahsulot topilmadi');
   sb.set({ q: '', view: 'grid', filters: true }); check('filters sheet', 'Saralash');
   sb.set({ filters: false });
-  sb.set({ tab: 'kit' }); check('kit smart assistant (default)', 'Aqlli yordamchi');
-  const zonesUy = { gate: 1, yard: 2, hall: 1 };
-  for (let st = 1; st <= 6; st++) { sb.set({ wz: { step: st, place: 'uy', zones: zonesUy } }); check(`kit smart question ${st + 1}`, 'Taxminiy narx'); }
-  sb.set({ wz: { step: 7, place: 'uy', zones: zonesUy, conn: 'wired' } }); check('kit smart result (wired)', 'Sizga mos komplekt tayyor');
-  sb.set({ wz: { step: 7, place: 'kv', zones: { door: 1, hall: 1 }, conn: 'wifi', budget: 'pro', alt: { in: -3 } } }); check('kit smart result (wifi + swap)', 'Sizga mos komplekt tayyor');
-  [1, 2, 3, 4].forEach(k => { sb.set({ tab: 'kit', kitMode: 'manual', kStep: k, cableUse: true, hddUse: true, creditUse: true }); check(`kit step ${k}`, 'Joriy hisob'); });
+  // Komplekt v2.1: tayyor komplektlar + bosqichma-bosqich (brend → tur → kameralar → registrator → ulanish → xotira → xulosa)
+  sb.set({ tab: 'kit' }); check('kit ready (default)', 'Tayyor komplektlar');
+  const kb = (step, extra = {}) => ({ view: 'build', step, brand: 'Dahua', tech: 'ip', place: 'out', cams: {}, rec: null, sw: null, cable: null, cableM: '', rj: null, power: null, store: null, storeQ: 1, install: false, ...extra });
+  sb.set({ kb: kb('brand', { brand: null, tech: null }) }); check('kit build: brand', 'Qaysi brend bilan');
+  ['tech', 'cams', 'rec', 'net', 'store', 'sum'].forEach(st => { sb.set({ kb: kb(st) }); check(`kit build: ${st}`, 'Komplekt'); });
+  ['wifi', 'analog'].forEach(t => ['rec', 'net', 'store'].forEach(st => { sb.set({ kb: kb(st, { tech: t }) }); check(`kit build: ${t} ${st}`, 'Komplekt'); }));
+  sb.set({ kb: null, tab: 'home' });
+  sb.set({ regionOpen: true }); check('region sheet', 'Hududni tanlang');
+  sb.set({ regionOpen: false });
   [1, 2, 3].forEach(k => { sb.set({ tab: 'expert', expStep: k, cb: 'idle', topic: 'Yangi kamera kerak' }); check(`expert step ${k}`, 'Mutaxassis yordami'); });
   sb.set({ cb: 'done' }); check('expert done', 'Ariza qabul qilindi');
   ['', 'orders', 'notif', 'addr', 'payment', 'warranty', 'about', 'settings'].forEach(p => { sb.set({ tab: 'profile', profPage: p }); check(`profile "${p || 'menu'}"`); });
   sb.set({ profPage: '', tab: 'home' });
   sb.set({ sel: 'IPC-2410' }); check('product detail', 'MODEL TAVSIFI');
-  if (!html().includes('Rasmiy 1 yil to\'liq servis kafolati')) throw new Error('v2 detail missing warranty');
+  if (!html().includes('Rasmiy 1 yil to‘liq servis kafolati')) throw new Error('v2 detail missing warranty');
   sb.set({ sel: null });
   sb.addBag('IPC-2410'); check('added sheet', 'Savatga qo');
   sb.set({ added: null, bagOpen: true, bagInstall: true }); check('cart', 'Rasmiylashtirish');

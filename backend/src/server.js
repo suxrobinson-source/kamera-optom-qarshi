@@ -1,6 +1,7 @@
 import './env.js';
 import express from 'express';
 import cors from 'cors';
+import compression from 'compression';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { ensureSchema, ensureAdmin } from './seed.js';
@@ -30,10 +31,12 @@ const newAdmin = await ensureAdmin();
 const app = express();
 app.set('trust proxy', 1); // Heroku router ortida — req.ip mijozning haqiqiy manzili
 app.use(cors());
+// gzip: mahsulotlar ro'yxati (~1 MB JSON) sekin mobil internetda ham tez yetib borsin
+app.use(compression());
 app.use(express.json({ limit: '10mb' }));
 
-// Rasmlar: repodagi statik fayllar diskdan, admin/mijoz yuklaganlari bazadan
-app.use('/assets', express.static(path.join(__dirname, '..', 'assets')), wrap(serveUpload));
+// Rasmlar: repodagi statik fayllar diskdan (1 kun kesh, ETag bilan), admin/mijoz yuklaganlari bazadan
+app.use('/assets', express.static(path.join(__dirname, '..', 'assets'), { maxAge: '1d' }), wrap(serveUpload));
 
 // Faqat frontend fayllari beriladi (baza, .env, ichki hujjatlar va kod tashqariga chiqmaydi)
 const ROOT = path.join(__dirname, '..', '..');

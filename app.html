@@ -106,11 +106,12 @@
 
     body {
       min-height: 100vh;
+      min-height: 100dvh;
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 64px;
-      padding: 32px 16px;
+      padding: 0;
       font-family: var(--fb);
       color: var(--ink);
       -webkit-font-smoothing: antialiased;
@@ -144,6 +145,15 @@
     textarea {
       font: inherit;
       color: inherit
+    }
+
+    /* iOS Safari 16px dan kichik maydonga fokusda sahifani kattalashtiradi — faqat iOS'da 16px */
+    @supports (-webkit-touch-callout: none) {
+      input,
+      textarea,
+      select {
+        font-size: 16px !important
+      }
     }
 
     :focus-visible {
@@ -212,24 +222,20 @@
       background: var(--glass)
     }
 
-    @media (min-width: 900px) {
-      .side {
-        display: flex
-      }
-    }
-
+    /* v2.1: asosiy holat — haqiqiy qurilmada to'liq ekran ilova (telefon, planshet, gorizontal holat).
+       100vh — dvh'ni bilmaydigan eski brauzerlar uchun zaxira; safe-area — notch va home chizig'i. */
     #device {
       position: relative;
-      width: 414px;
-      height: 868px;
+      width: 100%;
+      max-width: 640px;
+      height: 100vh;
+      height: 100dvh;
       flex: none;
-      border-radius: 58px;
-      border: 12px solid #121212;
       background: var(--bg);
-      box-shadow: 0 0 0 1.5px #3a3a3a, 0 50px 120px rgba(20, 19, 17, .35);
       overflow: hidden;
       display: flex;
-      flex-direction: column
+      flex-direction: column;
+      padding: env(safe-area-inset-top, 0px) env(safe-area-inset-right, 0px) env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px)
     }
 
     .dv-status {
@@ -284,24 +290,44 @@
       position: relative
     }
 
-    @media (max-width: 560px) {
+    .dv-status,
+    .dv-home {
+      display: none
+    }
+
+    /* planshet / keng ekran: ilova markazdagi ustunda */
+    @media (min-width: 641px) {
+      #device {
+        box-shadow: 0 0 0 1px var(--line), 0 30px 80px rgba(20, 19, 17, .16)
+      }
+    }
+
+    /* kompyuter (sichqoncha, keng va baland ekran): telefon ramkasidagi ko'rinish, balandlik ekranga moslashadi */
+    @media (min-width: 900px) and (min-height: 700px) and (hover: hover) and (pointer: fine) {
       body {
-        padding: 0;
-        align-items: stretch;
-        gap: 0
+        padding: 24px 16px
+      }
+
+      .side {
+        display: flex
       }
 
       #device {
-        width: 100%;
-        height: 100dvh;
-        border: none;
-        border-radius: 0;
-        box-shadow: none
+        width: 414px;
+        max-width: none;
+        height: min(868px, calc(100vh - 48px));
+        padding: 0;
+        border-radius: 58px;
+        border: 12px solid #121212;
+        box-shadow: 0 0 0 1.5px #3a3a3a, 0 50px 120px rgba(20, 19, 17, .35)
       }
 
-      .dv-status,
+      .dv-status {
+        display: flex
+      }
+
       .dv-home {
-        display: none
+        display: block
       }
     }
 
@@ -1167,7 +1193,7 @@
       color: var(--ink)
     }
 
-    .ctr button.pl {
+    .ctr button.plus {
       background: var(--btn);
       color: var(--btn-ink)
     }
@@ -2181,6 +2207,7 @@
 
     .pl-f {
       display: flex;
+      flex-wrap: wrap;
       align-items: flex-end;
       justify-content: space-between;
       gap: 8px;
@@ -2537,6 +2564,146 @@
 
     .rcpt-tot .pr {
       font-size: 24px
+    }
+
+    /* ── Komplekt v2.1: mahsulot qatorlari ── */
+    .kb-row,
+    .kb-kit {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px;
+      border-radius: 22px;
+      background: var(--surface);
+      box-shadow: var(--shadow);
+      border: 1.5px solid transparent;
+      text-align: left;
+      width: 100%
+    }
+
+    .kb-row.on {
+      border-color: var(--acc-line)
+    }
+
+    .kb-img {
+      flex: none;
+      width: 64px;
+      height: 64px;
+      border-radius: 16px;
+      overflow: hidden;
+      background: var(--surface2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--muted)
+    }
+
+    .kb-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover
+    }
+
+    .kb-img.sm {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px
+    }
+
+    .kb-b {
+      flex: 1;
+      min-width: 0
+    }
+
+    .kb-n {
+      font: 600 13.5px/1.25 var(--fb);
+      color: var(--ink);
+      overflow-wrap: anywhere
+    }
+
+    .kb-s {
+      font: 400 12px/1.35 var(--fb);
+      color: var(--muted);
+      margin-top: 2px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical
+    }
+
+    .kb-p {
+      margin-top: 4px;
+      font-size: 14px
+    }
+
+    .kb-pick,
+    .kb-add {
+      flex: none;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1.5px solid var(--line3);
+      color: var(--ink)
+    }
+
+    .kb-pick.on {
+      background: var(--acc);
+      border-color: var(--acc);
+      color: #fff
+    }
+
+    .kb-add {
+      background: var(--btn);
+      border-color: var(--btn);
+      color: var(--btn-ink)
+    }
+
+    .kb-go {
+      flex: none;
+      color: var(--muted)
+    }
+
+    .kb-ln {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 0;
+      border-top: 1px solid var(--line)
+    }
+
+    .kb-ln:first-of-type {
+      border-top: 0
+    }
+
+    .kb-lf {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 2px 10px;
+      margin-top: 3px;
+      font: 400 12px/1.35 var(--fb);
+      color: var(--muted)
+    }
+
+    .kb-sum {
+      flex: none;
+      font: 600 13px var(--fd);
+      color: var(--ink);
+      white-space: nowrap
+    }
+
+    .kb-steps .step.on {
+      flex: 3.2
+    }
+
+    .step[disabled] {
+      opacity: .45;
+      cursor: default
     }
 
     /* ── Mutaxassis ── */
@@ -3765,8 +3932,8 @@
     /* ── Hero: so‘zma-so‘z ochilish, yaltiroq urg‘u ── */
     .hero { position: relative }
     .hero .h1 { position: relative; z-index: 1 }
-    .w { display: inline-block; overflow: hidden; vertical-align: top; padding: 0 .04em .16em 0; margin-bottom: -.16em }
-    .w>span { display: inline-block }
+    .hero .w { display: inline-block; overflow: hidden; vertical-align: top; padding: 0 .04em .16em 0; margin-bottom: -.16em }
+    .hero .w>span { display: inline-block }
     .intro .hero .w>span { animation: wordUp .95s cubic-bezier(.2, .8, .2, 1) backwards; animation-delay: calc(var(--i) * 110ms + 140ms) }
     .intro .hero .eyebrow { animation: riseP .6s ease backwards }
     .intro .hero .search { animation: riseP .8s cubic-bezier(.2, .8, .2, 1) .5s backwards }
@@ -3792,6 +3959,11 @@
     }
 
     .intro .eye { animation: eyeIn 1.15s cubic-bezier(.2, .9, .2, 1) .15s backwards }
+    /* kichik telefonlar (≤370px): linza sarlavha ustiga tushmasin */
+    @media (max-width: 370px) {
+      .eye { width: 80px; height: 80px; top: 40px; right: -14px; opacity: .9 }
+      .hero .h1 { font-size: 27px }
+    }
     .eye i { position: absolute; border-radius: 50% }
     .er1 { inset: 0; border: 1.5px dashed var(--line2); animation: spin 36s linear infinite }
 
@@ -4272,11 +4444,11 @@
         <circle cx="17" cy="17" r="3.3" fill="#fff" />
         <circle cx="25" cy="9" r="1.8" fill="#fff" />
       </svg>
-      <span class="side-v">SIGNAL</span>
+      <span class="side-v">v2.1</span>
     </div>
     <h2>Kamera Optom<br>mijoz ilovasi</h2>
-    <p>Yangi dizayn: yorug‘ qog‘oz fon, suzuvchi navigatsiya, bento bosh sahifa va to‘liq SVG ikonkalar. Barcha funksiyalar
-      va backend ulanishi avvalgidek ishlaydi.</p>
+    <p>Kuzatuv kameralari, domofon va xavfsizlik tizimlari — Qarshi va butun O‘zbekiston bo‘ylab optom narxlarda. 1 yil rasmiy
+      kafolat, o‘rnatish va bepul maslahat.</p>
   </aside>
 
   <div id="device">
@@ -4810,7 +4982,7 @@
       };
     }
     function phFmt(v) { return String(v).replace(/[^0-9]/g, '').slice(0, 9).replace(/^(\d{2})(\d{0,3})(\d{0,2})(\d{0,2}).*/, (m, a, b, c, d) => [a, b, c, d].filter(Boolean).join(' ')); }
-    function placeOrder(what, sum, skus) { set({ ph: { what, sum, skus: skus || [] }, phVal: S.myPhone || '', phStep: S.myPhone ? 'confirm' : 'enter', bagOpen: false, added: null }); }
+    function placeOrder(what, sum, skus, opts = {}) { set({ ph: { what, sum, skus: skus || [], install: opts.install, cloud: opts.cloud, fromBag: !!opts.fromBag }, phVal: S.myPhone || '', phStep: S.myPhone ? 'confirm' : 'enter', bagOpen: false, added: null }); }
     function stopSpin() {
       if (_sp) {
         if (typeof _sp.clear === 'function') _sp.clear();
@@ -4862,7 +5034,8 @@
     async function finishOrder(addr, rcp) {
       const o = S.ph || {};
       const MN = ['yanvar', 'fevral', 'mart', 'aprel', 'may', 'iyun', 'iyul', 'avgust', 'sentabr', 'oktabr', 'noyabr', 'dekabr'], d = new Date();
-      const skus = (o.skus && o.skus.length ? o.skus : [['IPC-2410', 1]]);
+      const skus = o.skus || [];
+      if (!skus.length) { flash('Buyurtma tarkibi bo‘sh'); return; }
       let serverOrder = null;
       try {
         let res;
@@ -4876,8 +5049,8 @@
               region: S.region,
               address: addr ? addr.text : S.region,
               items: skus.map(([sku, q]) => ({ sku, qty: q })),
-              install: S.bagInstall || S.install,
-              cloud: S.bagCloud || S.cloud
+              install: o.install !== undefined ? !!o.install : !!(S.bagInstall || S.install),
+              cloud: o.cloud !== undefined ? !!o.cloud : !!(S.bagCloud || S.cloud)
             })
           });
         } catch (netErr) {
@@ -4906,7 +5079,7 @@
       S.myOrders = [rec, ...S.myOrders.filter(x => x.id !== id)];
       S.orderStatus = { ...S.orderStatus, [id]: 'Yangi' };
       set({
-        myPhone: S.phVal, ph: null, bag: {},
+        myPhone: S.phVal, ph: null, ...(o.fromBag ? { bag: {} } : {}),
         ok: {
           lines: [
             { k: 'BUYURTMA', v: id }, { k: 'TARKIB', v: o.what || '' }, { k: 'SUMMA', v: totalSum },
@@ -5200,7 +5373,7 @@
         }))
         .filter(g => g.items.length);
       const added = s.added ? PRODUCTS.find(p => p.sku === s.added) : null;
-      const bagItems = Object.keys(s.bag).map(sku => ({ p: PRODUCTS.find(x => x.sku === sku), q: s.bag[sku] })).filter(it => it.p);
+      const bagItems = Object.keys(s.bag).map(sku => ({ p: PRODUCTS.find(x => x.sku === sku) || sdProd(sku), q: s.bag[sku] })).filter(it => it.p);
       const bagQty = bagItems.reduce((n, it) => n + it.q, 0);
       const bagGoods = bagItems.reduce((n, it) => n + it.p.price * it.q, 0);
       const bagCams = bagItems.filter(it => ['Tashqi', 'Ichki', 'Aylanuvchi'].includes(it.p.cat)).reduce((n, it) => n + it.q, 0)
@@ -5427,7 +5600,7 @@
           { name: "O‘rnatish va sozlash", note: 'Kamera soniga qarab · usta chiqadi', on: s.bagInstall, price: fmt(bagInstallPrice || 250000), go: () => set({ bagInstall: !s.bagInstall }) },
           { name: 'Bulutli arxiv 12 oy', note: 'Yozuv serverda ham saqlanadi', on: s.bagCloud, price: fmt(bagCloudPrice || 420000), go: () => set({ bagCloud: !s.bagCloud }) }
         ].map(o => ({ ...o, tick: o.on ? '✓' : '', border: o.on ? 'rgba(47,224,182,.4)' : 'var(--line)', mark: o.on ? A : 'var(--line4)', fill: o.on ? A : 'transparent' })),
-        checkout: () => placeOrder(bagQty + ' dona · ' + bagItems.length + ' pozitsiya', fmt(bagTotal), bagItems.map(it => [it.p.sku, it.q])),
+        checkout: () => placeOrder(bagQty + ' dona · ' + bagItems.length + ' pozitsiya', fmt(bagTotal), bagItems.map(it => [it.p.sku, it.q]), { install: s.bagInstall, cloud: s.bagCloud, fromBag: true }),
         phoneOn: !!s.ph, phEnter: !!s.ph && s.phStep === 'enter', phConfirm: !!s.ph && s.phStep === 'confirm',
         phVal: s.phVal, phBig: '+998 ' + (s.phVal || '__ ___ __ __'),
         phOwner: s.myPhone && s.myPhone === s.phVal ? 'Saqlangan mijoz raqami' : 'Yangi raqam · profilga saqlanadi',
@@ -5565,7 +5738,7 @@
         },
         spinAuto: () => toggleSpin(),
         closeP: () => { stopSpin(); set({ sel: null, selImgIdx: 0, spinDeg: 0 }); },
-        goKit: () => { stopSpin(); set({ sel: null, selImgIdx: 0, spinDeg: 0, tab: 'kit' }); },
+        goKit: () => { stopSpin(); kbStartFrom(prodBySku(s.sel)); set({ sel: null, selImgIdx: 0, spinDeg: 0, tab: 'kit' }); },
         goCatalog: () => set({ tab: 'catalog', cat: '' }),
         isPopularCat: !q && (s.cat === '★ Ommabop' || s.cat === 'Ommabop'),
         showPopularBanner: !q && (s.cat !== '★ Ommabop' && s.cat !== 'Ommabop'),
@@ -5762,7 +5935,7 @@
         notifLabel: noteKeys.length ? noteKeys.length + ' ta xabar' : 'Xabar yo‘q', notifEmpty: noteKeys.length === 0,
         notifList: noteKeys.map(id => ({ id, text: s.notes[id].text, time: s.notes[id].time, go: () => set({ profPage: 'orders', openOrd: id }) })),
         addrRegion: regSel.name, addrEta: regSel.eta,
-        addrPrice: 'Yetkazish: ' + SHIP_RULE + ' · ' + regSel.eta,
+        addrPrice: 'Yetkazish: ' + SHIP_RULE + ' · ' + regSel.eta, shipRule: SHIP_RULE,
         pastLabel: (s.myOrders || []).length + ' ta buyurtma',
         pastEmpty: !(s.myOrders && s.myOrders.length),
         hasPhone: !!(s.myPhone && String(s.myPhone).replace(/[^0-9]/g, '').length === 9),
@@ -6562,7 +6735,7 @@
           <div class="wz-z ${n ? 'on' : ''}" style="--i:${i}" onclick="${h(() => setN(n ? 0 : 1))}">
             <span style="display:flex;align-items:center;justify-content:space-between;width:100%"><span class="ico" style="width:38px;height:38px;border-radius:12px">${ic(Z.ic, 19)}</span><span class="chk ${n ? 'on' : ''}">${n ? ic('check', 14, 3) : ''}</span></span>
             <span><span class="opt-t" style="display:block;font-size:14px">${esc(Z.n)}</span><span class="opt-s" style="display:block;margin:2px 0 0">${Z.t === 'out' ? 'Tashqi kamera' : Z.t === 'ptz' ? 'Aylanuvchi kamera' : 'Ichki kamera'}</span></span>
-            ${n ? `<div class="ctr sm" onclick="${h(e => stop(e))}"><button onclick="${h(e => { stop(e); setN(n - 1); })}" aria-label="Kamaytirish">${ic('minus', 14, 2.4)}</button><b>${n}</b><button class="pl" onclick="${h(e => { stop(e); setN(Math.min(6, n + 1)); })}" aria-label="Ko‘paytirish">${ic('plus', 14, 2.4)}</button></div>` : ''}
+            ${n ? `<div class="ctr sm" onclick="${h(e => stop(e))}"><button onclick="${h(e => { stop(e); setN(n - 1); })}" aria-label="Kamaytirish">${ic('minus', 14, 2.4)}</button><b>${n}</b><button class="plus" onclick="${h(e => { stop(e); setN(Math.min(6, n + 1)); })}" aria-label="Ko‘paytirish">${ic('plus', 14, 2.4)}</button></div>` : ''}
           </div>`;
         };
         body = `
@@ -6683,7 +6856,460 @@
 </div>`;
     }
 
-    function mKit(v) { return S.kitMode === 'manual' ? mKitManual(v) : mKitSmart(v); }
+    /* ═══ Komplekt v2.1 — taxminsiz, aniq tanlovlar asosida ═══
+       Yo'l: Brend → Tur (IP / analog / Wi-Fi) → Kameralar (Ko'cha / Xona) → Registrator → Ulanish → Xotira → Xulosa.
+       Qaysi brend/kameradan boshlansa, keyingi bosqichlar faqat shu brend va shu texnologiyaga mos mahsulotlarni ko'rsatadi.
+       Tayyor komplektlar ham shu bosqichlarga yuklanadi — har birini o'zgartirish mumkin. */
+    const KB_BRANDS = ['Dahua', 'HiLook', 'NEOCAM', 'Ezviz', 'Tapo'];
+    const KB_TECH = {
+      ip: { n: 'IP kameralar (simli, PoE)', s: 'Tarmoq kabeli orqali NVR registratorga ulanadi — eng ishonchli tizim' },
+      analog: { n: 'Analog kameralar (HDCVI / Turbo HD)', s: 'XVR / DVR registrator va 12V quvvat bloki bilan ishlaydi' },
+      wifi: { n: 'Wi-Fi / 4G kameralar (simsiz)', s: 'Har kamera o‘zi yozadi (microSD), telefon ilovasida ko‘rasiz' }
+    };
+    const KB_STEPS = [['brand', 'Brend'], ['tech', 'Tur'], ['cams', 'Kameralar'], ['rec', 'Registrator'], ['net', 'Ulanish'], ['store', 'Xotira'], ['sum', 'Xulosa']];
+    const KB_OUT = new Set(['DH-P3AE-PV', 'DH-P5AE-PV', 'TAPO-C675D-KIT']);
+    const kbAll = () => (DATA.products || []).filter(p => p.active !== 0 && p.active !== false);
+    const kbMod = m => !(S.mod && S.mod[m] === false);
+    const kbInStock = p => (p.qty ?? 1) > 0;
+    const kbTxt = p => ((p.spec || '') + ' ' + (Array.isArray(p.tags) ? p.tags.join(' ') : (p.tags || '')) + ' ' + (p.name || '')).toLowerCase();
+
+    function kbBrand(p) {
+      if (!p) return null;
+      const n = String(p.name || '');
+      if (/^HL-/.test(n)) return 'HiLook';
+      const b = n.split(' ')[0];
+      return KB_BRANDS.includes(b) ? b : null;
+    }
+    function kbIsCam(p) { return !!p && ['Tashqi', 'Ichki', 'Aylanuvchi'].includes(p.cat) && !!kbBrand(p); }
+    function kbTech(p) {
+      const b = kbBrand(p), t = kbTxt(p);
+      if (b === 'Ezviz' || b === 'Tapo') return 'wifi';
+      if (/hdcvi|turbo hd|analog/.test(t)) return 'analog';
+      if (p.poe || /\bpoe\b|onvif/.test(t)) return 'ip';
+      if (/wi-?fi|\b4g\b|akkumulyator|quyosh/.test(t)) return 'wifi';
+      return 'ip';
+    }
+    function kbPlace(p) {
+      if (p.cat === 'Tashqi' || KB_OUT.has(p.sku)) return 'out';
+      if (p.cat === 'Ichki') return 'in';
+      const t = kbTxt(p);
+      if (/ichki/.test(t)) return 'in';
+      if (/ip6[5-7]|tashqi|ko.cha|quyosh|\b4g\b|zoom|ptz/.test(t)) return 'out';
+      return 'in';
+    }
+    function kbMp(p) {
+      const t = (p.badge || '') + ' ' + kbTxt(p);
+      const ms = [...t.matchAll(/(\d+)\s*mp/gi)].map(m => +m[1]).filter(n => n > 0 && n < 50);
+      if (ms.length) return Math.max(...ms);
+      if (/\b4k\b/i.test(t)) return 8;
+      if (/\b3k/i.test(t)) return 5;
+      if (/\b2k\+/i.test(t)) return 4;
+      if (/\b2k\b/i.test(t)) return 3;
+      return 2;
+    }
+    function kbRecTech(p) {
+      if (!p || p.cat !== 'Yozuvchi' || !kbBrand(p)) return null;
+      const s = String(p.spec || '');
+      if (/simsiz nvr/i.test(s)) return 'wifi';
+      if (/^NVR/.test(s)) return 'ip';
+      if (/XVR|DVR/.test(s)) return 'analog';
+      return null;
+    }
+    const kbCh = p => { const m = String(p.badge || p.spec || '').match(/(\d+)\s*kanal/); return m ? +m[1] : 0; };
+    function kbRecMax(p) {
+      const s = String(p.spec || '');
+      const m = s.match(/(\d+)\s*MP gacha/);
+      if (m) return +m[1];
+      if (/1080N|1080p/i.test(s)) return 2;
+      const m2 = s.match(/·\s*(\d+)\s*MP\b/);
+      if (m2) return +m2[1];
+      if (/\b4K\b/.test(s)) return 8;
+      return 99;
+    }
+    function kbSata(p) { const m = String(p.spec || '').match(/(\d+)\s*SATA/); return m ? +m[1] : 1; }
+    function kbSwPorts(p) {
+      if (!p || p.cat !== 'Tarmoq' || !/switch/i.test((p.name || '') + ' ' + (p.spec || ''))) return 0;
+      const m = String(p.badge || '').match(/(\d+)\s*PoE/);
+      return m ? +m[1] : 0;
+    }
+    function sdOptions() { return ((DATA.config && DATA.config.pricing && DATA.config.pricing.hddOptions) || []).filter(o => o.sku); }
+    /* microSD — narx sozlamalaridagi variant; savat va komplekt uchun mahsulot ko'rinishida */
+    function sdProd(sku) {
+      const o = sdOptions().find(x => x.sku === sku);
+      if (!o) return null;
+      const usta = typeof isUsta === 'function' && isUsta() && o.priceUsta > 0;
+      return { sku: o.sku, name: 'microSD ' + o.size, cat: 'Xotira', badge: o.size, spec: 'microSD karta · ' + o.size + ' · ' + (o.days || '') + ' uzluksiz yozuv', price: usta ? o.priceUsta : o.price, images: [], qty: 999, sd: true };
+    }
+    const kbProd = sku => (DATA.products || []).find(p => p.sku === sku) || sdProd(sku) || null;
+
+    function kbState() {
+      if (!S.kb) S.kb = { view: 'ready', step: 'brand', brand: null, tech: null, place: 'out', cams: {}, rec: null, sw: null, cable: null, cableM: '', rj: null, power: null, store: null, storeQ: 1, install: false };
+      return S.kb;
+    }
+    function kbSet(patch) { set({ kb: kbFix({ ...kbState(), ...patch }) }); }
+    function kbCamList(k) { return Object.keys(k.cams || {}).map(s => ({ p: kbProd(s), q: +k.cams[s] || 0 })).filter(x => x.p && x.q > 0); }
+    const kbCamCount = k => kbCamList(k).reduce((n, x) => n + x.q, 0);
+    const kbMaxMp = k => kbCamList(k).reduce((m, x) => Math.max(m, kbMp(x.p)), 0);
+    const kbBrandCams = (brand, tech) => kbAll().filter(p => kbIsCam(p) && kbBrand(p) === brand && (!tech || kbTech(p) === tech));
+    function kbRecs(k) {
+      const n = Math.max(1, kbCamCount(k)), mp = kbMaxMp(k);
+      const ok = kbAll().filter(p => kbBrand(p) === k.brand && kbRecTech(p) === k.tech && kbCh(p) >= n && kbRecMax(p) >= mp && kbInStock(p))
+        .sort((a, b) => kbCh(a) - kbCh(b) || a.price - b.price);
+      const tiers = [...new Set(ok.map(kbCh))].slice(0, 2);
+      return ok.filter(p => tiers.includes(kbCh(p)) || p.sku === k.rec || p.sku === k.recWant);
+    }
+    function kbNeedSwitch(k) {
+      if (k.tech !== 'ip') return false;
+      const r = k.rec && k.rec !== 'none' ? kbProd(k.rec) : null;
+      return !(r && r.poe && kbCamCount(k) <= kbCh(r));
+    }
+    function kbSwitches(k) {
+      const n = Math.max(1, kbCamCount(k));
+      const all = kbAll().filter(p => kbSwPorts(p) >= n && kbInStock(p)).sort((a, b) => kbSwPorts(a) - kbSwPorts(b) || a.price - b.price);
+      const same = all.filter(p => kbBrand(p) === k.brand || (k.brand === 'HiLook' && /^NS-/.test(p.sku)));
+      return [...same, ...all.filter(p => !same.includes(p))];
+    }
+    const kbCables = () => kbAll().filter(p => /^KAB-KABEL-KSVP/.test(p.sku) && kbInStock(p)).sort((a, b) => a.price - b.price);
+    const kbPowers = () => kbAll().filter(p => /^ACC-(IBP-12V|BBP-)/.test(p.sku) && kbInStock(p)).sort((a, b) => a.price - b.price);
+    const kbHdds = () => kbAll().filter(p => p.cat === 'Xotira' && /\bHDD\b/.test(p.name || '') && kbInStock(p)).sort((a, b) => a.price - b.price);
+    const kbUsesSd = k => k.tech === 'wifi' && !(k.rec && k.rec !== 'none');
+
+    /* Yuqori bosqich o'zgarganda pastdagilar mos kelmay qolsa — tozalanadi (hech narsa aralashib ketmasin) */
+    function kbFix(k) {
+      k.cams = { ...(k.cams || {}) };
+      if (k.brand && k.tech && !kbBrandCams(k.brand, k.tech).length) k.tech = null;
+      Object.keys(k.cams).forEach(s => {
+        const p = kbProd(s);
+        if (!p || kbBrand(p) !== k.brand || kbTech(p) !== k.tech || !(k.cams[s] > 0)) delete k.cams[s];
+      });
+      if (k.recWant && !k.rec && kbRecs(k).some(p => p.sku === k.recWant)) k.rec = k.recWant;
+      if (k.rec && k.rec !== 'none' && !kbRecs(k).some(p => p.sku === k.rec)) k.rec = null;
+      if (k.sw && k.sw !== 'none' && (!kbNeedSwitch(k) || !kbSwitches(k).some(p => p.sku === k.sw))) k.sw = null;
+      if (k.tech === 'wifi') { k.cable = null; k.cableM = ''; k.rj = null; k.power = null; }
+      if (k.tech === 'analog') k.rj = null;
+      if (k.tech === 'ip') k.power = null;
+      if (k.store && k.store !== 'none') {
+        const sdOk = sdOptions().some(o => o.sku === k.store);
+        if (kbUsesSd(k) ? !sdOk : sdOk) k.store = null;
+      }
+      return k;
+    }
+    function kbStepOk(k, key) {
+      if (key === 'brand') return !!k.brand;
+      if (key === 'tech') return !!k.tech;
+      if (key === 'cams') return kbCamCount(k) > 0;
+      if (key === 'rec') return k.tech === 'wifi' || !!k.rec;
+      if (key === 'net') return k.tech !== 'ip' || !kbNeedSwitch(k) || !!k.sw;
+      if (key === 'store') return !!k.store;
+      return true;
+    }
+    function kbLines(k) {
+      const L = [];
+      kbCamList(k).forEach(x => L.push({ role: 'Kamera', p: x.p, q: x.q }));
+      if (k.rec && k.rec !== 'none') { const p = kbProd(k.rec); if (p) L.push({ role: 'Registrator', p, q: 1 }); }
+      if (k.sw && k.sw !== 'none' && kbNeedSwitch(k)) { const p = kbProd(k.sw); if (p) L.push({ role: 'PoE switch', p, q: 1 }); }
+      if (k.cable && +k.cableM > 0) { const p = kbProd(k.cable); if (p) L.push({ role: 'Kabel', p, q: +k.cableM, unit: 'm' }); }
+      if (k.rj) { const p = kbProd(k.rj); if (p) L.push({ role: 'Konnektor', p, q: 1 }); }
+      if (k.power) { const p = kbProd(k.power); if (p) L.push({ role: 'Quvvat bloki', p, q: 1 }); }
+      if (k.store && k.store !== 'none') { const p = kbProd(k.store); if (p) L.push({ role: 'Xotira', p, q: Math.max(1, +k.storeQ || 1) }); }
+      return L.map(l => ({ ...l, sum: l.p.price * l.q }));
+    }
+    function kbTotals(k) {
+      const pricing = (DATA.config && DATA.config.pricing) || {};
+      const lines = kbLines(k), goods = lines.reduce((n, l) => n + l.sum, 0), cams = kbCamCount(k);
+      const free = pricing.freeShipFrom >= 0 && pricing.freeShipFrom != null ? +pricing.freeShipFrom : 1000000;
+      const fee = pricing.shipFee >= 0 && pricing.shipFee != null ? +pricing.shipFee : 30000;
+      const install = k.install && cams ? cams * (pricing.installPerCamera || 250000) : 0;
+      const ship = lines.length ? (goods > free ? 0 : fee) : 0;
+      return { lines, goods, install, ship, total: goods + install + ship, cams };
+    }
+
+    /* Tayyor komplekt: brend + tur + kamera soni — eng arzon mos mahsulotlardan, bosqichlarga yuklanadi */
+    function kbBuild(brand, tech, nOut, nIn) {
+      const pool = kbBrandCams(brand, tech).filter(kbInStock);
+      const pick = place => {
+        const ps = pool.filter(p => kbPlace(p) === place).sort((a, b) => a.price - b.price);
+        return ps.find(p => kbMp(p) >= 4) || ps[0] || null;
+      };
+      const k = { view: 'build', step: 'sum', brand, tech, place: 'out', cams: {}, rec: null, sw: null, cable: null, cableM: '', rj: null, power: null, store: null, storeQ: 1, install: false };
+      const o = nOut ? pick('out') : null, i = nIn ? pick('in') : null;
+      if ((nOut && !o) || (nIn && !i)) return null;
+      if (o) k.cams[o.sku] = nOut;
+      if (i) k.cams[i.sku] = (k.cams[i.sku] || 0) + nIn;
+      const n = nOut + nIn;
+      if (tech !== 'wifi') {
+        const r = kbRecs(k)[0];
+        if (!r) return null;
+        k.rec = r.sku;
+        if (kbNeedSwitch(k)) { const sw = kbSwitches(k)[0]; if (!sw) return null; k.sw = sw.sku; }
+        const hd = kbHdds();
+        const want = n <= 4 ? 1000 : 2000;
+        const gb = p => { const m = String(p.badge || '').match(/(\d+)\s*(TB|GB)/); return m ? +m[1] * (m[2] === 'TB' ? 1000 : 1) : 0; };
+        const hdd = hd.find(p => gb(p) >= want) || hd[hd.length - 1];
+        k.store = hdd ? hdd.sku : 'none';
+        if (tech === 'ip') k.rj = rjBest(n);
+        if (tech === 'analog') { const pw = kbPowers().filter(p => /IBP-12V/.test(p.sku)); k.power = ((n <= 4 ? pw[0] : pw[1] || pw[0]) || {}).sku || null; }
+      } else {
+        k.rec = 'none';
+        const sd = sdOptions().find(x => /64/.test(x.size)) || sdOptions()[0];
+        k.store = sd ? sd.sku : 'none';
+        k.storeQ = n;
+      }
+      return kbFix(k);
+    }
+    let _kbReady = null, _kbReadyKey = null;
+    function kbReady() {
+      if (_kbReadyKey === DATA.products && _kbReady) return _kbReady;
+      const T = [['Dahua', 'ip', 4, 0], ['Dahua', 'ip', 6, 2], ['HiLook', 'ip', 4, 0], ['HiLook', 'ip', 6, 2], ['NEOCAM', 'ip', 4, 0],
+        ['Dahua', 'analog', 4, 0], ['HiLook', 'analog', 2, 2], ['Ezviz', 'wifi', 2, 2], ['Tapo', 'wifi', 2, 2], ['Dahua', 'wifi', 2, 2]];
+      _kbReady = T.map(([b, t, o, i]) => {
+        const k = kbBuild(b, t, o, i);
+        if (!k) return null;
+        const tot = kbTotals(k);
+        const where = [o ? o + ' ta ko‘cha' : '', i ? i + ' ta xona' : ''].filter(Boolean).join(' + ');
+        return { id: b + t + o + i, brand: b, tech: t, title: b + ' · ' + (o + i) + ' kamera', sub: KB_TECH[t].n.split(' (')[0] + ' · ' + where, k, goods: tot.goods, cover: kbCamList(k)[0].p };
+      }).filter(Boolean);
+      _kbReadyKey = DATA.products;
+      return _kbReady;
+    }
+    /* Mahsulot sahifasidan: shu kameradan / registratordan boshlab yig'ish */
+    function kbStartFrom(p) {
+      const k = { view: 'build', step: 'brand', brand: null, tech: null, place: 'out', cams: {}, rec: null, sw: null, cable: null, cableM: '', rj: null, power: null, store: null, storeQ: 1, install: false };
+      if (p && kbIsCam(p)) {
+        Object.assign(k, { brand: kbBrand(p), tech: kbTech(p), place: kbPlace(p), step: 'cams' });
+        k.cams[p.sku] = 1;
+      } else if (p && kbRecTech(p)) {
+        Object.assign(k, { brand: kbBrand(p), tech: kbRecTech(p), step: 'cams', recWant: p.sku });
+      }
+      S.kb = kbFix(k);
+    }
+
+    function kbRow(p, right, opts = {}) {
+      return `
+      <div class="kb-row ${opts.on ? 'on' : ''}">
+        <div class="kb-img">${p.sd ? ic('sd', 24, 1.6) : prodMedia(p, 40, 40)}</div>
+        <div class="kb-b">
+          <div class="kb-n">${esc(p.name)}</div>
+          <div class="kb-s">${esc(p.spec || '')}</div>
+          <div class="kb-p">${pr(fmt(p.price))}${opts.unit ? `<small class="muted"> / ${esc(opts.unit)}</small>` : ''}</div>
+        </div>
+        ${right}
+      </div>`;
+    }
+    const kbPick = (on, go) => `<button class="kb-pick ${on ? 'on' : ''}" onclick="${h(go)}" aria-label="Tanlash">${on ? ic('check', 15, 2.6) : ''}</button>`;
+    const kbQty = (q, minus, plus) => q > 0 ? `<div class="ctr sm"><button onclick="${h(minus)}" aria-label="Kamaytirish">${ic('minus', 15, 2.4)}</button><b>${q}</b><button class="plus" onclick="${h(plus)}" aria-label="Ko‘paytirish">${ic('plus', 15, 2.4)}</button></div>`
+      : `<button class="kb-add" onclick="${h(plus)}" aria-label="Qo‘shish">${ic('plus', 16, 2.4)}</button>`;
+    const kbOpt = (on, title, note, go, right = '') => `
+      <button class="opt ${on ? 'on' : ''}" onclick="${h(go)}">
+        <span class="chk ${on ? 'on' : ''}">${on ? ic('check', 14, 3) : ''}</span>
+        <span class="opt-b"><span class="opt-t" style="display:block">${esc(title)}</span>${note ? `<span class="opt-s" style="display:block">${esc(note)}</span>` : ''}</span>
+        ${right ? `<span class="opt-r">${right}</span>` : ''}
+      </button>`;
+
+    function mKit(v) {
+      const k = kbState();
+      const tot = kbTotals(k);
+      const seg = `<div class="seg"><button class="${k.view === 'ready' ? 'on' : ''}" onclick="${h(() => kbSet({ view: 'ready' }))}">Tayyor komplektlar</button><button class="${k.view === 'build' ? 'on' : ''}" onclick="${h(() => kbSet({ view: 'build' }))}">Bosqichma-bosqich</button></div>`;
+      if (k.view === 'ready') {
+        const R = kbReady();
+        const kits = kbAll().filter(p => p.cat === 'Komplekt' && kbInStock(p));
+        return `
+<div class="pg" style="gap:20px">
+  <div class="ttl"><h1 class="h2">Komplekt</h1><span class="sec-n">${R.length + kits.length} ta tayyor</span></div>
+  ${seg}
+  <div class="opt-s" style="margin-top:-6px">Har bir komplekt bitta brend mahsulotlaridan tuzilgan va bir-biriga mos. Tanlang — keyin har bir bosqichda o‘zgartira olasiz.</div>
+  <section class="sec" style="gap:12px">
+    ${R.map(r => `
+    <button class="kb-kit" onclick="${h(() => set({ kb: JSON.parse(JSON.stringify(r.k)) }))}">
+      <div class="kb-img">${prodMedia(r.cover, 40, 40)}</div>
+      <div class="kb-b">
+        <span class="tag ink">${esc(r.brand)}</span>
+        <div class="kb-n" style="margin-top:6px">${esc(r.title)}</div>
+        <div class="kb-s">${esc(r.sub)}</div>
+        <div class="kb-s">${esc(kbLines(r.k).filter(l => l.role !== 'Kamera').map(l => l.role).join(' · '))}</div>
+        <div class="kb-p">${pr(fmt(r.goods))}</div>
+      </div>
+      <span class="kb-go">${ic('chevR', 18, 2.2)}</span>
+    </button>`).join('')}
+    ${kits.map(p => `
+    <button class="kb-kit" onclick="${h(() => set({ sel: p.sku, selImgIdx: 0 }))}">
+      <div class="kb-img">${prodMedia(p, 40, 40)}</div>
+      <div class="kb-b"><span class="tag ink">${esc(kbBrand(p) || 'To‘plam')}</span><div class="kb-n" style="margin-top:6px">${esc(p.name)}</div><div class="kb-s">${esc(p.spec || '')}</div><div class="kb-p">${pr(fmt(p.price))}</div></div>
+      <span class="kb-go">${ic('chevR', 18, 2.2)}</span>
+    </button>`).join('')}
+  </section>
+  <button class="btn btn-o w" onclick="${h(() => kbSet({ view: 'build', step: 'brand' }))}">${ic('layers', 18, 2)} O‘zim bosqichma-bosqich yig‘aman</button>
+</div>`;
+      }
+
+      const idx = Math.max(0, KB_STEPS.findIndex(s => s[0] === k.step));
+      const key = KB_STEPS[idx][0];
+      const reach = i => KB_STEPS.slice(0, i).every(s => kbStepOk(k, s[0]));
+      const go = key2 => kbSet({ step: key2 });
+      const n = kbCamCount(k);
+      let body = '';
+
+      if (key === 'brand') {
+        body = `<section class="sec" style="gap:10px">
+          <div class="lbl">Qaysi brend bilan yig‘amiz?</div>
+          ${KB_BRANDS.map(b => {
+            const cams = kbBrandCams(b).filter(kbInStock);
+            if (!cams.length) return '';
+            const ts = Object.keys(KB_TECH).filter(t => cams.some(p => kbTech(p) === t));
+            const techs = ts.map(t => KB_TECH[t].n.split(' (')[0].replace(' kameralar', ''));
+            return kbOpt(k.brand === b, b, cams.length + ' ta kamera · ' + techs.join(', '), () => {
+              const same = k.brand === b;
+              kbSet({ brand: b, tech: same ? k.tech : (ts.length === 1 ? ts[0] : null), cams: same ? k.cams : {}, rec: same ? k.rec : null, sw: same ? k.sw : null, store: same ? k.store : null, step: !same && ts.length === 1 ? 'cams' : 'tech' });
+            });
+          }).join('')}
+        </section>`;
+      } else if (key === 'tech') {
+        body = `<section class="sec" style="gap:10px">
+          <div class="lbl">${esc(k.brand || '')} · tizim turi</div>
+          ${Object.keys(KB_TECH).map(t => {
+            const c = kbBrandCams(k.brand, t).filter(kbInStock).length;
+            if (!c) return '';
+            const same = k.tech === t;
+            return kbOpt(same, KB_TECH[t].n, KB_TECH[t].s + ' · ' + c + ' ta model', () => kbSet({ tech: t, cams: same ? k.cams : {}, rec: same ? k.rec : null, sw: same ? k.sw : null, store: same ? k.store : null, step: 'cams' }));
+          }).join('')}
+        </section>`;
+      } else if (key === 'cams') {
+        const list = kbBrandCams(k.brand, k.tech).filter(p => kbInStock(p) && kbPlace(p) === k.place).sort((a, b) => ((+k.cams[b.sku] > 0) - (+k.cams[a.sku] > 0)) || a.price - b.price);
+        const cntOut = kbCamList(k).filter(x => kbPlace(x.p) === 'out').reduce((s, x) => s + x.q, 0);
+        const cntIn = n - cntOut;
+        const setQ = (sku, q) => { const c = { ...k.cams }; if (q > 0) c[sku] = Math.min(64, q); else delete c[sku]; kbSet({ cams: c }); };
+        body = `<section class="sec" style="gap:12px">
+          <div class="seg">
+            <button class="${k.place === 'out' ? 'on' : ''}" onclick="${h(() => kbSet({ place: 'out' }))}">Ko‘cha (tashqi)${cntOut ? ' · ' + cntOut : ''}</button>
+            <button class="${k.place === 'in' ? 'on' : ''}" onclick="${h(() => kbSet({ place: 'in' }))}">Xona (ichki)${cntIn ? ' · ' + cntIn : ''}</button>
+          </div>
+          <div class="opt-s">${esc(k.brand || '')} · ${esc(KB_TECH[k.tech] ? KB_TECH[k.tech].n.split(' (')[0] : '')} · ${k.place === 'out' ? 'ko‘chaga (hovli, darvoza, fasad) mos' : 'xona ichiga mos'}: ${list.length} ta model</div>
+          ${list.length ? list.map(p => kbRow(p, kbQty(+k.cams[p.sku] || 0, () => setQ(p.sku, (+k.cams[p.sku] || 0) - 1), () => setQ(p.sku, (+k.cams[p.sku] || 0) + 1)), { on: +k.cams[p.sku] > 0 })).join('')
+            : `<div class="card tint"><div class="opt-s" style="margin:0">${esc(k.brand || '')} brendida bu turdagi ${k.place === 'out' ? 'ko‘cha' : 'xona'} kamerasi hozir yo‘q. Boshqa joyni yoki turni tanlang.</div></div>`}
+        </section>`;
+      } else if (key === 'rec') {
+        const recs = kbRecs(k);
+        body = `<section class="sec" style="gap:10px">
+          <div class="lbl">${k.tech === 'wifi' ? 'Yozuv qayerda saqlansin?' : 'Registrator · kamida ' + n + ' kanal'}</div>
+          ${k.tech === 'wifi' ? kbOpt(!k.rec || k.rec === 'none', 'Registratorsiz — har kamerada microSD', 'Har bir kamera yozuvni o‘z kartasiga yozadi', () => kbSet({ rec: 'none' })) : ''}
+          ${recs.map(p => kbRow(p, kbPick(k.rec === p.sku, () => kbSet({ rec: p.sku })), { on: k.rec === p.sku })).join('')}
+          ${!recs.length && k.tech !== 'wifi' ? `<div class="card tint"><div class="opt-s" style="margin:0">${esc(k.brand || '')} brendida ${n} ta kamera uchun mos registrator hozir yo‘q. Kamera sonini kamaytiring yoki mutaxassisga murojaat qiling.</div></div>` : ''}
+          ${k.tech !== 'wifi' ? kbOpt(k.rec === 'none', 'Registrator kerak emas', 'Menda mos registrator bor', () => kbSet({ rec: 'none' })) : ''}
+        </section>`;
+      } else if (key === 'net') {
+        let parts = '';
+        if (k.tech === 'wifi') {
+          parts = `<div class="card tint"><div class="opt-t">Simsiz ulanish</div><div class="opt-s">Wi-Fi / 4G kameralar o‘z quvvat adapteri bilan keladi — qo‘shimcha kabel yoki switch kerak emas. Wi-Fi kameralar uchun joyda internet (router) bo‘lishi kerak.</div></div>`;
+        } else {
+          if (k.tech === 'ip') {
+            if (kbNeedSwitch(k)) {
+              const sws = kbSwitches(k).slice(0, 8);
+              parts += `<div class="lbl">PoE switch · kamida ${n} port</div>
+                <div class="opt-s" style="margin-top:-4px">Kameralarga bitta kabel orqali quvvat va internet beradi</div>
+                ${sws.map(p => kbRow(p, kbPick(k.sw === p.sku, () => kbSet({ sw: p.sku })), { on: k.sw === p.sku })).join('')}
+                ${kbOpt(k.sw === 'none', 'Switch kerak emas', 'Menda PoE switch bor', () => kbSet({ sw: 'none' }))}`;
+            } else {
+              parts += `<div class="card tint"><div class="opt-t">PoE switch shart emas</div><div class="opt-s">Tanlangan registratorda kameralar uchun PoE portlar bor.</div></div>`;
+            }
+          }
+          if (k.tech === 'analog') {
+            parts += `<div class="lbl" style="margin-top:6px">12V quvvat bloki</div>
+              ${kbPowers().map(p => kbRow(p, kbPick(k.power === p.sku, () => kbSet({ power: k.power === p.sku ? null : p.sku })), { on: k.power === p.sku })).join('')}`;
+          }
+          const cabSel = k.cable ? kbProd(k.cable) : null;
+          parts += `<div class="lbl" style="margin-top:6px">Kabel</div>
+            <div class="opt-s" style="margin-top:-4px">Turini tanlang va kerakli metrni kiriting</div>
+            ${kbCables().map(p => kbRow(p, kbPick(k.cable === p.sku, () => kbSet({ cable: k.cable === p.sku ? null : p.sku })), { on: k.cable === p.sku, unit: 'm' })).join('')}
+            ${cabSel ? `<div class="card" style="display:flex;align-items:center;justify-content:space-between;gap:12px">
+              <div style="min-width:0"><div class="opt-t">Uzunligi</div><div class="opt-s">${+k.cableM > 0 ? esc(fmt(cabSel.price * k.cableM)) : 'Metrni kiriting'}</div></div>
+              <div class="ctr">
+                <button onclick="${h(() => kbSet({ cableM: Math.max(0, (+k.cableM || 0) - 10) || '' }))}" aria-label="-10 m">${ic('minus', 18, 2.2)}</button>
+                <label style="display:flex;align-items:baseline;gap:3px;padding:0 6px"><input data-k="kbcab" value="${esc(k.cableM)}" oninput="${h(e => { const d = String(e.target.value).replace(/[^0-9]/g, '').slice(0, 4); S.kb.cableM = d === '' ? '' : Math.min(2000, +d); })}" onchange="${h(() => kbSet({}))}" inputmode="numeric" placeholder="0" style="width:52px;border:0;outline:0;background:transparent;text-align:center;font:600 16px var(--fd);color:var(--ink)"><span class="muted" style="font:600 12px var(--fb)">m</span></label>
+                <button class="plus" onclick="${h(() => kbSet({ cableM: Math.min(2000, (+k.cableM || 0) + 10) }))}" aria-label="+10 m">${ic('plus', 18, 2.2)}</button>
+              </div>
+            </div>` : ''}
+            ${kbOpt(!k.cable, 'Kabel kerak emas', 'Kabelni o‘zim olaman', () => kbSet({ cable: null, cableM: '' }))}`;
+          if (k.tech === 'ip') {
+            const packs = rjPacks();
+            if (packs.length) parts += `<div class="lbl" style="margin-top:6px">RJ45 konnektor · kerak: ${n * 2} ta</div>
+              <div class="hdds">${packs.map(p => `<button class="hdd ${k.rj === p.sku ? 'on' : ''}" onclick="${h(() => kbSet({ rj: k.rj === p.sku ? null : p.sku }))}"><b>${esc(p.sku.slice(5))}</b><small>dona</small><small>${esc(fmt(p.price).replace(' so‘m', ''))}</small></button>`).join('')}</div>`;
+          }
+        }
+        body = `<section class="sec" style="gap:10px">${parts}</section>`;
+      } else if (key === 'store') {
+        if (kbUsesSd(k)) {
+          body = `<section class="sec" style="gap:10px">
+            <div class="lbl">microSD karta · har kameraga bittadan</div>
+            <div class="hdds">${sdOptions().map(o => `<button class="hdd ${k.store === o.sku ? 'on' : ''}" onclick="${h(() => kbSet({ store: o.sku, storeQ: k.store === o.sku ? k.storeQ : n }))}"><b>${esc(o.size.replace(' GB', ''))}</b><small>GB · ${esc(o.days || '')}</small><small>${esc(fmt(o.price).replace(' so‘m', ''))}</small></button>`).join('')}</div>
+            ${k.store && k.store !== 'none' ? `<div class="card" style="display:flex;align-items:center;justify-content:space-between;gap:12px"><div><div class="opt-t">Kartalar soni</div><div class="opt-s">${n} ta kamera</div></div>${kbQty(+k.storeQ || 1, () => kbSet({ storeQ: Math.max(1, (+k.storeQ || 1) - 1) }), () => kbSet({ storeQ: Math.min(64, (+k.storeQ || 1) + 1) }))}</div>` : ''}
+            ${kbOpt(k.store === 'none', 'Xotira kerak emas', 'Kartalar menda bor', () => kbSet({ store: 'none' }))}
+          </section>`;
+        } else {
+          const rec = k.rec && k.rec !== 'none' ? kbProd(k.rec) : null;
+          const slots = rec ? kbSata(rec) : 1;
+          body = `<section class="sec" style="gap:10px">
+            <div class="lbl">Qattiq disk (HDD)${rec ? ' · registratorda ' + slots + ' ta joy' : ''}</div>
+            ${kbHdds().map(p => kbRow(p, kbPick(k.store === p.sku, () => kbSet({ store: p.sku, storeQ: 1 })), { on: k.store === p.sku })).join('')}
+            ${k.store && k.store !== 'none' && slots > 1 ? `<div class="card" style="display:flex;align-items:center;justify-content:space-between;gap:12px"><div><div class="opt-t">Disklar soni</div><div class="opt-s">ko‘pi bilan ${slots} ta</div></div>${kbQty(+k.storeQ || 1, () => kbSet({ storeQ: Math.max(1, (+k.storeQ || 1) - 1) }), () => kbSet({ storeQ: Math.min(slots, (+k.storeQ || 1) + 1) }))}</div>` : ''}
+            ${kbOpt(k.store === 'none', 'Disk kerak emas', 'Menda disk bor', () => kbSet({ store: 'none' }))}
+          </section>`;
+        }
+      } else {
+        const pricing = (DATA.config && DATA.config.pricing) || {};
+        const rates = S.rates || {}, rateOn = S.rateOn || {};
+        const term = [12, 6, 24, 3].find(m => rateOn[m]) || 12;
+        const monthly = Math.round(tot.total * (1 + (rates[term] || 0) / 100) / term / 1000) * 1000;
+        const skus = tot.lines.map(l => [l.p.sku, l.q]);
+        const what = (k.brand || '') + ' komplekt · ' + n + ' kamera';
+        const perCam = pricing.installPerCamera || 250000;
+        body = `<section class="card">
+            <div class="lbl" style="margin-bottom:10px">Komplekt tarkibi</div>
+            ${tot.lines.map(l => `<div class="kb-ln"><div class="kb-img sm">${l.p.sd ? ic('sd', 18, 1.6) : prodMedia(l.p, 28, 28)}</div><div class="kb-b"><div class="kb-s" style="margin:0">${esc(l.role)}</div><div class="kb-n">${esc(l.p.name)}</div><div class="kb-lf"><span>${l.q}${l.unit ? ' ' + l.unit : ' dona'} × ${esc(fmt(l.p.price))}</span><b class="kb-sum">${esc(fmt(l.sum))}</b></div></div></div>`).join('')}
+          </section>
+          ${kbMod('install') ? kbOpt(k.install, 'O‘rnatish va sozlash', fmt(perCam) + ' / kamera · usta kabel tortadi, sozlaydi va telefoningizga ulaydi', () => kbSet({ install: !k.install }), pr(fmt(n * perCam))) : ''}
+          <section class="rcpt">
+            <div class="kv"><span>Mahsulotlar</span><span>${esc(fmt(tot.goods))}</span></div>
+            ${k.install ? `<div class="kv"><span>O‘rnatish · ${n} kamera</span><span>${esc(fmt(tot.install))}</span></div>` : ''}
+            <div class="kv"><span>Yetkazish</span><span>${tot.ship ? esc(fmt(tot.ship)) : 'Bepul'}</span></div>
+            <div class="rcpt-tot"><span class="lbl">Jami</span>${pr(fmt(tot.total))}</div>
+            ${S.creditService !== false && kbMod('credit') ? `<div class="opt-s" style="margin-top:10px">Muddatli to‘lov: ${term} oyga oyiga ~${esc(fmt(monthly))}</div>` : ''}
+          </section>
+          <div class="btn-row">
+            <button class="btn btn-g f" onclick="${h(() => { const b = { ...S.bag }; skus.forEach(([s, q]) => { b[s] = (b[s] || 0) + q; }); set({ bag: b, bagOpen: true }); flash('Komplekt savatga qo‘shildi'); })}">${ic('bag', 18, 2)} Savatga</button>
+            <button class="btn btn-p f" onclick="${h(() => placeOrder(what, fmt(tot.total), skus, { install: k.install, cloud: false }))}">Buyurtma ${ic('arrowR', 18, 2.2)}</button>
+          </div>
+          <div class="opt-s" style="text-align:center;margin-top:-8px">Tasdiqlashdan oldin telefon raqamingiz so‘raladi</div>`;
+      }
+
+      const nextKey = KB_STEPS[idx + 1] ? KB_STEPS[idx + 1][0] : null;
+      const canNext = kbStepOk(k, key);
+      const hint = { brand: 'Brendni tanlang', tech: 'Tizim turini tanlang', cams: 'Kamida bitta kamera qo‘shing', rec: 'Registratorni tanlang', net: 'Switchni tanlang yoki “kerak emas”ni belgilang', store: 'Xotirani tanlang yoki “kerak emas”ni belgilang' }[key];
+      return `
+<div class="pg" style="gap:20px">
+  <div class="ttl"><h1 class="h2">Komplekt</h1><span class="sec-n">${idx + 1} / ${KB_STEPS.length} · ${esc(KB_STEPS[idx][1])}</span></div>
+  ${seg}
+  <div class="steps kb-steps">
+    ${KB_STEPS.map(([s, nm], i) => `
+    <button class="step ${i === idx ? 'on' : ''} ${i < idx && kbStepOk(k, s) ? 'past' : ''}" ${reach(i) ? `onclick="${h(() => go(s))}"` : 'disabled'}>
+      <span class="step-bar"></span>
+      <span class="step-l">${i < idx && kbStepOk(k, s) ? ic('check', 12, 2.6) : `<i>${i + 1}</i>`}${i === idx ? esc(nm) : ''}</span>
+    </button>`).join('')}
+  </div>
+  ${key !== 'sum' && key !== 'brand' && n > 0 ? `
+  <div class="sumc">
+    <div class="lbl">${esc([k.brand, k.tech ? KB_TECH[k.tech].n.split(' (')[0] : ''].filter(Boolean).join(' · '))}</div>
+    <div class="sumc-v">${pr(fmt(tot.goods))}</div>
+    <div class="sumc-n">${n} kamera · ${tot.lines.length} pozitsiya</div>
+  </div>` : ''}
+  ${body}
+  ${key !== 'sum' ? `
+  <div class="btn-row">
+    ${idx > 0 ? `<button class="btn btn-g" onclick="${h(() => go(KB_STEPS[idx - 1][0]))}" aria-label="Orqaga">${ic('chevL', 20, 2.2)}</button>` : ''}
+    <button class="btn ${canNext ? 'btn-p' : 'btn-off'} f" onclick="${h(() => { if (!canNext) { flash(hint); return; } go(nextKey); })}">Davom etish ${ic('arrowR', 18, 2.2)}</button>
+  </div>` : `
+  <button class="btn btn-o w" onclick="${h(() => go('cams'))}">${ic('chevL', 18, 2)} Kameralarni o‘zgartirish</button>`}
+</div>`;
+    }
 
     function mKitManual(v) {
       const cam = prodBySku(S.camSku) || (DATA.products || []).find(p => p.name === v.camName) || null;
@@ -6741,7 +7367,7 @@
       <div class="ctr">
         <button onclick="${h(v.dec)}" aria-label="Kamaytirish">${ic('minus', 18, 2.2)}</button>
         <b>${v.cams}</b>
-        <button class="pl" onclick="${h(v.inc)}" aria-label="Ko‘paytirish">${ic('plus', 18, 2.2)}</button>
+        <button class="plus" onclick="${h(v.inc)}" aria-label="Ko‘paytirish">${ic('plus', 18, 2.2)}</button>
       </div>
     </div>
     ${v.cableModOn ? `
@@ -6762,7 +7388,7 @@
           <input data-k="cable" value="${esc(v.cable)}" oninput="${h(v.setCable)}" inputmode="numeric" style="width:44px;border:0;outline:0;background:transparent;text-align:center;font:600 16px var(--fd);color:var(--ink)">
           <span class="muted" style="font:600 12px var(--fb)">m</span>
         </label>
-        <button class="pl" onclick="${h(v.cableInc)}" aria-label="+10 m">${ic('plus', 18, 2.2)}</button>
+        <button class="plus" onclick="${h(v.cableInc)}" aria-label="+10 m">${ic('plus', 18, 2.2)}</button>
       </div>
     </div>
     ${v.rjOn ? `
@@ -7131,7 +7757,7 @@
       </div>`).join('')}
     </div>
   </section>
-  <div class="opt-s" style="text-align:center">Ilova versiyasi 2.0.0 · KAMERA OPTOM QARSHI</div>` : ''}
+  <div class="opt-s" style="text-align:center">Ilova versiyasi 2.1.0 · KAMERA OPTOM QARSHI</div>` : ''}
 
   ${S.profPage === 'usta' ? mUstaPage(v) : ''}
   ${v.profPaymentOn ? mProfPayment(v) : ''}
@@ -7477,7 +8103,7 @@ ${mProfHead(v, 'Yordam va biz haqida', "Qarshi shahar bosh do‘koni")}
             <div class="ctr sm">
               <button onclick="${h(c.minus)}" aria-label="Kamaytirish">${ic('minus', 15, 2.4)}</button>
               <b>${c.qty}</b>
-              <button class="pl" onclick="${h(c.plus)}" aria-label="Ko‘paytirish">${ic('plus', 15, 2.4)}</button>
+              <button class="plus" onclick="${h(c.plus)}" aria-label="Ko‘paytirish">${ic('plus', 15, 2.4)}</button>
             </div>
           </div>
         </div>
@@ -7510,7 +8136,7 @@ ${mProfHead(v, 'Yordam va biz haqida', "Qarshi shahar bosh do‘koni")}
 <div class="scrim" style="z-index:22" onclick="${h(e => { if (e && e.target === e.currentTarget) v.closeRegion(); })}">
   <div class="sheet">
     <div class="sheet-h">
-      <div><h2 class="h3">Hududni tanlang</h2><div class="opt-s" style="margin-top:4px">${esc(SHIP_RULE)}</div></div>
+      <div><h2 class="h3">Hududni tanlang</h2><div class="opt-s" style="margin-top:4px">${esc(v.shipRule)}</div></div>
       <button class="xbtn" style="width:34px;height:34px" onclick="${h(v.closeRegion)}" aria-label="Yopish">${ic('x', 16, 2.2)}</button>
     </div>
     <div style="padding:0 20px 12px;display:flex;flex-direction:column;gap:10px">
@@ -8780,6 +9406,99 @@ ${mProfHead(v, 'Yordam va biz haqida', "Qarshi shahar bosh do‘koni")}
       "Ruxsat":"Разрешение",
       "{n} so‘mdan ortiq buyurtmada bepul":"бесплатно при заказе от {n} сум",
       "aks holda {n} so‘m":"иначе {n} сум",
+      "Tayyor komplektlar":"Готовые комплекты",
+      "Bosqichma-bosqich":"Пошагово",
+      "{n} ta tayyor":"{n} готовых",
+      "Har bir komplekt bitta brend mahsulotlaridan tuzilgan va bir-biriga mos. Tanlang — keyin har bir bosqichda o‘zgartira olasiz.":"Каждый комплект собран из совместимых товаров одного бренда. Выберите — затем можно изменить любой шаг.",
+      "O‘zim bosqichma-bosqich yig‘aman":"Соберу сам пошагово",
+      "Brend":"Бренд",
+      "Tur":"Тип",
+      "Kameralar":"Камеры",
+      "Registrator":"Регистратор",
+      "Ulanish":"Подключение",
+      "Xulosa":"Итог",
+      "Qaysi brend bilan yig‘amiz?":"С каким брендом собираем?",
+      "{n} ta kamera":"{n} камер",
+      "IP":"IP",
+      "Analog":"Аналог",
+      "Wi-Fi / 4G":"Wi-Fi / 4G",
+      "tizim turi":"тип системы",
+      "IP kameralar (simli, PoE)":"IP-камеры (проводные, PoE)",
+      "Analog kameralar (HDCVI / Turbo HD)":"Аналоговые камеры (HDCVI / Turbo HD)",
+      "Wi-Fi / 4G kameralar (simsiz)":"Wi-Fi / 4G камеры (беспроводные)",
+      "IP kameralar":"IP-камеры",
+      "Analog kameralar":"Аналоговые камеры",
+      "Wi-Fi / 4G kameralar":"Wi-Fi / 4G камеры",
+      "Tarmoq kabeli orqali NVR registratorga ulanadi — eng ishonchli tizim":"Подключаются к NVR сетевым кабелем — самая надёжная система",
+      "XVR / DVR registrator va 12V quvvat bloki bilan ishlaydi":"Работают с регистратором XVR / DVR и блоком питания 12V",
+      "Har kamera o‘zi yozadi (microSD), telefon ilovasida ko‘rasiz":"Каждая камера пишет сама (microSD), смотрите в приложении",
+      "{n} ta model":"{n} моделей",
+      "Ko‘cha (tashqi)":"Улица (уличные)",
+      "Xona (ichki)":"Помещение (внутренние)",
+      "ko‘chaga (hovli, darvoza, fasad) mos: {n} ta model":"для улицы (двор, ворота, фасад): {n} моделей",
+      "xona ichiga mos: {n} ta model":"для помещения: {n} моделей",
+      "kamida {n} kanal":"не менее {n} каналов",
+      "Yozuv qayerda saqlansin?":"Где хранить запись?",
+      "Registratorsiz":"Без регистратора",
+      "har kamerada microSD":"microSD в каждой камере",
+      "Har bir kamera yozuvni o‘z kartasiga yozadi":"Каждая камера пишет на свою карту",
+      "Registrator kerak emas":"Регистратор не нужен",
+      "Menda mos registrator bor":"У меня есть подходящий регистратор",
+      "Simsiz ulanish":"Беспроводное подключение",
+      "Wi-Fi / 4G kameralar o‘z quvvat adapteri bilan keladi — qo‘shimcha kabel yoki switch kerak emas. Wi-Fi kameralar uchun joyda internet (router) bo‘lishi kerak.":"Wi-Fi / 4G камеры поставляются со своим адаптером питания — дополнительный кабель или коммутатор не нужен. Для Wi-Fi камер на объекте нужен интернет (роутер).",
+      "PoE switch":"PoE-коммутатор",
+      "kamida {n} port":"не менее {n} портов",
+      "Kameralarga bitta kabel orqali quvvat va internet beradi":"Даёт камерам питание и интернет по одному кабелю",
+      "Switch kerak emas":"Коммутатор не нужен",
+      "Menda PoE switch bor":"У меня есть PoE-коммутатор",
+      "PoE switch shart emas":"PoE-коммутатор не нужен",
+      "Tanlangan registratorda kameralar uchun PoE portlar bor.":"У выбранного регистратора есть PoE-порты для камер.",
+      "12V quvvat bloki":"Блок питания 12V",
+      "Kabel":"Кабель",
+      "Turini tanlang va kerakli metrni kiriting":"Выберите тип и введите нужные метры",
+      "Uzunligi":"Длина",
+      "Metrni kiriting":"Введите метры",
+      "Kabel kerak emas":"Кабель не нужен",
+      "Kabelni o‘zim olaman":"Кабель куплю сам",
+      "RJ45 konnektor · kerak: {n} ta":"Коннектор RJ45 · нужно: {n} шт",
+      "kerak: {n} ta":"нужно: {n} шт",
+      "microSD karta · har kameraga bittadan":"Карта microSD · по одной на камеру",
+      "microSD karta":"Карта microSD",
+      "har kameraga bittadan":"по одной на камеру",
+      "Kartalar soni":"Количество карт",
+      "Xotira kerak emas":"Память не нужна",
+      "Kartalar menda bor":"Карты у меня есть",
+      "Qattiq disk (HDD)":"Жёсткий диск (HDD)",
+      "registratorda {n} ta joy":"в регистраторе {n} слотов",
+      "Disklar soni":"Количество дисков",
+      "ko‘pi bilan {n} ta":"не более {n}",
+      "Disk kerak emas":"Диск не нужен",
+      "Menda disk bor":"Диск у меня есть",
+      "Kamera":"Камера",
+      "Konnektor":"Коннектор",
+      "Quvvat bloki":"Блок питания",
+      "{n} dona × {n} so‘m":"{n} шт × {n} сум",
+      "{n} m × {n} so‘m":"{n} м × {n} сум",
+      "{n} so‘m / kamera":"{n} сум / камера",
+      "usta kabel tortadi, sozlaydi va telefoningizga ulaydi":"мастер проложит кабель, настроит и подключит к телефону",
+      "O‘rnatish · {n} kamera":"Установка · {n} камер",
+      "Muddatli to‘lov: {n} oyga oyiga ~{n} so‘m":"Рассрочка: на {n} мес. ~{n} сум в месяц",
+      "Savatga":"В корзину",
+      "Buyurtma":"Заказ",
+      "Kameralarni o‘zgartirish":"Изменить камеры",
+      "Komplekt savatga qo‘shildi":"Комплект добавлен в корзину",
+      "Brendni tanlang":"Выберите бренд",
+      "Tizim turini tanlang":"Выберите тип системы",
+      "Kamida bitta kamera qo‘shing":"Добавьте хотя бы одну камеру",
+      "Registratorni tanlang":"Выберите регистратор",
+      "Switchni tanlang yoki “kerak emas”ni belgilang":"Выберите коммутатор или отметьте «не нужен»",
+      "Xotirani tanlang yoki “kerak emas”ni belgilang":"Выберите память или отметьте «не нужна»",
+      "{n} ta ko‘cha":"{n} уличных",
+      "{n} ta xona":"{n} внутренних",
+      "{n} ta ko‘cha + {n} ta xona":"{n} уличных + {n} внутренних",
+      "{n} kamera · {n} pozitsiya":"{n} камер · {n} позиций",
+      "Buyurtma tarkibi bo‘sh":"Состав заказа пуст",
+      "microSD va HDD disklar":"microSD и HDD диски",
       "RJ45 konnektor":"Коннектор RJ45",
       "RJ45 konnektor · {n} dona":"Коннектор RJ45 · {n} шт",
       "{n} dona · har kameraga {n} ta":"{n} шт · по {n} на камеру",
@@ -8804,8 +9523,10 @@ ${mProfHead(v, 'Yordam va biz haqida', "Qarshi shahar bosh do‘koni")}
       }
       if (core.length > 2 && core === core.toUpperCase() && /[A-Z]/.test(core)) {
         const cap = core.charAt(0) + core.slice(1).toLowerCase();
-        const t = trRu(cap);
-        if (t !== cap) return t.toUpperCase();
+        if (cap !== core) {
+          const t = trRu(cap);
+          if (t !== cap) return t.toUpperCase();
+        }
       }
       for (const sep of [' · ', ' — ', ', ']) {
         if (!core.includes(sep)) continue;
@@ -8851,7 +9572,7 @@ ${mProfHead(v, 'Yordam va biz haqida', "Qarshi shahar bosh do‘koni")}
     let _pnKey = null, _pnSet = new Set();
     function _prodNames() {
       const ps = DATA.products || [];
-      if (_pnKey !== ps) { _pnKey = ps; _pnSet = new Set(ps.flatMap(p => [p.name, p.sku, p.badge].filter(Boolean))); _trCache.ru.clear(); _trCache.kr.clear(); }
+      if (_pnKey !== ps) { _pnKey = ps; _pnSet = new Set(ps.flatMap(p => [p.name, p.sku].filter(Boolean))); _trCache.ru.clear(); _trCache.kr.clear(); }
       return _pnSet;
     }
     /* ruscha ko‘plik: 1 камера · 2–4 камеры · 5+ камер */
@@ -8903,6 +9624,8 @@ ${mProfHead(v, 'Yordam va biz haqida', "Qarshi shahar bosh do‘koni")}
       const th = day ? 'day' : 'night';
       if (DEV) DEV.setAttribute('data-theme', th);
       if (document.documentElement) document.documentElement.setAttribute('data-theme', th);
+      const tc = document.querySelector('meta[name="theme-color"]');
+      if (tc) tc.setAttribute('content', day ? '#f3f1ed' : '#0f0f0e');
     }
     function mFatal(title, msg, btnHtml) {
       return `

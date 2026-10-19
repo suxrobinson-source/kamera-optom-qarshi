@@ -5527,7 +5527,7 @@
         filtered: list.map(p => {
           const b = P(p); return {
             ...b, stockShort: (p.stock || '').replace('Omborda ', ''),
-            perMonth: fmt(monthlyFor(12, p.price)) + '/oy',
+            perMonth: creditOn && monthlyFor(12, p.price) >= 10000 ? fmt(monthlyFor(12, p.price)) + '/oy' : '',
             add: e => { if (e && e.stopPropagation) e.stopPropagation(); addBag(p.sku); }
           };
         }),
@@ -7272,7 +7272,7 @@
             ${k.install ? `<div class="kv"><span>O‘rnatish · ${n} kamera</span><span>${esc(fmt(tot.install))}</span></div>` : ''}
             <div class="kv"><span>Yetkazish</span><span>${tot.ship ? esc(fmt(tot.ship)) : 'Bepul'}</span></div>
             <div class="rcpt-tot"><span class="lbl">Jami</span>${pr(fmt(tot.total))}</div>
-            ${S.creditService !== false && kbMod('credit') ? `<div class="opt-s" style="margin-top:10px">Muddatli to‘lov: ${term} oyga oyiga ~${esc(fmt(monthly))}</div>` : ''}
+            ${S.creditService !== false && kbMod('credit') && monthly >= 10000 ? `<div class="opt-s" style="margin-top:10px">Muddatli to‘lov: ${term} oyga oyiga ~${esc(fmt(monthly))}</div>` : ''}
           </section>
           <div class="btn-row">
             <button class="btn btn-g f" onclick="${h(() => { const b = { ...S.bag }; skus.forEach(([s, q]) => { b[s] = (b[s] || 0) + q; }); set({ bag: b, bagOpen: true }); flash('Komplekt savatga qo‘shildi'); })}">${ic('bag', 18, 2)} Savatga</button>

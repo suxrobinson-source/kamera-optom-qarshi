@@ -27,7 +27,7 @@ async function main() {
         { k: 'Dona narxi', v: `${UNIT} so‘m` },
         { k: 'Kerakli miqdor', v: 'Har bir kamera kabeliga 2 ta' },
       ],
-      images: [1, 2, 3].map(i => `/assets/products/rj45-${n}-${i}.jpg`),
+      images: [1, 2, 3].map(i => `/assets/products/rj45-${n}-${i}.jpg?v=hd1`),
     };
     const row = await db.get('SELECT sku FROM products WHERE sku = ?', sku);
     if (row) {

@@ -2470,7 +2470,7 @@
   "images": [
    "/assets/products/tpl-cpe220-1.jpg",
    "/assets/products/tpl-cpe220-2.jpg",
-   "/assets/products/tpl-cpe220-3.jpg"
+   "/assets/products/tpl-cpe220-3.jpg?v=hd1"
   ]
  },
  {
@@ -3912,7 +3912,8 @@
   "warranty": true,
   "images": [
    "/assets/products/tpl-ne210-outdoor-1.jpg",
-   "/assets/products/tpl-ne210-outdoor-2.jpg"
+   "/assets/products/tpl-ne210-outdoor-2.jpg?v=hd1",
+   "/assets/products/tpl-ne210-outdoor-3.jpg?v=hd1"
   ]
  },
  {
@@ -6442,7 +6443,8 @@
   "cost_usd": 31.0,
   "warranty": true,
   "images": [
-   "/assets/products/tapo-tc40-1.jpg"
+   "/assets/products/tapo-tc40-1.jpg?v=hd1",
+   "/assets/products/tapo-tc40-2.jpg?v=hd1"
   ]
  },
  {
@@ -6481,7 +6483,8 @@
   "cost_usd": 67.0,
   "warranty": true,
   "images": [
-   "/assets/products/tapo-tc40gw-1.jpg"
+   "/assets/products/tapo-tc40gw-1.jpg?v=hd1",
+   "/assets/products/tapo-tc40gw-2.jpg?v=hd1"
   ]
  },
  {
@@ -6520,7 +6523,9 @@
   "cost_usd": 29.0,
   "warranty": true,
   "images": [
-   "/assets/products/tapo-tc41-1.jpg"
+   "/assets/products/tapo-tc41-1.jpg?v=hd1",
+   "/assets/products/tapo-tc41-2.jpg?v=hd1",
+   "/assets/products/tapo-tc41-3.jpg?v=hd1"
   ]
  },
  {
@@ -6559,7 +6564,9 @@
   "cost_usd": 40.0,
   "warranty": true,
   "images": [
-   "/assets/products/tapo-tc42-1.jpg"
+   "/assets/products/tapo-tc42-1.jpg?v=hd1",
+   "/assets/products/tapo-tc42-2.jpg?v=hd1",
+   "/assets/products/tapo-tc42-3.jpg?v=hd1"
   ]
  },
  {
@@ -6598,7 +6605,9 @@
   "cost_usd": 16.0,
   "warranty": true,
   "images": [
-   "/assets/products/tapo-tc60-1.jpg"
+   "/assets/products/tapo-tc60-1.jpg?v=hd1",
+   "/assets/products/tapo-tc60-2.jpg?v=hd1",
+   "/assets/products/tapo-tc60-3.jpg?v=hd1"
   ]
  },
  {
@@ -6641,7 +6650,9 @@
   "cost_usd": 30.0,
   "warranty": true,
   "images": [
-   "/assets/products/tapo-tc65-1.jpg"
+   "/assets/products/tapo-tc65-1.jpg?v=hd1",
+   "/assets/products/tapo-tc65-2.jpg?v=hd1",
+   "/assets/products/tapo-tc65-3.jpg?v=hd1"
   ]
  },
  {
@@ -6676,7 +6687,9 @@
   "cost_usd": 19.0,
   "warranty": true,
   "images": [
-   "/assets/products/tapo-tc70-1.jpg"
+   "/assets/products/tapo-tc70-1.jpg?v=hd1",
+   "/assets/products/tapo-tc70-2.jpg?v=hd1",
+   "/assets/products/tapo-tc70-3.jpg?v=hd1"
   ]
  },
  {
@@ -6715,7 +6728,9 @@
   "cost_usd": 19.0,
   "warranty": true,
   "images": [
-   "/assets/products/tapo-tc71-1.jpg"
+   "/assets/products/tapo-tc71-1.jpg?v=hd1",
+   "/assets/products/tapo-tc71-2.jpg?v=hd1",
+   "/assets/products/tapo-tc71-3.jpg?v=hd1"
   ]
  },
  {
@@ -6750,7 +6765,9 @@
   "cost_usd": 22.0,
   "warranty": true,
   "images": [
-   "/assets/products/tapo-tc72-1.jpg"
+   "/assets/products/tapo-tc72-1.jpg?v=hd1",
+   "/assets/products/tapo-tc72-2.jpg?v=hd1",
+   "/assets/products/tapo-tc72-3.jpg?v=hd1"
   ]
  },
  {
@@ -6789,7 +6806,9 @@
   "cost_usd": 40.0,
   "warranty": true,
   "images": [
-   "/assets/products/tapo-tc82-kit-1.jpg"
+   "/assets/products/tapo-tc82-kit-1.jpg?v=hd1",
+   "/assets/products/tapo-tc82-kit-2.jpg?v=hd1",
+   "/assets/products/tapo-tc82-kit-3.jpg?v=hd1"
   ]
  },
  {
@@ -7183,7 +7202,8 @@
   "cost_usd": 23.0,
   "warranty": true,
   "images": [
-   "/assets/products/tapo-ke100-1.jpg"
+   "/assets/products/tapo-ke100-1.jpg?v=hd1",
+   "/assets/products/tapo-ke100-2.jpg?v=hd1"
   ]
  },
  {
@@ -7222,7 +7242,9 @@
   "cost_usd": 31.5,
   "warranty": true,
   "images": [
-   "/assets/products/tapo-ke100-kit-1.jpg"
+   "/assets/products/tapo-ke100-kit-1.jpg?v=hd1",
+   "/assets/products/tapo-ke100-kit-2.jpg?v=hd1",
+   "/assets/products/tapo-ke100-kit-3.jpg?v=hd1"
   ]
  },
  {
@@ -8519,7 +8541,7 @@
   "images": [
    "/assets/products/mer-mr50g-1.jpg",
    "/assets/products/mer-mr50g-2.jpg",
-   "/assets/products/mer-mr50g-3.jpg"
+   "/assets/products/mer-mr50g-3.jpg?v=hd1"
   ]
  },
  {
@@ -9081,7 +9103,8 @@
   "cost_usd": 1.3,
   "warranty": false,
   "images": [
-   "/assets/products/opt-fiber-heat-shrink-tubing-1.jpg"
+   "/assets/products/opt-fiber-heat-shrink-tubing-1.jpg?v=hd1",
+   "/assets/products/opt-fiber-heat-shrink-tubing-2.jpg?v=hd1"
   ]
  },
  {
@@ -9116,7 +9139,8 @@
   "cost_usd": 0.3,
   "warranty": false,
   "images": [
-   "/assets/products/opt-lc-lc-1.jpg"
+   "/assets/products/opt-lc-lc-1.jpg?v=hd1",
+   "/assets/products/opt-lc-lc-2.jpg?v=hd1"
   ]
  },
  {
@@ -9154,7 +9178,9 @@
   "cost_usd": 2.5,
   "warranty": false,
   "images": [
-   "/assets/products/opt-lc-lc-cable-1-5m-optika-patchkord-dublex-1.jpg"
+   "/assets/products/opt-lc-lc-cable-1-5m-optika-patchkord-dublex-1.jpg?v=hd1",
+   "/assets/products/opt-lc-lc-cable-1-5m-optika-patchkord-dublex-2.jpg?v=hd1",
+   "/assets/products/opt-lc-lc-cable-1-5m-optika-patchkord-dublex-3.jpg?v=hd1"
   ]
  },
  {
@@ -9192,7 +9218,8 @@
   "cost_usd": 2.6,
   "warranty": false,
   "images": [
-   "/assets/products/opt-lc-lc-cable-3m-optika-patchkord-dublex-1.jpg"
+   "/assets/products/opt-lc-lc-cable-3m-optika-patchkord-dublex-1.jpg?v=hd1",
+   "/assets/products/opt-lc-lc-cable-3m-optika-patchkord-dublex-2.jpg?v=hd1"
   ]
  },
  {
@@ -9230,7 +9257,8 @@
   "cost_usd": 3.0,
   "warranty": false,
   "images": [
-   "/assets/products/opt-lc-lc-cable-5m-optika-patchkord-dublex-1.jpg"
+   "/assets/products/opt-lc-lc-cable-5m-optika-patchkord-dublex-1.jpg?v=hd1",
+   "/assets/products/opt-lc-lc-cable-5m-optika-patchkord-dublex-2.jpg?v=hd1"
   ]
  },
  {
@@ -9268,7 +9296,9 @@
   "cost_usd": 3.6,
   "warranty": false,
   "images": [
-   "/assets/products/opt-lc-lc-cable-10m-optika-patchkord-dublex-1.jpg"
+   "/assets/products/opt-lc-lc-cable-10m-optika-patchkord-dublex-1.jpg?v=hd1",
+   "/assets/products/opt-lc-lc-cable-10m-optika-patchkord-dublex-2.jpg?v=hd1",
+   "/assets/products/opt-lc-lc-cable-10m-optika-patchkord-dublex-3.jpg?v=hd1"
   ]
  },
  {
@@ -9333,7 +9363,9 @@
   "cost_usd": 0.11,
   "warranty": false,
   "images": [
-   "/assets/products/opt-sc-apc-sc-apc-1.jpg"
+   "/assets/products/opt-sc-apc-sc-apc-1.jpg?v=hd1",
+   "/assets/products/opt-sc-apc-sc-apc-2.jpg?v=hd1",
+   "/assets/products/opt-sc-apc-sc-apc-3.jpg?v=hd1"
   ]
  },
  {
@@ -9371,7 +9403,9 @@
   "cost_usd": 2.4,
   "warranty": false,
   "images": [
-   "/assets/products/opt-sc-lc-cable-1m-optika-patchkord-dublex-1.jpg"
+   "/assets/products/opt-sc-lc-cable-1m-optika-patchkord-dublex-1.jpg?v=hd1",
+   "/assets/products/opt-sc-lc-cable-1m-optika-patchkord-dublex-2.jpg?v=hd1",
+   "/assets/products/opt-sc-lc-cable-1m-optika-patchkord-dublex-3.jpg?v=hd1"
   ]
  },
  {
@@ -9409,7 +9443,8 @@
   "cost_usd": 2.5,
   "warranty": false,
   "images": [
-   "/assets/products/opt-sc-lc-cable-3m-optika-patchkord-dublex-1.jpg"
+   "/assets/products/opt-sc-lc-cable-3m-optika-patchkord-dublex-1.jpg?v=hd1",
+   "/assets/products/opt-sc-lc-cable-3m-optika-patchkord-dublex-2.jpg?v=hd1"
   ]
  },
  {
@@ -9447,7 +9482,8 @@
   "cost_usd": 2.9,
   "warranty": false,
   "images": [
-   "/assets/products/opt-sc-lc-cable-5m-optika-patchkord-dublex-1.jpg"
+   "/assets/products/opt-sc-lc-cable-5m-optika-patchkord-dublex-1.jpg?v=hd1",
+   "/assets/products/opt-sc-lc-cable-5m-optika-patchkord-dublex-2.jpg?v=hd1"
   ]
  },
  {
@@ -9485,7 +9521,9 @@
   "cost_usd": 3.5,
   "warranty": false,
   "images": [
-   "/assets/products/opt-sc-lc-cable-10m-optika-patchkord-dublex-1.jpg"
+   "/assets/products/opt-sc-lc-cable-10m-optika-patchkord-dublex-1.jpg?v=hd1",
+   "/assets/products/opt-sc-lc-cable-10m-optika-patchkord-dublex-2.jpg?v=hd1",
+   "/assets/products/opt-sc-lc-cable-10m-optika-patchkord-dublex-3.jpg?v=hd1"
   ]
  },
  {
@@ -9523,7 +9561,7 @@
   "cost_usd": 0.9,
   "warranty": false,
   "images": [
-   "/assets/products/opt-sc-sc-cable-1m-optika-patchkord-dublex-1.jpg"
+   "/assets/products/opt-sc-sc-cable-1m-optika-patchkord-dublex-1.jpg?v=hd1"
   ]
  },
  {
@@ -9561,7 +9599,9 @@
   "cost_usd": 2.0,
   "warranty": false,
   "images": [
-   "/assets/products/opt-sc-sc-cable-3m-optika-patchkord-dublex-1.jpg"
+   "/assets/products/opt-sc-sc-cable-3m-optika-patchkord-dublex-1.jpg?v=hd1",
+   "/assets/products/opt-sc-sc-cable-3m-optika-patchkord-dublex-2.jpg?v=hd1",
+   "/assets/products/opt-sc-sc-cable-3m-optika-patchkord-dublex-3.jpg?v=hd1"
   ]
  },
  {
@@ -9599,7 +9639,9 @@
   "cost_usd": 1.1,
   "warranty": false,
   "images": [
-   "/assets/products/opt-sc-sc-cable-5m-optika-patchkord-dublex-1.jpg"
+   "/assets/products/opt-sc-sc-cable-5m-optika-patchkord-dublex-1.jpg?v=hd1",
+   "/assets/products/opt-sc-sc-cable-5m-optika-patchkord-dublex-2.jpg?v=hd1",
+   "/assets/products/opt-sc-sc-cable-5m-optika-patchkord-dublex-3.jpg?v=hd1"
   ]
  },
  {
@@ -9637,18 +9679,19 @@
   "cost_usd": 1.6,
   "warranty": false,
   "images": [
-   "/assets/products/opt-sc-sc-cable-10m-optika-patchkord-dublex-1.jpg"
+   "/assets/products/opt-sc-sc-cable-10m-optika-patchkord-dublex-1.jpg?v=hd1"
   ]
  },
  {
   "sku": "OPT-MC-9005-DELITEL-NA-16-KANALOV-DLYA-OPOVESHEN",
-  "name": "MC-9005 — ovozli ogohlantirish uchun 16 kanalli taqsimlagich",
+  "name": "Optik taqsimlagich MC-9005, 16 kanal",
   "model": "",
-  "cat": "Aksessuar",
+  "cat": "Tarmoq",
   "badge": "16 kanal",
-  "spec": "Ogohlantirish taqsimlagichi · 16 kanal",
+  "spec": "Optik splitter · 16 chiqish",
   "tags": [
-   "Ogohlantirish",
+   "Optika",
+   "Splitter",
    "16 kanal"
   ],
   "flags": {
@@ -9657,11 +9700,15 @@
    "night": 0,
    "spin": 0
   },
-  "desc": "MC-9005 — ovozli ogohlantirish (xabar berish) tizimi uchun 16 kanalli taqsimlagich (distribyutor tavsifi).",
+  "desc": "MC-9005 — 16 chiqishli optik taqsimlagich (splitter), SC/APC ulagichli pigteyllar bilan (distribyutor rasmi bo‘yicha).",
   "rows": [
    [
-    "Kanallar",
+    "Chiqishlar",
     "16 ta"
+   ],
+   [
+    "Ulagich",
+    "SC/APC"
    ]
   ],
   "cost_usd": 200.0,
@@ -9701,7 +9748,7 @@
   "cost_usd": 0.46,
   "warranty": false,
   "images": [
-   "/assets/products/opt-optic-pigteyl-lc-1-5-m-1.jpg"
+   "/assets/products/opt-optic-pigteyl-lc-1-5-m-1.jpg?v=hd1"
   ]
  },
  {
@@ -9735,7 +9782,8 @@
   "cost_usd": 0.46,
   "warranty": false,
   "images": [
-   "/assets/products/opt-opticheskiy-pikteyl-sc-apc-1-5-m-1.jpg"
+   "/assets/products/opt-opticheskiy-pikteyl-sc-apc-1-5-m-1.jpg?v=hd1",
+   "/assets/products/opt-opticheskiy-pikteyl-sc-apc-1-5-m-2.jpg?v=hd1"
   ]
  },
  {
@@ -9769,7 +9817,8 @@
   "cost_usd": 0.46,
   "warranty": false,
   "images": [
-   "/assets/products/opt-opticheskiy-pikteyl-sc-upc-1-5-m-1.jpg"
+   "/assets/products/opt-opticheskiy-pikteyl-sc-upc-1-5-m-1.jpg?v=hd1",
+   "/assets/products/opt-opticheskiy-pikteyl-sc-upc-1-5-m-2.jpg?v=hd1"
   ]
  },
  {
@@ -9804,7 +9853,9 @@
   "cost_usd": 5.29,
   "warranty": false,
   "images": [
-   "/assets/products/opt-plc-1x2-apc-1.jpg"
+   "/assets/products/opt-plc-1x2-apc-1.jpg?v=hd1",
+   "/assets/products/opt-plc-1x2-apc-2.jpg?v=hd1",
+   "/assets/products/opt-plc-1x2-apc-3.jpg?v=hd1"
   ]
  },
  {
@@ -9839,7 +9890,8 @@
   "cost_usd": 5.29,
   "warranty": false,
   "images": [
-   "/assets/products/opt-plc-1x2-upc-1.jpg"
+   "/assets/products/opt-plc-1x2-upc-1.jpg?v=hd1",
+   "/assets/products/opt-plc-1x2-upc-2.jpg?v=hd1"
   ]
  },
  {
@@ -9874,7 +9926,9 @@
   "cost_usd": 6.61,
   "warranty": false,
   "images": [
-   "/assets/products/opt-plc-1x4-apc-1.jpg"
+   "/assets/products/opt-plc-1x4-apc-1.jpg?v=hd1",
+   "/assets/products/opt-plc-1x4-apc-2.jpg?v=hd1",
+   "/assets/products/opt-plc-1x4-apc-3.jpg?v=hd1"
   ]
  },
  {
@@ -9909,7 +9963,9 @@
   "cost_usd": 6.61,
   "warranty": false,
   "images": [
-   "/assets/products/opt-plc-1x4-upc-1.jpg"
+   "/assets/products/opt-plc-1x4-upc-1.jpg?v=hd1",
+   "/assets/products/opt-plc-1x4-upc-2.jpg?v=hd1",
+   "/assets/products/opt-plc-1x4-upc-3.jpg?v=hd1"
   ]
  },
  {
@@ -9944,7 +10000,9 @@
   "cost_usd": 7.94,
   "warranty": false,
   "images": [
-   "/assets/products/opt-plc-1x8-apc-1.jpg"
+   "/assets/products/opt-plc-1x8-apc-1.jpg?v=hd1",
+   "/assets/products/opt-plc-1x8-apc-2.jpg?v=hd1",
+   "/assets/products/opt-plc-1x8-apc-3.jpg?v=hd1"
   ]
  },
  {
@@ -9979,7 +10037,9 @@
   "cost_usd": 7.94,
   "warranty": false,
   "images": [
-   "/assets/products/opt-plc-1x8-upc-1.jpg"
+   "/assets/products/opt-plc-1x8-upc-1.jpg?v=hd1",
+   "/assets/products/opt-plc-1x8-upc-2.jpg?v=hd1",
+   "/assets/products/opt-plc-1x8-upc-3.jpg?v=hd1"
   ]
  },
  {
@@ -10014,7 +10074,9 @@
   "cost_usd": 15.87,
   "warranty": false,
   "images": [
-   "/assets/products/opt-plc-1x16-apc-1.jpg"
+   "/assets/products/opt-plc-1x16-apc-1.jpg?v=hd1",
+   "/assets/products/opt-plc-1x16-apc-2.jpg?v=hd1",
+   "/assets/products/opt-plc-1x16-apc-3.jpg?v=hd1"
   ]
  },
  {
@@ -10049,7 +10111,8 @@
   "cost_usd": 15.87,
   "warranty": false,
   "images": [
-   "/assets/products/opt-plc-1x16-upc-1.jpg"
+   "/assets/products/opt-plc-1x16-upc-1.jpg?v=hd1",
+   "/assets/products/opt-plc-1x16-upc-2.jpg?v=hd1"
   ]
  },
  {
@@ -10084,7 +10147,9 @@
   "cost_usd": 28.44,
   "warranty": false,
   "images": [
-   "/assets/products/opt-plc-1x32-apc-1.jpg"
+   "/assets/products/opt-plc-1x32-apc-1.jpg?v=hd1",
+   "/assets/products/opt-plc-1x32-apc-2.jpg?v=hd1",
+   "/assets/products/opt-plc-1x32-apc-3.jpg?v=hd1"
   ]
  },
  {
@@ -10119,7 +10184,9 @@
   "cost_usd": 28.44,
   "warranty": false,
   "images": [
-   "/assets/products/opt-plc-1x32-upc-1.jpg"
+   "/assets/products/opt-plc-1x32-upc-1.jpg?v=hd1",
+   "/assets/products/opt-plc-1x32-upc-2.jpg?v=hd1",
+   "/assets/products/opt-plc-1x32-upc-3.jpg?v=hd1"
   ]
  },
  {
@@ -10154,7 +10221,9 @@
   "cost_usd": 52.91,
   "warranty": false,
   "images": [
-   "/assets/products/opt-plc-1x64-apc-1.jpg"
+   "/assets/products/opt-plc-1x64-apc-1.jpg?v=hd1",
+   "/assets/products/opt-plc-1x64-apc-2.jpg?v=hd1",
+   "/assets/products/opt-plc-1x64-apc-3.jpg?v=hd1"
   ]
  },
  {
@@ -10189,7 +10258,8 @@
   "cost_usd": 52.91,
   "warranty": false,
   "images": [
-   "/assets/products/opt-plc-1x64-upc-1.jpg"
+   "/assets/products/opt-plc-1x64-upc-1.jpg?v=hd1",
+   "/assets/products/opt-plc-1x64-upc-2.jpg?v=hd1"
   ]
  },
  {
@@ -10224,7 +10294,9 @@
   "cost_usd": 23.81,
   "warranty": false,
   "images": [
-   "/assets/products/opt-dac-kabel-10g-1-m-1.jpg"
+   "/assets/products/opt-dac-kabel-10g-1-m-1.jpg?v=hd1",
+   "/assets/products/opt-dac-kabel-10g-1-m-2.jpg?v=hd1",
+   "/assets/products/opt-dac-kabel-10g-1-m-3.jpg?v=hd1"
   ]
  },
  {
@@ -10259,7 +10331,9 @@
   "cost_usd": 29.1,
   "warranty": false,
   "images": [
-   "/assets/products/opt-dac-kabel-10g-3-m-1.jpg"
+   "/assets/products/opt-dac-kabel-10g-3-m-1.jpg?v=hd1",
+   "/assets/products/opt-dac-kabel-10g-3-m-2.jpg?v=hd1",
+   "/assets/products/opt-dac-kabel-10g-3-m-3.jpg?v=hd1"
   ]
  },
  {
@@ -10293,7 +10367,9 @@
   "cost_usd": 1.45,
   "warranty": false,
   "images": [
-   "/assets/products/opt-patch-kabel-cat-6-0-3m-1.jpg"
+   "/assets/products/opt-patch-kabel-cat-6-0-3m-1.jpg?v=hd1",
+   "/assets/products/opt-patch-kabel-cat-6-0-3m-2.jpg?v=hd1",
+   "/assets/products/opt-patch-kabel-cat-6-0-3m-3.jpg?v=hd1"
   ]
  },
  {
@@ -10327,7 +10403,8 @@
   "cost_usd": 1.7,
   "warranty": false,
   "images": [
-   "/assets/products/opt-patch-kabel-cat-6-0-5m-1.jpg"
+   "/assets/products/opt-patch-kabel-cat-6-0-5m-1.jpg?v=hd1",
+   "/assets/products/opt-patch-kabel-cat-6-0-5m-2.jpg?v=hd1"
   ]
  },
  {
@@ -10361,7 +10438,9 @@
   "cost_usd": 15.8,
   "warranty": false,
   "images": [
-   "/assets/products/opt-sfp-lc3km-1.jpg"
+   "/assets/products/opt-sfp-lc3km-1.jpg?v=hd1",
+   "/assets/products/opt-sfp-lc3km-2.jpg?v=hd1",
+   "/assets/products/opt-sfp-lc3km-3.jpg?v=hd1"
   ]
  },
  {
@@ -10395,7 +10474,9 @@
   "cost_usd": 17.0,
   "warranty": false,
   "images": [
-   "/assets/products/opt-sfp-lc20km-1.jpg"
+   "/assets/products/opt-sfp-lc20km-1.jpg?v=hd1",
+   "/assets/products/opt-sfp-lc20km-2.jpg?v=hd1",
+   "/assets/products/opt-sfp-lc20km-3.jpg?v=hd1"
   ]
  },
  {
@@ -10429,7 +10510,9 @@
   "cost_usd": 10.0,
   "warranty": false,
   "images": [
-   "/assets/products/opt-sfp-sc3km-1.jpg"
+   "/assets/products/opt-sfp-sc3km-1.jpg?v=hd1",
+   "/assets/products/opt-sfp-sc3km-2.jpg?v=hd1",
+   "/assets/products/opt-sfp-sc3km-3.jpg?v=hd1"
   ]
  },
  {
@@ -10463,7 +10546,9 @@
   "cost_usd": 18.0,
   "warranty": false,
   "images": [
-   "/assets/products/opt-sfp-sc20km-1.jpg"
+   "/assets/products/opt-sfp-sc20km-1.jpg?v=hd1",
+   "/assets/products/opt-sfp-sc20km-2.jpg?v=hd1",
+   "/assets/products/opt-sfp-sc20km-3.jpg?v=hd1"
   ]
  },
  {
@@ -10493,7 +10578,7 @@
   "cost_usd": 2.0,
   "warranty": false,
   "images": [
-   "/assets/products/opt-lotok-dlya-sraschivaniya-fiber-optic-splice-1.jpg"
+   "/assets/products/opt-lotok-dlya-sraschivaniya-fiber-optic-splice-1.jpg?v=hd1"
   ]
  },
  {
@@ -10523,7 +10608,9 @@
   "cost_usd": 0.66,
   "warranty": false,
   "images": [
-   "/assets/products/opt-fast-konnektor-upc-1.jpg"
+   "/assets/products/opt-fast-konnektor-upc-1.jpg?v=hd1",
+   "/assets/products/opt-fast-konnektor-upc-2.jpg?v=hd1",
+   "/assets/products/opt-fast-konnektor-upc-3.jpg?v=hd1"
   ]
  },
  {
@@ -10553,7 +10640,9 @@
   "cost_usd": 0.66,
   "warranty": false,
   "images": [
-   "/assets/products/opt-fast-konnektor-apc-1.jpg"
+   "/assets/products/opt-fast-konnektor-apc-1.jpg?v=hd1",
+   "/assets/products/opt-fast-konnektor-apc-2.jpg?v=hd1",
+   "/assets/products/opt-fast-konnektor-apc-3.jpg?v=hd1"
   ]
  },
  {
@@ -10591,7 +10680,9 @@
   "cost_usd": 15.0,
   "warranty": false,
   "images": [
-   "/assets/products/opt-hk-sfp-1-25g-20-1310-df-1.jpg"
+   "/assets/products/opt-hk-sfp-1-25g-20-1310-df-1.jpg?v=hd1",
+   "/assets/products/opt-hk-sfp-1-25g-20-1310-df-2.jpg?v=hd1",
+   "/assets/products/opt-hk-sfp-1-25g-20-1310-df-3.jpg?v=hd1"
   ]
  },
  {
@@ -10626,7 +10717,8 @@
   "cost_usd": 35.71,
   "warranty": false,
   "images": [
-   "/assets/products/opt-odf-kross-24-port-kachestvennyy-vydvizhnoy-1.jpg"
+   "/assets/products/opt-odf-kross-24-port-kachestvennyy-vydvizhnoy-1.jpg?v=hd1",
+   "/assets/products/opt-odf-kross-24-port-kachestvennyy-vydvizhnoy-2.jpg?v=hd1"
   ]
  },
  {
@@ -10661,7 +10753,8 @@
   "cost_usd": 19.84,
   "warranty": false,
   "images": [
-   "/assets/products/opt-odf-kross-24-port-prostoy-1.jpg"
+   "/assets/products/opt-odf-kross-24-port-prostoy-1.jpg?v=hd1",
+   "/assets/products/opt-odf-kross-24-port-prostoy-2.jpg?v=hd1"
   ]
  },
  {
@@ -10696,7 +10789,9 @@
   "cost_usd": 27.78,
   "warranty": false,
   "images": [
-   "/assets/products/opt-odf-kross-24-port-sredniy-1.jpg"
+   "/assets/products/opt-odf-kross-24-port-sredniy-1.jpg?v=hd1",
+   "/assets/products/opt-odf-kross-24-port-sredniy-2.jpg?v=hd1",
+   "/assets/products/opt-odf-kross-24-port-sredniy-3.jpg?v=hd1"
   ]
  },
  {
@@ -10731,7 +10826,7 @@
   "cost_usd": 5.95,
   "warranty": false,
   "images": [
-   "/assets/products/opt-odf-kross-4-port-prostoy-1.jpg"
+   "/assets/products/opt-odf-kross-4-port-prostoy-1.jpg?v=hd1"
   ]
  },
  {
@@ -10762,7 +10857,8 @@
   "cost_usd": 33.07,
   "warranty": false,
   "images": [
-   "/assets/products/opt-odf-kross-48-port-1.jpg"
+   "/assets/products/opt-odf-kross-48-port-1.jpg?v=hd1",
+   "/assets/products/opt-odf-kross-48-port-2.jpg?v=hd1"
   ]
  },
  {
@@ -10797,7 +10893,8 @@
   "cost_usd": 5.95,
   "warranty": false,
   "images": [
-   "/assets/products/opt-odf-kross-8-port-prostoy-1.jpg"
+   "/assets/products/opt-odf-kross-8-port-prostoy-1.jpg?v=hd1",
+   "/assets/products/opt-odf-kross-8-port-prostoy-2.jpg?v=hd1"
   ]
  },
  {
@@ -10832,7 +10929,8 @@
   "cost_usd": 7.94,
   "warranty": false,
   "images": [
-   "/assets/products/opt-odf-kross-8-port-kachestvennyy-1.jpg"
+   "/assets/products/opt-odf-kross-8-port-kachestvennyy-1.jpg?v=hd1",
+   "/assets/products/opt-odf-kross-8-port-kachestvennyy-2.jpg?v=hd1"
   ]
  },
  {
@@ -10867,7 +10965,7 @@
   "cost_usd": 4.63,
   "warranty": false,
   "images": [
-   "/assets/products/opt-odf-kross-plastik-8-port-1.jpg"
+   "/assets/products/opt-odf-kross-plastik-8-port-1.jpg?v=hd1"
   ]
  },
  {
@@ -11007,7 +11105,7 @@
   "cost_usd": 7.94,
   "warranty": false,
   "images": [
-   "/assets/products/opt-odf-kross-ulichnyy-4-port-1.jpg"
+   "/assets/products/opt-odf-kross-ulichnyy-4-port-1.jpg?v=hd1"
   ]
  },
  {
@@ -11072,7 +11170,8 @@
   "cost_usd": 13.23,
   "warranty": false,
   "images": [
-   "/assets/products/opt-optic-lazer-10-km-1.jpg"
+   "/assets/products/opt-optic-lazer-10-km-1.jpg?v=hd1",
+   "/assets/products/opt-optic-lazer-10-km-2.jpg?v=hd1"
   ]
  },
  {
@@ -11102,7 +11201,8 @@
   "cost_usd": 19.84,
   "warranty": false,
   "images": [
-   "/assets/products/opt-optic-lazer-20-km-1.jpg"
+   "/assets/products/opt-optic-lazer-20-km-1.jpg?v=hd1",
+   "/assets/products/opt-optic-lazer-20-km-2.jpg?v=hd1"
   ]
  },
  {
@@ -11132,7 +11232,9 @@
   "cost_usd": 26.46,
   "warranty": false,
   "images": [
-   "/assets/products/opt-optic-lazer-30-km-1.jpg"
+   "/assets/products/opt-optic-lazer-30-km-1.jpg?v=hd1",
+   "/assets/products/opt-optic-lazer-30-km-2.jpg?v=hd1",
+   "/assets/products/opt-optic-lazer-30-km-3.jpg?v=hd1"
   ]
  },
  {
@@ -11162,7 +11264,7 @@
   "cost_usd": 33.07,
   "warranty": false,
   "images": [
-   "/assets/products/opt-optic-lazer-80-km-1.jpg"
+   "/assets/products/opt-optic-lazer-80-km-1.jpg?v=hd1"
   ]
  },
  {
@@ -11197,7 +11299,9 @@
   "cost_usd": 317.46,
   "warranty": false,
   "images": [
-   "/assets/products/opt-otdr-reflektometr-aua-180u-1.jpg"
+   "/assets/products/opt-otdr-reflektometr-aua-180u-1.jpg?v=hd1",
+   "/assets/products/opt-otdr-reflektometr-aua-180u-2.jpg?v=hd1",
+   "/assets/products/opt-otdr-reflektometr-aua-180u-3.jpg?v=hd1"
   ]
  },
  {
@@ -11267,7 +11371,9 @@
   "cost_usd": 449.74,
   "warranty": false,
   "images": [
-   "/assets/products/opt-otdr-reflektometr-jw3302sj-1.jpg"
+   "/assets/products/opt-otdr-reflektometr-jw3302sj-1.jpg?v=hd1",
+   "/assets/products/opt-otdr-reflektometr-jw3302sj-2.jpg?v=hd1",
+   "/assets/products/opt-otdr-reflektometr-jw3302sj-3.jpg?v=hd1"
   ]
  },
  {
@@ -11343,7 +11449,7 @@
   "cost_usd": 79.37,
   "warranty": false,
   "images": [
-   "/assets/products/opt-powwer-metr-zhyoltyy-vfl-20km-normal-20-1.jpg"
+   "/assets/products/opt-powwer-metr-zhyoltyy-vfl-20km-normal-20-1.jpg?v=hd1"
   ]
  },
  {
@@ -11432,7 +11538,7 @@
   "cost_usd": 13.23,
   "warranty": false,
   "images": [
-   "/assets/products/opt-opticheskaya-mufta-12-port-kvadrat-1.jpg"
+   "/assets/products/opt-opticheskaya-mufta-12-port-kvadrat-1.jpg?v=hd1"
   ]
  },
  {
@@ -11462,7 +11568,9 @@
   "cost_usd": 33.07,
   "warranty": false,
   "images": [
-   "/assets/products/opt-opticheskiy-rezak-i-skalyvatel-skl-6c-1.jpg"
+   "/assets/products/opt-opticheskiy-rezak-i-skalyvatel-skl-6c-1.jpg?v=hd1",
+   "/assets/products/opt-opticheskiy-rezak-i-skalyvatel-skl-6c-2.jpg?v=hd1",
+   "/assets/products/opt-opticheskiy-rezak-i-skalyvatel-skl-6c-3.jpg?v=hd1"
   ]
  },
  {
@@ -11492,7 +11600,8 @@
   "cost_usd": 59.52,
   "warranty": false,
   "images": [
-   "/assets/products/opt-opticheskiy-rezak-i-skalyvatel-dy-2-1.jpg"
+   "/assets/products/opt-opticheskiy-rezak-i-skalyvatel-dy-2-1.jpg?v=hd1",
+   "/assets/products/opt-opticheskiy-rezak-i-skalyvatel-dy-2-2.jpg?v=hd1"
   ]
  },
  {
@@ -11522,7 +11631,7 @@
   "cost_usd": 105.82,
   "warranty": false,
   "images": [
-   "/assets/products/opt-opticheskiy-rezak-i-skalyvatel-k-9-1.jpg"
+   "/assets/products/opt-opticheskiy-rezak-i-skalyvatel-k-9-1.jpg?v=hd1"
   ]
  },
  {
@@ -11552,7 +11661,9 @@
   "cost_usd": 1388.88,
   "warranty": false,
   "images": [
-   "/assets/products/opt-opticheskiy-svarochnyy-apparat-ai-9-1.jpg"
+   "/assets/products/opt-opticheskiy-svarochnyy-apparat-ai-9-1.jpg?v=hd1",
+   "/assets/products/opt-opticheskiy-svarochnyy-apparat-ai-9-2.jpg?v=hd1",
+   "/assets/products/opt-opticheskiy-svarochnyy-apparat-ai-9-3.jpg?v=hd1"
   ]
  },
  {
@@ -11582,7 +11693,9 @@
   "cost_usd": 9.26,
   "warranty": false,
   "images": [
-   "/assets/products/opt-stripper-zheltyy-1.jpg"
+   "/assets/products/opt-stripper-zheltyy-1.jpg?v=hd1",
+   "/assets/products/opt-stripper-zheltyy-2.jpg?v=hd1",
+   "/assets/products/opt-stripper-zheltyy-3.jpg?v=hd1"
   ]
  },
  {
@@ -11619,7 +11732,9 @@
   "cost_usd": 0.09,
   "warranty": false,
   "images": [
-   "/assets/products/kab-kabel-kspv-2-0-4-1.jpg"
+   "/assets/products/kab-kabel-kspv-2-0-4-1.jpg?v=hd1",
+   "/assets/products/kab-kabel-kspv-2-0-4-2.jpg?v=hd1",
+   "/assets/products/kab-kabel-kspv-2-0-4-3.jpg?v=hd1"
   ]
  },
  {
@@ -11656,7 +11771,9 @@
   "cost_usd": 0.13,
   "warranty": false,
   "images": [
-   "/assets/products/kab-kabel-kspv-2-0-5-1.jpg"
+   "/assets/products/kab-kabel-kspv-2-0-5-1.jpg?v=hd1",
+   "/assets/products/kab-kabel-kspv-2-0-5-2.jpg?v=hd1",
+   "/assets/products/kab-kabel-kspv-2-0-5-3.jpg?v=hd1"
   ]
  },
  {
@@ -11693,7 +11810,9 @@
   "cost_usd": 0.16,
   "warranty": false,
   "images": [
-   "/assets/products/kab-kabel-kspv-4-0-4-1.jpg"
+   "/assets/products/kab-kabel-kspv-4-0-4-1.jpg?v=hd1",
+   "/assets/products/kab-kabel-kspv-4-0-4-2.jpg?v=hd1",
+   "/assets/products/kab-kabel-kspv-4-0-4-3.jpg?v=hd1"
   ]
  },
  {
@@ -11730,7 +11849,9 @@
   "cost_usd": 0.33,
   "warranty": false,
   "images": [
-   "/assets/products/kab-kabel-ksvveng-2h0-8-1.jpg"
+   "/assets/products/kab-kabel-ksvveng-2h0-8-1.jpg?v=hd1",
+   "/assets/products/kab-kabel-ksvveng-2h0-8-2.jpg?v=hd1",
+   "/assets/products/kab-kabel-ksvveng-2h0-8-3.jpg?v=hd1"
   ]
  },
  {
@@ -11767,7 +11888,7 @@
   "cost_usd": 0.58,
   "warranty": false,
   "images": [
-   "/assets/products/kab-kabel-ksvveng-4h0-8-1.jpg"
+   "/assets/products/kab-kabel-ksvveng-4h0-8-1.jpg?v=hd1"
   ]
  },
  {
@@ -11814,7 +11935,9 @@
   "cost_usd": 0.49,
   "warranty": false,
   "images": [
-   "/assets/products/kab-kabel-ksvpv-4-2-0-52-seryy-yutp-1.jpg"
+   "/assets/products/kab-kabel-ksvpv-4-2-0-52-seryy-yutp-1.jpg?v=hd1",
+   "/assets/products/kab-kabel-ksvpv-4-2-0-52-seryy-yutp-2.jpg?v=hd1",
+   "/assets/products/kab-kabel-ksvpv-4-2-0-52-seryy-yutp-3.jpg?v=hd1"
   ]
  },
  {
@@ -11861,7 +11984,9 @@
   "cost_usd": 0.55,
   "warranty": false,
   "images": [
-   "/assets/products/kab-kabel-ksvpve-5e-4-2-0-52-seryy-ftp-1.jpg"
+   "/assets/products/kab-kabel-ksvpve-5e-4-2-0-52-seryy-ftp-1.jpg?v=hd1",
+   "/assets/products/kab-kabel-ksvpve-5e-4-2-0-52-seryy-ftp-2.jpg?v=hd1",
+   "/assets/products/kab-kabel-ksvpve-5e-4-2-0-52-seryy-ftp-3.jpg?v=hd1"
   ]
  },
  {
@@ -11908,7 +12033,8 @@
   "cost_usd": 0.63,
   "warranty": false,
   "images": [
-   "/assets/products/kab-kabel-ksvpv-6a-4-2-0-57-1.jpg"
+   "/assets/products/kab-kabel-ksvpv-6a-4-2-0-57-1.jpg?v=hd1",
+   "/assets/products/kab-kabel-ksvpv-6a-4-2-0-57-2.jpg?v=hd1"
   ]
  },
  {
@@ -11955,7 +12081,8 @@
   "cost_usd": 0.75,
   "warranty": false,
   "images": [
-   "/assets/products/kab-kabel-ksvpve-6-4-2-0-57-1.jpg"
+   "/assets/products/kab-kabel-ksvpve-6-4-2-0-57-1.jpg?v=hd1",
+   "/assets/products/kab-kabel-ksvpve-6-4-2-0-57-2.jpg?v=hd1"
   ]
  },
  {
@@ -12002,7 +12129,7 @@
   "cost_usd": 0.48,
   "warranty": false,
   "images": [
-   "/assets/products/kab-kabel-ksvpp-4-2-0-52-chernyy-yutp-1.jpg"
+   "/assets/products/kab-kabel-ksvpp-4-2-0-52-chernyy-yutp-1.jpg?v=hd1"
   ]
  },
  {
@@ -12049,7 +12176,9 @@
   "cost_usd": 0.54,
   "warranty": false,
   "images": [
-   "/assets/products/kab-kabel-ksvppe-4-2-0-52-chernyy-ftp-1.jpg"
+   "/assets/products/kab-kabel-ksvppe-4-2-0-52-chernyy-ftp-1.jpg?v=hd1",
+   "/assets/products/kab-kabel-ksvppe-4-2-0-52-chernyy-ftp-2.jpg?v=hd1",
+   "/assets/products/kab-kabel-ksvppe-4-2-0-52-chernyy-ftp-3.jpg?v=hd1"
   ]
  },
  {
@@ -12096,7 +12225,7 @@
   "cost_usd": 0.63,
   "warranty": false,
   "images": [
-   "/assets/products/kab-kabel-ksvpp-6-4-2-0-57-1.jpg"
+   "/assets/products/kab-kabel-ksvpp-6-4-2-0-57-1.jpg?v=hd1"
   ]
  },
  {
@@ -12143,7 +12272,7 @@
   "cost_usd": 0.7,
   "warranty": false,
   "images": [
-   "/assets/products/kab-kabel-ksvppe-6-4-2-0-57-1.jpg"
+   "/assets/products/kab-kabel-ksvppe-6-4-2-0-57-1.jpg?v=hd1"
   ]
  },
  {
@@ -12190,7 +12319,8 @@
   "cost_usd": 0.58,
   "warranty": false,
   "images": [
-   "/assets/products/kab-kabel-ksvppetross-4-2-0-52-1.jpg"
+   "/assets/products/kab-kabel-ksvppetross-4-2-0-52-1.jpg?v=hd1",
+   "/assets/products/kab-kabel-ksvppetross-4-2-0-52-2.jpg?v=hd1"
   ]
  },
  {
@@ -12227,7 +12357,9 @@
   "cost_usd": 0.22,
   "warranty": false,
   "images": [
-   "/assets/products/kab-kabel-p-274-m-2-0-5-polevoy-1.jpg"
+   "/assets/products/kab-kabel-p-274-m-2-0-5-polevoy-1.jpg?v=hd1",
+   "/assets/products/kab-kabel-p-274-m-2-0-5-polevoy-2.jpg?v=hd1",
+   "/assets/products/kab-kabel-p-274-m-2-0-5-polevoy-3.jpg?v=hd1"
   ]
  },
  {
@@ -12264,7 +12396,9 @@
   "cost_usd": 0.45,
   "warranty": false,
   "images": [
-   "/assets/products/kab-kabel-pvs-2-0-75-1.jpg"
+   "/assets/products/kab-kabel-pvs-2-0-75-1.jpg?v=hd1",
+   "/assets/products/kab-kabel-pvs-2-0-75-2.jpg?v=hd1",
+   "/assets/products/kab-kabel-pvs-2-0-75-3.jpg?v=hd1"
   ]
  },
  {
@@ -12301,7 +12435,9 @@
   "cost_usd": 1.67,
   "warranty": false,
   "images": [
-   "/assets/products/kab-kabel-pvs-3-2-5-1.jpg"
+   "/assets/products/kab-kabel-pvs-3-2-5-1.jpg?v=hd1",
+   "/assets/products/kab-kabel-pvs-3-2-5-2.jpg?v=hd1",
+   "/assets/products/kab-kabel-pvs-3-2-5-3.jpg?v=hd1"
   ]
  },
  {
@@ -12338,7 +12474,8 @@
   "cost_usd": 0.29,
   "warranty": false,
   "images": [
-   "/assets/products/kab-kabel-pugnp-2-0-5-1.jpg"
+   "/assets/products/kab-kabel-pugnp-2-0-5-1.jpg?v=hd1",
+   "/assets/products/kab-kabel-pugnp-2-0-5-2.jpg?v=hd1"
   ]
  },
  {
@@ -12375,7 +12512,9 @@
   "cost_usd": 0.38,
   "warranty": false,
   "images": [
-   "/assets/products/kab-kabel-pugnp-2-0-75-1.jpg"
+   "/assets/products/kab-kabel-pugnp-2-0-75-1.jpg?v=hd1",
+   "/assets/products/kab-kabel-pugnp-2-0-75-2.jpg?v=hd1",
+   "/assets/products/kab-kabel-pugnp-2-0-75-3.jpg?v=hd1"
   ]
  },
  {
@@ -12412,7 +12551,9 @@
   "cost_usd": 0.66,
   "warranty": false,
   "images": [
-   "/assets/products/kab-kabel-pugnp-2-1-5-1.jpg"
+   "/assets/products/kab-kabel-pugnp-2-1-5-1.jpg?v=hd1",
+   "/assets/products/kab-kabel-pugnp-2-1-5-2.jpg?v=hd1",
+   "/assets/products/kab-kabel-pugnp-2-1-5-3.jpg?v=hd1"
   ]
  },
  {
@@ -12449,7 +12590,9 @@
   "cost_usd": 1.14,
   "warranty": false,
   "images": [
-   "/assets/products/kab-kabel-pugnp-2-2-5-1.jpg"
+   "/assets/products/kab-kabel-pugnp-2-2-5-1.jpg?v=hd1",
+   "/assets/products/kab-kabel-pugnp-2-2-5-2.jpg?v=hd1",
+   "/assets/products/kab-kabel-pugnp-2-2-5-3.jpg?v=hd1"
   ]
  },
  {
@@ -12486,7 +12629,8 @@
   "cost_usd": 1.67,
   "warranty": false,
   "images": [
-   "/assets/products/kab-kabel-pugnp-3-2-5-1.jpg"
+   "/assets/products/kab-kabel-pugnp-3-2-5-1.jpg?v=hd1",
+   "/assets/products/kab-kabel-pugnp-3-2-5-2.jpg?v=hd1"
   ]
  },
  {
@@ -12523,7 +12667,9 @@
   "cost_usd": 0.1,
   "warranty": false,
   "images": [
-   "/assets/products/kab-kabel-trp-2-0-4-1.jpg"
+   "/assets/products/kab-kabel-trp-2-0-4-1.jpg?v=hd1",
+   "/assets/products/kab-kabel-trp-2-0-4-2.jpg?v=hd1",
+   "/assets/products/kab-kabel-trp-2-0-4-3.jpg?v=hd1"
   ]
  },
  {
@@ -12560,7 +12706,9 @@
   "cost_usd": 0.14,
   "warranty": false,
   "images": [
-   "/assets/products/kab-kabel-trp-2-0-5-1.jpg"
+   "/assets/products/kab-kabel-trp-2-0-5-1.jpg?v=hd1",
+   "/assets/products/kab-kabel-trp-2-0-5-2.jpg?v=hd1",
+   "/assets/products/kab-kabel-trp-2-0-5-3.jpg?v=hd1"
   ]
  },
  {
@@ -12597,7 +12745,9 @@
   "cost_usd": 83.0,
   "warranty": false,
   "images": [
-   "/assets/products/kab-kpcng-a-frls-1h2h0-5-1.jpg"
+   "/assets/products/kab-kpcng-a-frls-1h2h0-5-1.jpg?v=hd1",
+   "/assets/products/kab-kpcng-a-frls-1h2h0-5-2.jpg?v=hd1",
+   "/assets/products/kab-kpcng-a-frls-1h2h0-5-3.jpg?v=hd1"
   ]
  },
  {
@@ -12634,7 +12784,9 @@
   "cost_usd": 120.0,
   "warranty": false,
   "images": [
-   "/assets/products/kab-kpcng-a-frls-1h2h0-75-1.jpg"
+   "/assets/products/kab-kpcng-a-frls-1h2h0-75-1.jpg?v=hd1",
+   "/assets/products/kab-kpcng-a-frls-1h2h0-75-2.jpg?v=hd1",
+   "/assets/products/kab-kpcng-a-frls-1h2h0-75-3.jpg?v=hd1"
   ]
  },
  {
@@ -12668,7 +12820,8 @@
   "cost_usd": 50.0,
   "warranty": false,
   "images": [
-   "/assets/products/kab-optika-drop-kabel-fiber-optic-2core-1.jpg"
+   "/assets/products/kab-optika-drop-kabel-fiber-optic-2core-1.jpg?v=hd1",
+   "/assets/products/kab-optika-drop-kabel-fiber-optic-2core-2.jpg?v=hd1"
   ]
  },
  {
@@ -12770,16 +12923,17 @@
   "cost_usd": 4.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-152e-kronshteyn-dlya-truby-2-klipsy-diametr-1.jpg"
+   "/assets/products/acc-152e-kronshteyn-dlya-truby-2-klipsy-diametr-1.jpg?v=hd1",
+   "/assets/products/acc-152e-kronshteyn-dlya-truby-2-klipsy-diametr-2.jpg?v=hd1"
   ]
  },
  {
   "sku": "ACC-3385-KRONSHTEYN-DLYA-KAMERY-OT-VODY",
-  "name": "Kamera uchun yomg'irdan himoya kronshteyni 3385",
+  "name": "Kamera uchun yomg‘irdan himoya qopqog‘i 3385 (shaffof gumbaz)",
   "model": "",
   "cat": "Aksessuar",
   "badge": "Kronshteyn",
-  "spec": "Kamera uchun yomg'irdan himoya kronshteyni 3385",
+  "spec": "Kamera uchun yomg‘irdan himoya qopqog‘i 3385 (shaffof gumbaz)",
   "tags": [
    "Kronshteyn",
    "Kamera"
@@ -12790,7 +12944,7 @@
    "night": 0,
    "spin": 0
   },
-  "desc": "Kamerani yomg'ir va suvdan himoyalab o'rnatish uchun plastik kronshteyn.",
+  "desc": "Kamerani yomg‘ir va suvdan himoyalovchi shaffof plastik qopqoq (gumbaz).",
   "rows": [
    [
     "Material",
@@ -12834,7 +12988,8 @@
   "cost_usd": 20.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-kronshteyn-dlya-stolba-3-klipsy-dlina-60-sm-1.jpg"
+   "/assets/products/acc-kronshteyn-dlya-stolba-3-klipsy-dlina-60-sm-1.jpg?v=hd1",
+   "/assets/products/acc-kronshteyn-dlya-stolba-3-klipsy-dlina-60-sm-2.jpg?v=hd1"
   ]
  },
  {
@@ -12894,7 +13049,8 @@
   "cost_usd": 4.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-kronshteyn-dlya-truby-2-klipsy-diametr-200-1.jpg"
+   "/assets/products/acc-kronshteyn-dlya-truby-2-klipsy-diametr-200-1.jpg?v=hd1",
+   "/assets/products/acc-kronshteyn-dlya-truby-2-klipsy-diametr-200-2.jpg?v=hd1"
   ]
  },
  {
@@ -12929,11 +13085,11 @@
  },
  {
   "sku": "ACC-KRONSHTEYN-UGLOVOY-90-GRADUS-25SM",
-  "name": "Burchak kronshteyni 90°, 25 sm",
+  "name": "Devor kronshteyni 90° (L-shakl), 25 sm",
   "model": "",
   "cat": "Aksessuar",
   "badge": "Kronshteyn",
-  "spec": "Burchak kronshteyni 90°, 25 sm",
+  "spec": "Devor kronshteyni 90° (L-shakl), 25 sm",
   "tags": [
    "Kronshteyn",
    "Kamera"
@@ -12944,7 +13100,7 @@
    "night": 0,
    "spin": 0
   },
-  "desc": "Kamerani bino burchagiga o'rnatish uchun 90° burchak kronshteyni, 25 sm.",
+  "desc": "Kamerani devorga 90° burchak ostida (L-shakl) o‘rnatish uchun kronshteyn, 25 sm.",
   "rows": [
    [
     "Turi",
@@ -12954,16 +13110,16 @@
   "cost_usd": 7.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-kronshteyn-uglovoy-90-gradus-25sm-1.jpg"
+   "/assets/products/acc-kronshteyn-uglovoy-90-gradus-25sm-1.jpg?v=hd1"
   ]
  },
  {
   "sku": "ACC-KRONSHTEYN-UGLOVOY-90-GRADUS-30-60SM",
-  "name": "Burchak kronshteyni 90°, 30–60 sm",
+  "name": "Devor kronshteyni 90° (L-shakl), 30–60 sm",
   "model": "",
   "cat": "Aksessuar",
   "badge": "Kronshteyn",
-  "spec": "Burchak kronshteyni 90°, 30–60 sm",
+  "spec": "Devor kronshteyni 90° (L-shakl), 30–60 sm",
   "tags": [
    "Kronshteyn",
    "Kamera"
@@ -12974,7 +13130,7 @@
    "night": 0,
    "spin": 0
   },
-  "desc": "Kamerani bino burchagiga o'rnatish uchun 90° burchak kronshteyni, 30–60 sm.",
+  "desc": "Kamerani devorga 90° burchak ostida (L-shakl) o‘rnatish uchun kronshteyn, 30–60 sm.",
   "rows": [
    [
     "Turi",
@@ -12989,11 +13145,11 @@
  },
  {
   "sku": "ACC-KRONSHTEYN-UGLOVOY-90-GRADUS50SM",
-  "name": "Burchak kronshteyni 90°, 50 sm",
+  "name": "Devor kronshteyni 90° (L-shakl), 50 sm",
   "model": "",
   "cat": "Aksessuar",
   "badge": "Kronshteyn",
-  "spec": "Burchak kronshteyni 90°, 50 sm",
+  "spec": "Devor kronshteyni 90° (L-shakl), 50 sm",
   "tags": [
    "Kronshteyn",
    "Kamera"
@@ -13004,7 +13160,7 @@
    "night": 0,
    "spin": 0
   },
-  "desc": "Kamerani bino burchagiga o'rnatish uchun 90° burchak kronshteyni, 50 sm.",
+  "desc": "Kamerani devorga 90° burchak ostida (L-shakl) o‘rnatish uchun kronshteyn, 50 sm.",
   "rows": [
    [
     "Turi",
@@ -13014,7 +13170,8 @@
   "cost_usd": 10.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-kronshteyn-uglovoy-90-gradus50sm-1.jpg"
+   "/assets/products/acc-kronshteyn-uglovoy-90-gradus50sm-1.jpg?v=hd1",
+   "/assets/products/acc-kronshteyn-uglovoy-90-gradus50sm-2.jpg?v=hd1"
   ]
  },
  {
@@ -13078,7 +13235,9 @@
   "cost_usd": 8.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-1280zj-xs-germetichnaya-korobka-metallichesk-1.jpg"
+   "/assets/products/acc-1280zj-xs-germetichnaya-korobka-metallichesk-1.jpg?v=hd1",
+   "/assets/products/acc-1280zj-xs-germetichnaya-korobka-metallichesk-2.jpg?v=hd1",
+   "/assets/products/acc-1280zj-xs-germetichnaya-korobka-metallichesk-3.jpg?v=hd1"
   ]
  },
  {
@@ -13112,7 +13271,9 @@
   "cost_usd": 10.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-1280zj-s-germetichnaya-korobka-metallicheski-1.jpg"
+   "/assets/products/acc-1280zj-s-germetichnaya-korobka-metallicheski-1.jpg?v=hd1",
+   "/assets/products/acc-1280zj-s-germetichnaya-korobka-metallicheski-2.jpg?v=hd1",
+   "/assets/products/acc-1280zj-s-germetichnaya-korobka-metallicheski-3.jpg?v=hd1"
   ]
  },
  {
@@ -13214,7 +13375,7 @@
   "cost_usd": 1.5,
   "warranty": false,
   "images": [
-   "/assets/products/acc-201c-germetichnaya-korobka-kruglyy-kitay-1.jpg"
+   "/assets/products/acc-201c-germetichnaya-korobka-kruglyy-kitay-1.jpg?v=hd1"
   ]
  },
  {
@@ -13406,7 +13567,7 @@
   "cost_usd": 4.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-germetichnaya-korobka-metallicheskiy-kruglyy-1.jpg"
+   "/assets/products/acc-germetichnaya-korobka-metallicheskiy-kruglyy-1.jpg?v=hd1"
   ]
  },
  {
@@ -13436,7 +13597,7 @@
   "cost_usd": 10.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-stoyka-dlya-kamer-50sm-1.jpg"
+   "/assets/products/acc-stoyka-dlya-kamer-50sm-1.jpg?v=hd1"
   ]
  },
  {
@@ -13466,7 +13627,7 @@
   "cost_usd": 18.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-stoyka-dlya-kamer-80sm-1.jpg"
+   "/assets/products/acc-stoyka-dlya-kamer-80sm-1.jpg?v=hd1"
   ]
  },
  {
@@ -13500,7 +13661,9 @@
   "cost_usd": 1.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-hdmi-1-5-m-1.jpg"
+   "/assets/products/acc-hdmi-1-5-m-1.jpg?v=hd1",
+   "/assets/products/acc-hdmi-1-5-m-2.jpg?v=hd1",
+   "/assets/products/acc-hdmi-1-5-m-3.jpg?v=hd1"
   ]
  },
  {
@@ -13568,7 +13731,7 @@
   "cost_usd": 1.5,
   "warranty": false,
   "images": [
-   "/assets/products/acc-hdmi-3-m-1.jpg"
+   "/assets/products/acc-hdmi-3-m-1.jpg?v=hd1"
   ]
  },
  {
@@ -13602,7 +13765,8 @@
   "cost_usd": 2.5,
   "warranty": false,
   "images": [
-   "/assets/products/acc-hdmi-3-m-ploskiy-1.jpg"
+   "/assets/products/acc-hdmi-3-m-ploskiy-1.jpg?v=hd1",
+   "/assets/products/acc-hdmi-3-m-ploskiy-2.jpg?v=hd1"
   ]
  },
  {
@@ -13636,7 +13800,8 @@
   "cost_usd": 2.5,
   "warranty": false,
   "images": [
-   "/assets/products/acc-hdmi-5-m-1.jpg"
+   "/assets/products/acc-hdmi-5-m-1.jpg?v=hd1",
+   "/assets/products/acc-hdmi-5-m-2.jpg?v=hd1"
   ]
  },
  {
@@ -13670,7 +13835,9 @@
   "cost_usd": 3.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-hdmi-5-m-ploskiy-1.jpg"
+   "/assets/products/acc-hdmi-5-m-ploskiy-1.jpg?v=hd1",
+   "/assets/products/acc-hdmi-5-m-ploskiy-2.jpg?v=hd1",
+   "/assets/products/acc-hdmi-5-m-ploskiy-3.jpg?v=hd1"
   ]
  },
  {
@@ -13704,7 +13871,9 @@
   "cost_usd": 3.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-hdmi-10-m-1.jpg"
+   "/assets/products/acc-hdmi-10-m-1.jpg?v=hd1",
+   "/assets/products/acc-hdmi-10-m-2.jpg?v=hd1",
+   "/assets/products/acc-hdmi-10-m-3.jpg?v=hd1"
   ]
  },
  {
@@ -13738,7 +13907,7 @@
   "cost_usd": 4.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-hdmi-10-m-ploskiy-1.jpg"
+   "/assets/products/acc-hdmi-10-m-ploskiy-1.jpg?v=hd1"
   ]
  },
  {
@@ -13772,7 +13941,9 @@
   "cost_usd": 4.5,
   "warranty": false,
   "images": [
-   "/assets/products/acc-hdmi-15-m-1.jpg"
+   "/assets/products/acc-hdmi-15-m-1.jpg?v=hd1",
+   "/assets/products/acc-hdmi-15-m-2.jpg?v=hd1",
+   "/assets/products/acc-hdmi-15-m-3.jpg?v=hd1"
   ]
  },
  {
@@ -13840,7 +14011,8 @@
   "cost_usd": 7.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-hdmi-20-m-1.jpg"
+   "/assets/products/acc-hdmi-20-m-1.jpg?v=hd1",
+   "/assets/products/acc-hdmi-20-m-2.jpg?v=hd1"
   ]
  },
  {
@@ -13908,7 +14080,9 @@
   "cost_usd": 15.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-hdmi-25m-1.jpg"
+   "/assets/products/acc-hdmi-25m-1.jpg?v=hd1",
+   "/assets/products/acc-hdmi-25m-2.jpg?v=hd1",
+   "/assets/products/acc-hdmi-25m-3.jpg?v=hd1"
   ]
  },
  {
@@ -13942,7 +14116,9 @@
   "cost_usd": 12.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-hdmi-30m-1.jpg"
+   "/assets/products/acc-hdmi-30m-1.jpg?v=hd1",
+   "/assets/products/acc-hdmi-30m-2.jpg?v=hd1",
+   "/assets/products/acc-hdmi-30m-3.jpg?v=hd1"
   ]
  },
  {
@@ -14010,7 +14186,9 @@
   "cost_usd": 35.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-hdmi-4k-40m-1.jpg"
+   "/assets/products/acc-hdmi-4k-40m-1.jpg?v=hd1",
+   "/assets/products/acc-hdmi-4k-40m-2.jpg?v=hd1",
+   "/assets/products/acc-hdmi-4k-40m-3.jpg?v=hd1"
   ]
  },
  {
@@ -14044,7 +14222,7 @@
   "cost_usd": 40.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-hdmi-4k-50m-1.jpg"
+   "/assets/products/acc-hdmi-4k-50m-1.jpg?v=hd1"
   ]
  },
  {
@@ -14078,7 +14256,7 @@
   "cost_usd": 50.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-hdmi-4k-60m-1.jpg"
+   "/assets/products/acc-hdmi-4k-60m-1.jpg?v=hd1"
   ]
  },
  {
@@ -14112,7 +14290,9 @@
   "cost_usd": 2.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-hdmi-4k-1-5m-1.jpg"
+   "/assets/products/acc-hdmi-4k-1-5m-1.jpg?v=hd1",
+   "/assets/products/acc-hdmi-4k-1-5m-2.jpg?v=hd1",
+   "/assets/products/acc-hdmi-4k-1-5m-3.jpg?v=hd1"
   ]
  },
  {
@@ -14146,7 +14326,9 @@
   "cost_usd": 4.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-hdmi-4k-3m-1.jpg"
+   "/assets/products/acc-hdmi-4k-3m-1.jpg?v=hd1",
+   "/assets/products/acc-hdmi-4k-3m-2.jpg?v=hd1",
+   "/assets/products/acc-hdmi-4k-3m-3.jpg?v=hd1"
   ]
  },
  {
@@ -14180,7 +14362,8 @@
   "cost_usd": 5.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-hdmi-4k-5m-1.jpg"
+   "/assets/products/acc-hdmi-4k-5m-1.jpg?v=hd1",
+   "/assets/products/acc-hdmi-4k-5m-2.jpg?v=hd1"
   ]
  },
  {
@@ -14214,7 +14397,9 @@
   "cost_usd": 8.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-hdmi-4k-10m-1.jpg"
+   "/assets/products/acc-hdmi-4k-10m-1.jpg?v=hd1",
+   "/assets/products/acc-hdmi-4k-10m-2.jpg?v=hd1",
+   "/assets/products/acc-hdmi-4k-10m-3.jpg?v=hd1"
   ]
  },
  {
@@ -14248,7 +14433,9 @@
   "cost_usd": 9.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-hdmi-4k-15m-1.jpg"
+   "/assets/products/acc-hdmi-4k-15m-1.jpg?v=hd1",
+   "/assets/products/acc-hdmi-4k-15m-2.jpg?v=hd1",
+   "/assets/products/acc-hdmi-4k-15m-3.jpg?v=hd1"
   ]
  },
  {
@@ -14282,7 +14469,9 @@
   "cost_usd": 15.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-hdmi-4k-20m-1.jpg"
+   "/assets/products/acc-hdmi-4k-20m-1.jpg?v=hd1",
+   "/assets/products/acc-hdmi-4k-20m-2.jpg?v=hd1",
+   "/assets/products/acc-hdmi-4k-20m-3.jpg?v=hd1"
   ]
  },
  {
@@ -14316,7 +14505,8 @@
   "cost_usd": 20.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-hdmi-optika-5-m-1.jpg"
+   "/assets/products/acc-hdmi-optika-5-m-1.jpg?v=hd1",
+   "/assets/products/acc-hdmi-optika-5-m-2.jpg?v=hd1"
   ]
  },
  {
@@ -14350,7 +14540,9 @@
   "cost_usd": 30.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-hdmi-optika-10-m-1.jpg"
+   "/assets/products/acc-hdmi-optika-10-m-1.jpg?v=hd1",
+   "/assets/products/acc-hdmi-optika-10-m-2.jpg?v=hd1",
+   "/assets/products/acc-hdmi-optika-10-m-3.jpg?v=hd1"
   ]
  },
  {
@@ -14384,7 +14576,9 @@
   "cost_usd": 40.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-hdmi-optika-30-m-1.jpg"
+   "/assets/products/acc-hdmi-optika-30-m-1.jpg?v=hd1",
+   "/assets/products/acc-hdmi-optika-30-m-2.jpg?v=hd1",
+   "/assets/products/acc-hdmi-optika-30-m-3.jpg?v=hd1"
   ]
  },
  {
@@ -14418,7 +14612,8 @@
   "cost_usd": 1.5,
   "warranty": false,
   "images": [
-   "/assets/products/acc-hdmi-4k-1-5-m-siniy-1.jpg"
+   "/assets/products/acc-hdmi-4k-1-5-m-siniy-1.jpg?v=hd1",
+   "/assets/products/acc-hdmi-4k-1-5-m-siniy-2.jpg?v=hd1"
   ]
  },
  {
@@ -14452,7 +14647,7 @@
   "cost_usd": 2.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-hdmi-4k-3-m-siniy-1.jpg"
+   "/assets/products/acc-hdmi-4k-3-m-siniy-1.jpg?v=hd1"
   ]
  },
  {
@@ -14486,7 +14681,9 @@
   "cost_usd": 2.5,
   "warranty": false,
   "images": [
-   "/assets/products/acc-hdmi-4k-5-m-siniy-1.jpg"
+   "/assets/products/acc-hdmi-4k-5-m-siniy-1.jpg?v=hd1",
+   "/assets/products/acc-hdmi-4k-5-m-siniy-2.jpg?v=hd1",
+   "/assets/products/acc-hdmi-4k-5-m-siniy-3.jpg?v=hd1"
   ]
  },
  {
@@ -14520,7 +14717,9 @@
   "cost_usd": 4.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-hdmi-4k-10-m-siniy-1.jpg"
+   "/assets/products/acc-hdmi-4k-10-m-siniy-1.jpg?v=hd1",
+   "/assets/products/acc-hdmi-4k-10-m-siniy-2.jpg?v=hd1",
+   "/assets/products/acc-hdmi-4k-10-m-siniy-3.jpg?v=hd1"
   ]
  },
  {
@@ -14554,7 +14753,9 @@
   "cost_usd": 4.5,
   "warranty": false,
   "images": [
-   "/assets/products/acc-hdmi-4k-15-m-siniy-1.jpg"
+   "/assets/products/acc-hdmi-4k-15-m-siniy-1.jpg?v=hd1",
+   "/assets/products/acc-hdmi-4k-15-m-siniy-2.jpg?v=hd1",
+   "/assets/products/acc-hdmi-4k-15-m-siniy-3.jpg?v=hd1"
   ]
  },
  {
@@ -14614,7 +14815,9 @@
   "cost_usd": 18.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-hdmi-4k-1-4-1-vhod-4-vyhod-1.jpg"
+   "/assets/products/acc-hdmi-4k-1-4-1-vhod-4-vyhod-1.jpg?v=hd1",
+   "/assets/products/acc-hdmi-4k-1-4-1-vhod-4-vyhod-2.jpg?v=hd1",
+   "/assets/products/acc-hdmi-4k-1-4-1-vhod-4-vyhod-3.jpg?v=hd1"
   ]
  },
  {
@@ -14648,7 +14851,9 @@
   "cost_usd": 14.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-hdmi-extender-30m-1.jpg"
+   "/assets/products/acc-hdmi-extender-30m-1.jpg?v=hd1",
+   "/assets/products/acc-hdmi-extender-30m-2.jpg?v=hd1",
+   "/assets/products/acc-hdmi-extender-30m-3.jpg?v=hd1"
   ]
  },
  {
@@ -14682,7 +14887,9 @@
   "cost_usd": 19.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-hdmi-extender-60m-b-1.jpg"
+   "/assets/products/acc-hdmi-extender-60m-b-1.jpg?v=hd1",
+   "/assets/products/acc-hdmi-extender-60m-b-2.jpg?v=hd1",
+   "/assets/products/acc-hdmi-extender-60m-b-3.jpg?v=hd1"
   ]
  },
  {
@@ -14716,7 +14923,8 @@
   "cost_usd": 45.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-hdmi-extender-120m-1.jpg"
+   "/assets/products/acc-hdmi-extender-120m-1.jpg?v=hd1",
+   "/assets/products/acc-hdmi-extender-120m-2.jpg?v=hd1"
   ]
  },
  {
@@ -14746,7 +14954,9 @@
   "cost_usd": 0.6,
   "warranty": false,
   "images": [
-   "/assets/products/acc-hdmi-mama-mama-1.jpg"
+   "/assets/products/acc-hdmi-mama-mama-1.jpg?v=hd1",
+   "/assets/products/acc-hdmi-mama-mama-2.jpg?v=hd1",
+   "/assets/products/acc-hdmi-mama-mama-3.jpg?v=hd1"
   ]
  },
  {
@@ -14780,7 +14990,9 @@
   "cost_usd": 35.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-hdmi-extender-4k-60m-1.jpg"
+   "/assets/products/acc-hdmi-extender-4k-60m-1.jpg?v=hd1",
+   "/assets/products/acc-hdmi-extender-4k-60m-2.jpg?v=hd1",
+   "/assets/products/acc-hdmi-extender-4k-60m-3.jpg?v=hd1"
   ]
  },
  {
@@ -14814,7 +15026,8 @@
   "cost_usd": 30.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-hdmi-kvm-60m-1.jpg"
+   "/assets/products/acc-hdmi-kvm-60m-1.jpg?v=hd1",
+   "/assets/products/acc-hdmi-kvm-60m-2.jpg?v=hd1"
   ]
  },
  {
@@ -14878,7 +15091,9 @@
   "cost_usd": 10.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-hdmi-splitter-4k-1-4-1.jpg"
+   "/assets/products/acc-hdmi-splitter-4k-1-4-1.jpg?v=hd1",
+   "/assets/products/acc-hdmi-splitter-4k-1-4-2.jpg?v=hd1",
+   "/assets/products/acc-hdmi-splitter-4k-1-4-3.jpg?v=hd1"
   ]
  },
  {
@@ -14912,7 +15127,9 @@
   "cost_usd": 23.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-swich-4g-cpe-cpf912-modem-4-antenna-dlya-sim-1.jpg"
+   "/assets/products/acc-swich-4g-cpe-cpf912-modem-4-antenna-dlya-sim-1.jpg?v=hd1",
+   "/assets/products/acc-swich-4g-cpe-cpf912-modem-4-antenna-dlya-sim-2.jpg?v=hd1",
+   "/assets/products/acc-swich-4g-cpe-cpf912-modem-4-antenna-dlya-sim-3.jpg?v=hd1"
   ]
  },
  {
@@ -14946,7 +15163,9 @@
   "cost_usd": 23.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-swich-4g-cpe-903-modem-2-antenna-dlya-sim-ka-1.jpg"
+   "/assets/products/acc-swich-4g-cpe-903-modem-2-antenna-dlya-sim-ka-1.jpg?v=hd1",
+   "/assets/products/acc-swich-4g-cpe-903-modem-2-antenna-dlya-sim-ka-2.jpg?v=hd1",
+   "/assets/products/acc-swich-4g-cpe-903-modem-2-antenna-dlya-sim-ka-3.jpg?v=hd1"
   ]
  },
  {
@@ -15048,7 +15267,7 @@
   "cost_usd": 75.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-swich-ai-poe-24-2-1.jpg"
+   "/assets/products/acc-swich-ai-poe-24-2-1.jpg?v=hd1"
   ]
  },
  {
@@ -15150,7 +15369,8 @@
   "cost_usd": 20.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-swich-linkff-ff-q411a-gb4-2-1sfp-1.jpg"
+   "/assets/products/acc-swich-linkff-ff-q411a-gb4-2-1sfp-1.jpg?v=hd1",
+   "/assets/products/acc-swich-linkff-ff-q411a-gb4-2-1sfp-2.jpg?v=hd1"
   ]
  },
  {
@@ -15219,7 +15439,7 @@
   "cost_usd": 13.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-swich-linkff-ff-q42a-gb4-2-1.jpg"
+   "/assets/products/acc-swich-linkff-ff-q42a-gb4-2-1.jpg?v=hd1"
   ]
  },
  {
@@ -15287,7 +15507,8 @@
   "cost_usd": 15.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-swich-lte-cpe-cp106-300mbps-modem-dlya-sim-k-1.jpg"
+   "/assets/products/acc-swich-lte-cpe-cp106-300mbps-modem-dlya-sim-k-1.jpg?v=hd1",
+   "/assets/products/acc-swich-lte-cpe-cp106-300mbps-modem-dlya-sim-k-2.jpg?v=hd1"
   ]
  },
  {
@@ -15321,7 +15542,9 @@
   "cost_usd": 3.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-swich-poe-splitter-48v-1.jpg"
+   "/assets/products/acc-swich-poe-splitter-48v-1.jpg?v=hd1",
+   "/assets/products/acc-swich-poe-splitter-48v-2.jpg?v=hd1",
+   "/assets/products/acc-swich-poe-splitter-48v-3.jpg?v=hd1"
   ]
  },
  {
@@ -15355,7 +15578,7 @@
   "cost_usd": 9.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-wifi-router-linkff-ff-ap3a-1.jpg"
+   "/assets/products/acc-wifi-router-linkff-ff-ap3a-1.jpg?v=hd1"
   ]
  },
  {
@@ -15423,7 +15646,9 @@
   "cost_usd": 5.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-tenda-router-d301-v4-1.jpg"
+   "/assets/products/acc-tenda-router-d301-v4-1.jpg?v=hd1",
+   "/assets/products/acc-tenda-router-d301-v4-2.jpg?v=hd1",
+   "/assets/products/acc-tenda-router-d301-v4-3.jpg?v=hd1"
   ]
  },
  {
@@ -15457,7 +15682,9 @@
   "cost_usd": 9.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-mediakonverter-100mb-a-b-komplekt-1.jpg"
+   "/assets/products/acc-mediakonverter-100mb-a-b-komplekt-1.jpg?v=hd1",
+   "/assets/products/acc-mediakonverter-100mb-a-b-komplekt-2.jpg?v=hd1",
+   "/assets/products/acc-mediakonverter-100mb-a-b-komplekt-3.jpg?v=hd1"
   ]
  },
  {
@@ -15491,7 +15718,7 @@
   "cost_usd": 11.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-mediakonverter-1gb-a-b-komplekt-1.jpg"
+   "/assets/products/acc-mediakonverter-1gb-a-b-komplekt-1.jpg?v=hd1"
   ]
  },
  {
@@ -15525,7 +15752,8 @@
   "cost_usd": 60.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-wifi-most-s350-1km-5-8g-100mb-s-1.jpg"
+   "/assets/products/acc-wifi-most-s350-1km-5-8g-100mb-s-1.jpg?v=hd1",
+   "/assets/products/acc-wifi-most-s350-1km-5-8g-100mb-s-2.jpg?v=hd1"
   ]
  },
  {
@@ -15559,9 +15787,9 @@
   "cost_usd": 150.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-usilitel-gsm-dlya-sotovyy-1.jpg",
-   "/assets/products/acc-usilitel-gsm-dlya-sotovyy-2.jpg",
-   "/assets/products/acc-usilitel-gsm-dlya-sotovyy-3.jpg"
+   "/assets/products/acc-usilitel-gsm-dlya-sotovyy-1.jpg?v=hd1",
+   "/assets/products/acc-usilitel-gsm-dlya-sotovyy-2.jpg?v=hd1",
+   "/assets/products/acc-usilitel-gsm-dlya-sotovyy-3.jpg?v=hd1"
   ]
  },
  {
@@ -15599,7 +15827,9 @@
   "cost_usd": 58.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-shkaf-6-yunit-600-600-finen-1.jpg"
+   "/assets/products/acc-shkaf-6-yunit-600-600-finen-1.jpg?v=hd1",
+   "/assets/products/acc-shkaf-6-yunit-600-600-finen-2.jpg?v=hd1",
+   "/assets/products/acc-shkaf-6-yunit-600-600-finen-3.jpg?v=hd1"
   ]
  },
  {
@@ -15637,7 +15867,9 @@
   "cost_usd": 70.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-shkaf-12-yunit-600-450-finen-1.jpg"
+   "/assets/products/acc-shkaf-12-yunit-600-450-finen-1.jpg?v=hd1",
+   "/assets/products/acc-shkaf-12-yunit-600-450-finen-2.jpg?v=hd1",
+   "/assets/products/acc-shkaf-12-yunit-600-450-finen-3.jpg?v=hd1"
   ]
  },
  {
@@ -15713,7 +15945,9 @@
   "cost_usd": 330.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-shkaf-18-yunit-800-1000-finen-1.jpg"
+   "/assets/products/acc-shkaf-18-yunit-800-1000-finen-1.jpg?v=hd1",
+   "/assets/products/acc-shkaf-18-yunit-800-1000-finen-2.jpg?v=hd1",
+   "/assets/products/acc-shkaf-18-yunit-800-1000-finen-3.jpg?v=hd1"
   ]
  },
  {
@@ -15751,7 +15985,8 @@
   "cost_usd": 280.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-shkaf-32-yunit-600-900-finen-1.jpg"
+   "/assets/products/acc-shkaf-32-yunit-600-900-finen-1.jpg?v=hd1",
+   "/assets/products/acc-shkaf-32-yunit-600-900-finen-2.jpg?v=hd1"
   ]
  },
  {
@@ -15789,7 +16024,9 @@
   "cost_usd": 400.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-shkaf-32-yunit-800-800-finen-1.jpg"
+   "/assets/products/acc-shkaf-32-yunit-800-800-finen-1.jpg?v=hd1",
+   "/assets/products/acc-shkaf-32-yunit-800-800-finen-2.jpg?v=hd1",
+   "/assets/products/acc-shkaf-32-yunit-800-800-finen-3.jpg?v=hd1"
   ]
  },
  {
@@ -15879,16 +16116,17 @@
   "cost_usd": 40.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-organayzer-kabelnyy-vertikalnyy-s-kryshkoy-4-1.jpg"
+   "/assets/products/acc-organayzer-kabelnyy-vertikalnyy-s-kryshkoy-4-1.jpg?v=hd1",
+   "/assets/products/acc-organayzer-kabelnyy-vertikalnyy-s-kryshkoy-4-2.jpg?v=hd1"
   ]
  },
  {
   "sku": "ACC-SCHIT-DLYA-SVICHY",
-  "name": "Switch uchun montaj shchiti",
+  "name": "Switch uchun kichik devor shkafi",
   "model": "",
   "cat": "Tarmoq",
   "badge": "Shchit",
-  "spec": "Montaj shchiti",
+  "spec": "Devor shkafi",
   "tags": [
    "Shkaf"
   ],
@@ -15898,7 +16136,7 @@
    "night": 0,
    "spin": 0
   },
-  "desc": "Switchni devorga o'rnatish uchun shchit.",
+  "desc": "Switchni devorga o‘rnatish uchun shishali eshikli kichik shkaf.",
   "rows": [
    [
     "Vazifasi",
@@ -15913,11 +16151,11 @@
  },
  {
   "sku": "ACC-SCHIT-DLYA-SVICHY-NVR",
-  "name": "Switch va NVR uchun montaj shchiti",
+  "name": "Switch va NVR uchun shaffof montaj qutisi",
   "model": "",
   "cat": "Tarmoq",
   "badge": "Shchit",
-  "spec": "Montaj shchiti",
+  "spec": "Montaj qutisi",
   "tags": [
    "Shkaf"
   ],
@@ -15927,7 +16165,7 @@
    "night": 0,
    "spin": 0
   },
-  "desc": "Switch va NVR ni devorga o'rnatish uchun shchit.",
+  "desc": "Switch va NVR ni devorga o‘rnatish uchun shaffof qopqoqli montaj qutisi.",
   "rows": [
    [
     "Vazifasi",
@@ -16061,7 +16299,8 @@
   "cost_usd": 2.5,
   "warranty": false,
   "images": [
-   "/assets/products/acc-udlinitel-3-gnezd-2-metr-1.jpg"
+   "/assets/products/acc-udlinitel-3-gnezd-2-metr-1.jpg?v=hd1",
+   "/assets/products/acc-udlinitel-3-gnezd-2-metr-2.jpg?v=hd1"
   ]
  },
  {
@@ -16095,7 +16334,8 @@
   "cost_usd": 3.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-udlinitel-4-gnezd-2-metr-1.jpg"
+   "/assets/products/acc-udlinitel-4-gnezd-2-metr-1.jpg?v=hd1",
+   "/assets/products/acc-udlinitel-4-gnezd-2-metr-2.jpg?v=hd1"
   ]
  },
  {
@@ -16129,7 +16369,9 @@
   "cost_usd": 5.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-udlinitel-5-gnezd-2-metr-1.jpg"
+   "/assets/products/acc-udlinitel-5-gnezd-2-metr-1.jpg?v=hd1",
+   "/assets/products/acc-udlinitel-5-gnezd-2-metr-2.jpg?v=hd1",
+   "/assets/products/acc-udlinitel-5-gnezd-2-metr-3.jpg?v=hd1"
   ]
  },
  {
@@ -16284,12 +16526,13 @@
  },
  {
   "sku": "ACC-ZK-D10-SPLITTER-1-10",
-  "name": "Splitter ZK-D10 1×10",
+  "name": "HDMI splitter ZK-D10, 1×10",
   "model": "",
   "cat": "Aksessuar",
   "badge": "1×10",
-  "spec": "Splitter · 1×10",
+  "spec": "HDMI splitter · 1 → 10",
   "tags": [
+   "HDMI",
    "Splitter"
   ],
   "flags": {
@@ -16298,7 +16541,7 @@
    "night": 0,
    "spin": 0
   },
-  "desc": "ZK-D10 — 1 kirish va 10 chiqishli splitter (distribyutor nomi bo'yicha).",
+  "desc": "HDMI splitter ZK-D10: bitta manbadan (NVR) 10 ta monitorga bir xil tasvir chiqaradi.",
   "rows": [
    [
     "Kirish / chiqish",
@@ -16313,12 +16556,13 @@
  },
  {
   "sku": "ACC-ZK-D8-SPLITTER-1-8",
-  "name": "Splitter ZK-D8 1×8",
+  "name": "HDMI splitter ZK-D8, 1×8",
   "model": "",
   "cat": "Aksessuar",
   "badge": "1×8",
-  "spec": "Splitter · 1×8",
+  "spec": "HDMI splitter · 1 → 8",
   "tags": [
+   "HDMI",
    "Splitter"
   ],
   "flags": {
@@ -16327,7 +16571,7 @@
    "night": 0,
    "spin": 0
   },
-  "desc": "ZK-D8 — 1 kirish va 8 chiqishli splitter (distribyutor nomi bo'yicha).",
+  "desc": "HDMI splitter ZK-D8: bitta manbadan (NVR) 8 ta monitorga bir xil tasvir chiqaradi.",
   "rows": [
    [
     "Kirish / chiqish",
@@ -16342,12 +16586,13 @@
  },
  {
   "sku": "ACC-ZK-D4-SPLITTER-1-4",
-  "name": "Splitter ZK-D4 1×4",
+  "name": "HDMI splitter ZK-D4, 1×4",
   "model": "",
   "cat": "Aksessuar",
   "badge": "1×4",
-  "spec": "Splitter · 1×4",
+  "spec": "HDMI splitter · 1 → 4",
   "tags": [
+   "HDMI",
    "Splitter"
   ],
   "flags": {
@@ -16356,7 +16601,7 @@
    "night": 0,
    "spin": 0
   },
-  "desc": "ZK-D4 — 1 kirish va 4 chiqishli splitter (distribyutor nomi bo'yicha).",
+  "desc": "HDMI splitter ZK-D4: bitta manbadan (NVR) 4 ta monitorga bir xil tasvir chiqaradi.",
   "rows": [
    [
     "Kirish / chiqish",
@@ -16366,7 +16611,9 @@
   "cost_usd": 52.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-zk-d4-splitter-1-4-1.jpg"
+   "/assets/products/acc-zk-d4-splitter-1-4-1.jpg?v=hd1",
+   "/assets/products/acc-zk-d4-splitter-1-4-2.jpg?v=hd1",
+   "/assets/products/acc-zk-d4-splitter-1-4-3.jpg?v=hd1"
   ]
  },
  {
@@ -16395,7 +16642,7 @@
   "cost_usd": 2.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-ibp-2a-belyy-plastmassovyy-1.jpg"
+   "/assets/products/acc-ibp-2a-belyy-plastmassovyy-1.jpg?v=hd1"
   ]
  },
  {
@@ -16574,7 +16821,9 @@
   "cost_usd": 3.5,
   "warranty": false,
   "images": [
-   "/assets/products/acc-ibp-12v60w-5a-original-1.jpg"
+   "/assets/products/acc-ibp-12v60w-5a-original-1.jpg?v=hd1",
+   "/assets/products/acc-ibp-12v60w-5a-original-2.jpg?v=hd1",
+   "/assets/products/acc-ibp-12v60w-5a-original-3.jpg?v=hd1"
   ]
  },
  {
@@ -16608,7 +16857,8 @@
   "cost_usd": 4.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-ibp-12v100w-8-5a-original-1.jpg"
+   "/assets/products/acc-ibp-12v100w-8-5a-original-1.jpg?v=hd1",
+   "/assets/products/acc-ibp-12v100w-8-5a-original-2.jpg?v=hd1"
   ]
  },
  {
@@ -16642,7 +16892,8 @@
   "cost_usd": 5.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-ibp-12v150w-12-5a-original-1.jpg"
+   "/assets/products/acc-ibp-12v150w-12-5a-original-1.jpg?v=hd1",
+   "/assets/products/acc-ibp-12v150w-12-5a-original-2.jpg?v=hd1"
   ]
  },
  {
@@ -16672,7 +16923,9 @@
   "cost_usd": 16.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-bbp-20-1.jpg"
+   "/assets/products/acc-bbp-20-1.jpg?v=hd1",
+   "/assets/products/acc-bbp-20-2.jpg?v=hd1",
+   "/assets/products/acc-bbp-20-3.jpg?v=hd1"
   ]
  },
  {
@@ -16706,7 +16959,9 @@
   "cost_usd": 23.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-bbp-30-1.jpg"
+   "/assets/products/acc-bbp-30-1.jpg?v=hd1",
+   "/assets/products/acc-bbp-30-2.jpg?v=hd1",
+   "/assets/products/acc-bbp-30-3.jpg?v=hd1"
   ]
  },
  {
@@ -16740,7 +16995,8 @@
   "cost_usd": 29.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-bbp-50-1.jpg"
+   "/assets/products/acc-bbp-50-1.jpg?v=hd1",
+   "/assets/products/acc-bbp-50-2.jpg?v=hd1"
   ]
  },
  {
@@ -16769,7 +17025,9 @@
   "cost_usd": 100.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-ups-cw-2000va-1.jpg"
+   "/assets/products/acc-ups-cw-2000va-1.jpg?v=hd1",
+   "/assets/products/acc-ups-cw-2000va-2.jpg?v=hd1",
+   "/assets/products/acc-ups-cw-2000va-3.jpg?v=hd1"
   ]
  },
  {
@@ -16799,7 +17057,9 @@
   "cost_usd": 0.2,
   "warranty": false,
   "images": [
-   "/assets/products/acc-patch-kabel-cat-5-0-3m-1.jpg"
+   "/assets/products/acc-patch-kabel-cat-5-0-3m-1.jpg?v=hd1",
+   "/assets/products/acc-patch-kabel-cat-5-0-3m-2.jpg?v=hd1",
+   "/assets/products/acc-patch-kabel-cat-5-0-3m-3.jpg?v=hd1"
   ]
  },
  {
@@ -16829,7 +17089,9 @@
   "cost_usd": 0.29,
   "warranty": false,
   "images": [
-   "/assets/products/acc-patch-kabel-cat-5-0-5m-1.jpg"
+   "/assets/products/acc-patch-kabel-cat-5-0-5m-1.jpg?v=hd1",
+   "/assets/products/acc-patch-kabel-cat-5-0-5m-2.jpg?v=hd1",
+   "/assets/products/acc-patch-kabel-cat-5-0-5m-3.jpg?v=hd1"
   ]
  },
  {
@@ -16859,7 +17121,8 @@
   "cost_usd": 0.49,
   "warranty": false,
   "images": [
-   "/assets/products/acc-patch-kabel-cat-5-1-0m-1.jpg"
+   "/assets/products/acc-patch-kabel-cat-5-1-0m-1.jpg?v=hd1",
+   "/assets/products/acc-patch-kabel-cat-5-1-0m-2.jpg?v=hd1"
   ]
  },
  {
@@ -16889,7 +17152,9 @@
   "cost_usd": 0.59,
   "warranty": false,
   "images": [
-   "/assets/products/acc-patch-kabel-cat-5-1-5m-1.jpg"
+   "/assets/products/acc-patch-kabel-cat-5-1-5m-1.jpg?v=hd1",
+   "/assets/products/acc-patch-kabel-cat-5-1-5m-2.jpg?v=hd1",
+   "/assets/products/acc-patch-kabel-cat-5-1-5m-3.jpg?v=hd1"
   ]
  },
  {
@@ -16919,7 +17184,9 @@
   "cost_usd": 0.88,
   "warranty": false,
   "images": [
-   "/assets/products/acc-patch-kabel-cat-5-3-0m-1.jpg"
+   "/assets/products/acc-patch-kabel-cat-5-3-0m-1.jpg?v=hd1",
+   "/assets/products/acc-patch-kabel-cat-5-3-0m-2.jpg?v=hd1",
+   "/assets/products/acc-patch-kabel-cat-5-3-0m-3.jpg?v=hd1"
   ]
  },
  {
@@ -16954,7 +17221,9 @@
   "cost_usd": 19.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-patch-panel-24ch-5-cat-1.jpg"
+   "/assets/products/acc-patch-panel-24ch-5-cat-1.jpg?v=hd1",
+   "/assets/products/acc-patch-panel-24ch-5-cat-2.jpg?v=hd1",
+   "/assets/products/acc-patch-panel-24ch-5-cat-3.jpg?v=hd1"
   ]
  },
  {
@@ -16989,7 +17258,9 @@
   "cost_usd": 21.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-patch-panel-24ch-6-cat-1.jpg"
+   "/assets/products/acc-patch-panel-24ch-6-cat-1.jpg?v=hd1",
+   "/assets/products/acc-patch-panel-24ch-6-cat-2.jpg?v=hd1",
+   "/assets/products/acc-patch-panel-24ch-6-cat-3.jpg?v=hd1"
   ]
  },
  {
@@ -17024,7 +17295,9 @@
   "cost_usd": 32.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-patch-panel-48ch-5-cat-1.jpg"
+   "/assets/products/acc-patch-panel-48ch-5-cat-1.jpg?v=hd1",
+   "/assets/products/acc-patch-panel-48ch-5-cat-2.jpg?v=hd1",
+   "/assets/products/acc-patch-panel-48ch-5-cat-3.jpg?v=hd1"
   ]
  },
  {
@@ -17059,7 +17332,9 @@
   "cost_usd": 34.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-patch-panel-48ch-6-cat-1.jpg"
+   "/assets/products/acc-patch-panel-48ch-6-cat-1.jpg?v=hd1",
+   "/assets/products/acc-patch-panel-48ch-6-cat-2.jpg?v=hd1",
+   "/assets/products/acc-patch-panel-48ch-6-cat-3.jpg?v=hd1"
   ]
  },
  {
@@ -17090,7 +17365,9 @@
   "cost_usd": 31.25,
   "warranty": false,
   "images": [
-   "/assets/products/acc-patch-panel-6-kategoriya-1.jpg"
+   "/assets/products/acc-patch-panel-6-kategoriya-1.jpg?v=hd1",
+   "/assets/products/acc-patch-panel-6-kategoriya-2.jpg?v=hd1",
+   "/assets/products/acc-patch-panel-6-kategoriya-3.jpg?v=hd1"
   ]
  },
  {
@@ -17124,7 +17401,9 @@
   "cost_usd": 2.5,
   "warranty": false,
   "images": [
-   "/assets/products/acc-shteker-rj-45-5-cat-v-korobke-100sht-1.jpg"
+   "/assets/products/acc-shteker-rj-45-5-cat-v-korobke-100sht-1.jpg?v=hd1",
+   "/assets/products/acc-shteker-rj-45-5-cat-v-korobke-100sht-2.jpg?v=hd1",
+   "/assets/products/acc-shteker-rj-45-5-cat-v-korobke-100sht-3.jpg?v=hd1"
   ]
  },
  {
@@ -17158,7 +17437,7 @@
   "cost_usd": 5.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-shteker-rj-45-5-cat-v-korobke-100sht-premium-1.jpg"
+   "/assets/products/acc-shteker-rj-45-5-cat-v-korobke-100sht-premium-1.jpg?v=hd1"
   ]
  },
  {
@@ -17192,7 +17471,7 @@
   "cost_usd": 4.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-shteker-rj-45-5-cat-v-korobke-100sht-tsvetna-1.jpg"
+   "/assets/products/acc-shteker-rj-45-5-cat-v-korobke-100sht-tsvetna-1.jpg?v=hd1"
   ]
  },
  {
@@ -17226,7 +17505,8 @@
   "cost_usd": 4.5,
   "warranty": false,
   "images": [
-   "/assets/products/acc-shteker-rj-45-5-cat-metalicheskie-v-banochke-1.jpg"
+   "/assets/products/acc-shteker-rj-45-5-cat-metalicheskie-v-banochke-1.jpg?v=hd1",
+   "/assets/products/acc-shteker-rj-45-5-cat-metalicheskie-v-banochke-2.jpg?v=hd1"
   ]
  },
  {
@@ -17260,7 +17540,9 @@
   "cost_usd": 3.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-shteker-rj-45-6-cat-v-korobke-100sht-1.jpg"
+   "/assets/products/acc-shteker-rj-45-6-cat-v-korobke-100sht-1.jpg?v=hd1",
+   "/assets/products/acc-shteker-rj-45-6-cat-v-korobke-100sht-2.jpg?v=hd1",
+   "/assets/products/acc-shteker-rj-45-6-cat-v-korobke-100sht-3.jpg?v=hd1"
   ]
  },
  {
@@ -17294,7 +17576,7 @@
   "cost_usd": 5.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-shteker-rj-45-6-cat-v-korobke-100sht-tsvetna-1.jpg"
+   "/assets/products/acc-shteker-rj-45-6-cat-v-korobke-100sht-tsvetna-1.jpg?v=hd1"
   ]
  },
  {
@@ -17328,7 +17610,7 @@
   "cost_usd": 0.2,
   "warranty": false,
   "images": [
-   "/assets/products/acc-shteker-rj-45-7-kategoriya-premium-1.jpg"
+   "/assets/products/acc-shteker-rj-45-7-kategoriya-premium-1.jpg?v=hd1"
   ]
  },
  {
@@ -17358,7 +17640,8 @@
   "cost_usd": 0.15,
   "warranty": false,
   "images": [
-   "/assets/products/acc-shteker-bns-1.jpg"
+   "/assets/products/acc-shteker-bns-1.jpg?v=hd1",
+   "/assets/products/acc-shteker-bns-2.jpg?v=hd1"
   ]
  },
  {
@@ -17418,7 +17701,9 @@
   "cost_usd": 0.05,
   "warranty": false,
   "images": [
-   "/assets/products/acc-shteker-pitaniya-1.jpg"
+   "/assets/products/acc-shteker-pitaniya-1.jpg?v=hd1",
+   "/assets/products/acc-shteker-pitaniya-2.jpg?v=hd1",
+   "/assets/products/acc-shteker-pitaniya-3.jpg?v=hd1"
   ]
  },
  {
@@ -17448,7 +17733,9 @@
   "cost_usd": 0.07,
   "warranty": false,
   "images": [
-   "/assets/products/acc-shteker-pitaniya-pod-vint-1.jpg"
+   "/assets/products/acc-shteker-pitaniya-pod-vint-1.jpg?v=hd1",
+   "/assets/products/acc-shteker-pitaniya-pod-vint-2.jpg?v=hd1",
+   "/assets/products/acc-shteker-pitaniya-pod-vint-3.jpg?v=hd1"
   ]
  },
  {
@@ -17478,7 +17765,7 @@
   "cost_usd": 0.1,
   "warranty": false,
   "images": [
-   "/assets/products/acc-kolpochok-dlya-rj-45-1.jpg"
+   "/assets/products/acc-kolpochok-dlya-rj-45-1.jpg?v=hd1"
   ]
  },
  {
@@ -17508,7 +17795,7 @@
   "cost_usd": 0.7,
   "warranty": false,
   "images": [
-   "/assets/products/acc-lan-adapter-rj-45-1.jpg"
+   "/assets/products/acc-lan-adapter-rj-45-1.jpg?v=hd1"
   ]
  },
  {
@@ -17538,7 +17825,9 @@
   "cost_usd": 1.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-rozetochnyy-modul-utp-cat-6-1.jpg"
+   "/assets/products/acc-rozetochnyy-modul-utp-cat-6-1.jpg?v=hd1",
+   "/assets/products/acc-rozetochnyy-modul-utp-cat-6-2.jpg?v=hd1",
+   "/assets/products/acc-rozetochnyy-modul-utp-cat-6-3.jpg?v=hd1"
   ]
  },
  {
@@ -17568,7 +17857,7 @@
   "cost_usd": 2.5,
   "warranty": false,
   "images": [
-   "/assets/products/acc-sks-rozetka-telefon-1.jpg"
+   "/assets/products/acc-sks-rozetka-telefon-1.jpg?v=hd1"
   ]
  },
  {
@@ -17628,7 +17917,9 @@
   "cost_usd": 1.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-vodonepronitsaemyy-soedinitel-vitoy-pary-rj-1.jpg"
+   "/assets/products/acc-vodonepronitsaemyy-soedinitel-vitoy-pary-rj-1.jpg?v=hd1",
+   "/assets/products/acc-vodonepronitsaemyy-soedinitel-vitoy-pary-rj-2.jpg?v=hd1",
+   "/assets/products/acc-vodonepronitsaemyy-soedinitel-vitoy-pary-rj-3.jpg?v=hd1"
   ]
  },
  {
@@ -17658,7 +17949,9 @@
   "cost_usd": 3.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-soedinitelnye-klemmy-skotch-lok-1.jpg"
+   "/assets/products/acc-soedinitelnye-klemmy-skotch-lok-1.jpg?v=hd1",
+   "/assets/products/acc-soedinitelnye-klemmy-skotch-lok-2.jpg?v=hd1",
+   "/assets/products/acc-soedinitelnye-klemmy-skotch-lok-3.jpg?v=hd1"
   ]
  },
  {
@@ -17688,7 +17981,9 @@
   "cost_usd": 3.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-ac-power-cable-europen-standard-c13-1-5m-1.jpg"
+   "/assets/products/acc-ac-power-cable-europen-standard-c13-1-5m-1.jpg?v=hd1",
+   "/assets/products/acc-ac-power-cable-europen-standard-c13-1-5m-2.jpg?v=hd1",
+   "/assets/products/acc-ac-power-cable-europen-standard-c13-1-5m-3.jpg?v=hd1"
   ]
  },
  {
@@ -17718,7 +18013,8 @@
   "cost_usd": 1.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-perehodnik-220v-kitay-evropa-1.jpg"
+   "/assets/products/acc-perehodnik-220v-kitay-evropa-1.jpg?v=hd1",
+   "/assets/products/acc-perehodnik-220v-kitay-evropa-2.jpg?v=hd1"
   ]
  },
  {
@@ -17748,7 +18044,9 @@
   "cost_usd": 0.5,
   "warranty": false,
   "images": [
-   "/assets/products/acc-izolenta-1.jpg"
+   "/assets/products/acc-izolenta-1.jpg?v=hd1",
+   "/assets/products/acc-izolenta-2.jpg?v=hd1",
+   "/assets/products/acc-izolenta-3.jpg?v=hd1"
   ]
  },
  {
@@ -17778,7 +18076,8 @@
   "cost_usd": 1.25,
   "warranty": false,
   "images": [
-   "/assets/products/acc-kabelnaya-klipsa-16-mm-1.jpg"
+   "/assets/products/acc-kabelnaya-klipsa-16-mm-1.jpg?v=hd1",
+   "/assets/products/acc-kabelnaya-klipsa-16-mm-2.jpg?v=hd1"
   ]
  },
  {
@@ -17808,7 +18107,8 @@
   "cost_usd": 3.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-homut-dlya-kabelya-s-markirovkoy-1.jpg"
+   "/assets/products/acc-homut-dlya-kabelya-s-markirovkoy-1.jpg?v=hd1",
+   "/assets/products/acc-homut-dlya-kabelya-s-markirovkoy-2.jpg?v=hd1"
   ]
  },
  {
@@ -17838,7 +18138,8 @@
   "cost_usd": 2.5,
   "warranty": false,
   "images": [
-   "/assets/products/acc-homut-plastmassovyy-5-250-1.jpg"
+   "/assets/products/acc-homut-plastmassovyy-5-250-1.jpg?v=hd1",
+   "/assets/products/acc-homut-plastmassovyy-5-250-2.jpg?v=hd1"
   ]
  },
  {
@@ -17868,18 +18169,20 @@
   "cost_usd": 2.7,
   "warranty": false,
   "images": [
-   "/assets/products/acc-homut-plastmassovyy-5-300-1.jpg"
+   "/assets/products/acc-homut-plastmassovyy-5-300-1.jpg?v=hd1",
+   "/assets/products/acc-homut-plastmassovyy-5-300-2.jpg?v=hd1",
+   "/assets/products/acc-homut-plastmassovyy-5-300-3.jpg?v=hd1"
   ]
  },
  {
   "sku": "ACC-GIBKIY-PEREHOD",
-  "name": "Egiluvchan o'tkazgich",
+  "name": "Eshik uchun kabel o‘tkazgich",
   "model": "",
-  "cat": "Aksessuar",
-  "badge": "Gofra",
-  "spec": "Egiluvchan o'tkazgich",
+  "cat": "Kirish nazorati",
+  "badge": "Eshik",
+  "spec": "Eshik uchun kabel o‘tkazgich",
   "tags": [
-   "Gofra",
+   "Eshik",
    "Montaj"
   ],
   "flags": {
@@ -17888,28 +18191,29 @@
    "night": 0,
    "spin": 0
   },
-  "desc": "Kabelni himoyalash uchun egiluvchan o'tkazgich.",
+  "desc": "Elektr qulf kabelini eshik ramkasidan eshik tabaqasiga himoyalangan holda o‘tkazish uchun egiluvchan metall o‘tkazgich.",
   "rows": [
    [
     "Turi",
-    "Egiluvchan o'tkazgich"
+    "Eshik uchun kabel o‘tkazgich"
    ]
   ],
   "cost_usd": 1.5,
   "warranty": false,
   "images": [
-   "/assets/products/acc-gibkiy-perehod-1.jpg"
+   "/assets/products/acc-gibkiy-perehod-1.jpg?v=hd1",
+   "/assets/products/acc-gibkiy-perehod-2.jpg?v=hd1"
   ]
  },
  {
   "sku": "ACC-GIBKIY-PEREHOD-BOLSHOY",
-  "name": "Egiluvchan o'tkazgich, katta",
+  "name": "Eshik uchun kabel o‘tkazgich, katta",
   "model": "",
-  "cat": "Aksessuar",
-  "badge": "Gofra",
-  "spec": "Egiluvchan o'tkazgich, katta",
+  "cat": "Kirish nazorati",
+  "badge": "Eshik",
+  "spec": "Eshik uchun kabel o‘tkazgich, katta",
   "tags": [
-   "Gofra",
+   "Eshik",
    "Montaj"
   ],
   "flags": {
@@ -17918,11 +18222,11 @@
    "night": 0,
    "spin": 0
   },
-  "desc": "Kabelni himoyalash uchun katta egiluvchan o'tkazgich.",
+  "desc": "Elektr qulf kabelini eshik ramkasidan eshik tabaqasiga himoyalangan holda o‘tkazish uchun egiluvchan metall o‘tkazgich.",
   "rows": [
    [
     "Turi",
-    "Egiluvchan o'tkazgich, katta"
+    "Eshik uchun kabel o‘tkazgich, katta"
    ]
   ],
   "cost_usd": 8.0,
@@ -17933,13 +18237,13 @@
  },
  {
   "sku": "ACC-GIBKIY-PEREHOD-CHYORNYY",
-  "name": "Egiluvchan o'tkazgich, qora",
+  "name": "Eshik uchun kabel o‘tkazgich, qora",
   "model": "",
-  "cat": "Aksessuar",
-  "badge": "Gofra",
-  "spec": "Egiluvchan o'tkazgich, qora",
+  "cat": "Kirish nazorati",
+  "badge": "Eshik",
+  "spec": "Eshik uchun kabel o‘tkazgich, qora",
   "tags": [
-   "Gofra",
+   "Eshik",
    "Montaj"
   ],
   "flags": {
@@ -17948,11 +18252,11 @@
    "night": 0,
    "spin": 0
   },
-  "desc": "Kabelni himoyalash uchun egiluvchan o'tkazgich.",
+  "desc": "Elektr qulf kabelini eshik ramkasidan eshik tabaqasiga himoyalangan holda o‘tkazish uchun egiluvchan metall o‘tkazgich.",
   "rows": [
    [
     "Turi",
-    "Egiluvchan o'tkazgich, qora"
+    "Eshik uchun kabel o‘tkazgich, qora"
    ]
   ],
   "cost_usd": 2.0,
@@ -17963,13 +18267,13 @@
  },
  {
   "sku": "ACC-GIBKIY-PEREHOD-BOLSHOY-CHERNYY",
-  "name": "Egiluvchan o'tkazgich, katta, qora",
+  "name": "Eshik uchun kabel o‘tkazgich, katta, qora",
   "model": "",
-  "cat": "Aksessuar",
-  "badge": "Gofra",
-  "spec": "Egiluvchan o'tkazgich, katta, qora",
+  "cat": "Kirish nazorati",
+  "badge": "Eshik",
+  "spec": "Eshik uchun kabel o‘tkazgich, katta, qora",
   "tags": [
-   "Gofra",
+   "Eshik",
    "Montaj"
   ],
   "flags": {
@@ -17978,17 +18282,19 @@
    "night": 0,
    "spin": 0
   },
-  "desc": "Katta o'lchamli egiluvchan o'tkazgich (zanglamas po'lat yoki ruxlangan metall).",
+  "desc": "Elektr qulf kabelini eshik ramkasidan eshik tabaqasiga himoyalangan holda o‘tkazish uchun egiluvchan metall o‘tkazgich.",
   "rows": [
    [
     "Turi",
-    "Egiluvchan o'tkazgich, katta, qora"
+    "Eshik uchun kabel o‘tkazgich, katta, qora"
    ]
   ],
   "cost_usd": 8.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-gibkiy-perehod-bolshoy-chernyy-1.jpg"
+   "/assets/products/acc-gibkiy-perehod-bolshoy-chernyy-1.jpg?v=hd1",
+   "/assets/products/acc-gibkiy-perehod-bolshoy-chernyy-2.jpg?v=hd1",
+   "/assets/products/acc-gibkiy-perehod-bolshoy-chernyy-3.jpg?v=hd1"
   ]
  },
  {
@@ -18018,7 +18324,9 @@
   "cost_usd": 6.2,
   "warranty": false,
   "images": [
-   "/assets/products/acc-gofrirovannyy-shlang-16-1.jpg"
+   "/assets/products/acc-gofrirovannyy-shlang-16-1.jpg?v=hd1",
+   "/assets/products/acc-gofrirovannyy-shlang-16-2.jpg?v=hd1",
+   "/assets/products/acc-gofrirovannyy-shlang-16-3.jpg?v=hd1"
   ]
  },
  {
@@ -18078,7 +18386,9 @@
   "cost_usd": 2.5,
   "warranty": false,
   "images": [
-   "/assets/products/acc-chupik-dlya-samarez-10mm-v-pachke-50sht-1.jpg"
+   "/assets/products/acc-chupik-dlya-samarez-10mm-v-pachke-50sht-1.jpg?v=hd1",
+   "/assets/products/acc-chupik-dlya-samarez-10mm-v-pachke-50sht-2.jpg?v=hd1",
+   "/assets/products/acc-chupik-dlya-samarez-10mm-v-pachke-50sht-3.jpg?v=hd1"
   ]
  },
  {
@@ -18108,7 +18418,9 @@
   "cost_usd": 1.8,
   "warranty": false,
   "images": [
-   "/assets/products/acc-chupik-dlya-samarez-6mm-v-pachke-50sht-1.jpg"
+   "/assets/products/acc-chupik-dlya-samarez-6mm-v-pachke-50sht-1.jpg?v=hd1",
+   "/assets/products/acc-chupik-dlya-samarez-6mm-v-pachke-50sht-2.jpg?v=hd1",
+   "/assets/products/acc-chupik-dlya-samarez-6mm-v-pachke-50sht-3.jpg?v=hd1"
   ]
  },
  {
@@ -18168,7 +18480,9 @@
   "cost_usd": 12.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-zamok-180kg-magnitnyy-1.jpg"
+   "/assets/products/acc-zamok-180kg-magnitnyy-1.jpg?v=hd1",
+   "/assets/products/acc-zamok-180kg-magnitnyy-2.jpg?v=hd1",
+   "/assets/products/acc-zamok-180kg-magnitnyy-3.jpg?v=hd1"
   ]
  },
  {
@@ -18198,7 +18512,9 @@
   "cost_usd": 15.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-zamok-280kg-magnitnyy-1.jpg"
+   "/assets/products/acc-zamok-280kg-magnitnyy-1.jpg?v=hd1",
+   "/assets/products/acc-zamok-280kg-magnitnyy-2.jpg?v=hd1",
+   "/assets/products/acc-zamok-280kg-magnitnyy-3.jpg?v=hd1"
   ]
  },
  {
@@ -18228,7 +18544,9 @@
   "cost_usd": 15.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-zamok-280kg-magnitnyy-ugolok-montazhnyy-1.jpg"
+   "/assets/products/acc-zamok-280kg-magnitnyy-ugolok-montazhnyy-1.jpg?v=hd1",
+   "/assets/products/acc-zamok-280kg-magnitnyy-ugolok-montazhnyy-2.jpg?v=hd1",
+   "/assets/products/acc-zamok-280kg-magnitnyy-ugolok-montazhnyy-3.jpg?v=hd1"
   ]
  },
  {
@@ -18258,7 +18576,8 @@
   "cost_usd": 27.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-zamok-380kg-magnitnyy-1.jpg"
+   "/assets/products/acc-zamok-380kg-magnitnyy-1.jpg?v=hd1",
+   "/assets/products/acc-zamok-380kg-magnitnyy-2.jpg?v=hd1"
   ]
  },
  {
@@ -18288,7 +18607,9 @@
   "cost_usd": 60.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-zamok-500kg-magnitnyy-1.jpg"
+   "/assets/products/acc-zamok-500kg-magnitnyy-1.jpg?v=hd1",
+   "/assets/products/acc-zamok-500kg-magnitnyy-2.jpg?v=hd1",
+   "/assets/products/acc-zamok-500kg-magnitnyy-3.jpg?v=hd1"
   ]
  },
  {
@@ -18433,7 +18754,9 @@
   "cost_usd": 75.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-zamok-kak-polis-yb600b-1.jpg"
+   "/assets/products/acc-zamok-kak-polis-yb600b-1.jpg?v=hd1",
+   "/assets/products/acc-zamok-kak-polis-yb600b-2.jpg?v=hd1",
+   "/assets/products/acc-zamok-kak-polis-yb600b-3.jpg?v=hd1"
   ]
  },
  {
@@ -18462,7 +18785,9 @@
   "cost_usd": 25.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-zamok-3-klyuch-gougar-1.jpg"
+   "/assets/products/acc-zamok-3-klyuch-gougar-1.jpg?v=hd1",
+   "/assets/products/acc-zamok-3-klyuch-gougar-2.jpg?v=hd1",
+   "/assets/products/acc-zamok-3-klyuch-gougar-3.jpg?v=hd1"
   ]
  },
  {
@@ -18491,7 +18816,9 @@
   "cost_usd": 30.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-zamok-6-klyuch-andel-1.jpg"
+   "/assets/products/acc-zamok-6-klyuch-andel-1.jpg?v=hd1",
+   "/assets/products/acc-zamok-6-klyuch-andel-2.jpg?v=hd1",
+   "/assets/products/acc-zamok-6-klyuch-andel-3.jpg?v=hd1"
   ]
  },
  {
@@ -18520,7 +18847,9 @@
   "cost_usd": 38.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-zamok-6-klyuch-andel-premium-1.jpg"
+   "/assets/products/acc-zamok-6-klyuch-andel-premium-1.jpg?v=hd1",
+   "/assets/products/acc-zamok-6-klyuch-andel-premium-2.jpg?v=hd1",
+   "/assets/products/acc-zamok-6-klyuch-andel-premium-3.jpg?v=hd1"
   ]
  },
  {
@@ -18549,7 +18878,9 @@
   "cost_usd": 12.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-zamok-6-serdtsevina-1.jpg"
+   "/assets/products/acc-zamok-6-serdtsevina-1.jpg?v=hd1",
+   "/assets/products/acc-zamok-6-serdtsevina-2.jpg?v=hd1",
+   "/assets/products/acc-zamok-6-serdtsevina-3.jpg?v=hd1"
   ]
  },
  {
@@ -18583,7 +18914,8 @@
   "cost_usd": 28.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-dovodchik-80kg-bolshoy-1.jpg"
+   "/assets/products/acc-dovodchik-80kg-bolshoy-1.jpg?v=hd1",
+   "/assets/products/acc-dovodchik-80kg-bolshoy-2.jpg?v=hd1"
   ]
  },
  {
@@ -18613,7 +18945,8 @@
   "cost_usd": 20.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-dovodchik-malenkiy-1.jpg"
+   "/assets/products/acc-dovodchik-malenkiy-1.jpg?v=hd1",
+   "/assets/products/acc-dovodchik-malenkiy-2.jpg?v=hd1"
   ]
  },
  {
@@ -18647,7 +18980,9 @@
   "cost_usd": 24.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-dovodchik-60kg-malenkiy-1.jpg"
+   "/assets/products/acc-dovodchik-60kg-malenkiy-1.jpg?v=hd1",
+   "/assets/products/acc-dovodchik-60kg-malenkiy-2.jpg?v=hd1",
+   "/assets/products/acc-dovodchik-60kg-malenkiy-3.jpg?v=hd1"
   ]
  },
  {
@@ -18677,7 +19012,9 @@
   "cost_usd": 20.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-zamok-280kg-magnitnyy-raspashnoy-1.jpg"
+   "/assets/products/acc-zamok-280kg-magnitnyy-raspashnoy-1.jpg?v=hd1",
+   "/assets/products/acc-zamok-280kg-magnitnyy-raspashnoy-2.jpg?v=hd1",
+   "/assets/products/acc-zamok-280kg-magnitnyy-raspashnoy-3.jpg?v=hd1"
   ]
  },
  {
@@ -18706,7 +19043,8 @@
   "cost_usd": 20.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-zamok-dj06-lock-1.jpg"
+   "/assets/products/acc-zamok-dj06-lock-1.jpg?v=hd1",
+   "/assets/products/acc-zamok-dj06-lock-2.jpg?v=hd1"
   ]
  },
  {
@@ -18736,7 +19074,9 @@
   "cost_usd": 3.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-kronshteyn-dlya-magnitnyy-steklyannyy-280kg-1.jpg"
+   "/assets/products/acc-kronshteyn-dlya-magnitnyy-steklyannyy-280kg-1.jpg?v=hd1",
+   "/assets/products/acc-kronshteyn-dlya-magnitnyy-steklyannyy-280kg-2.jpg?v=hd1",
+   "/assets/products/acc-kronshteyn-dlya-magnitnyy-steklyannyy-280kg-3.jpg?v=hd1"
   ]
  },
  {
@@ -18796,7 +19136,8 @@
   "cost_usd": 0.1,
   "warranty": false,
   "images": [
-   "/assets/products/acc-karta-brelok-1.jpg"
+   "/assets/products/acc-karta-brelok-1.jpg?v=hd1",
+   "/assets/products/acc-karta-brelok-2.jpg?v=hd1"
   ]
  },
  {
@@ -18826,7 +19167,9 @@
   "cost_usd": 0.1,
   "warranty": false,
   "images": [
-   "/assets/products/acc-karta-brelok-tsvetnaya-1.jpg"
+   "/assets/products/acc-karta-brelok-tsvetnaya-1.jpg?v=hd1",
+   "/assets/products/acc-karta-brelok-tsvetnaya-2.jpg?v=hd1",
+   "/assets/products/acc-karta-brelok-tsvetnaya-3.jpg?v=hd1"
   ]
  },
  {
@@ -18856,7 +19199,7 @@
   "cost_usd": 0.12,
   "warranty": false,
   "images": [
-   "/assets/products/acc-karta-plastik-emarine-1.jpg"
+   "/assets/products/acc-karta-plastik-emarine-1.jpg?v=hd1"
   ]
  },
  {
@@ -18886,7 +19229,9 @@
   "cost_usd": 0.15,
   "warranty": false,
   "images": [
-   "/assets/products/acc-karta-plastik-mifare-tolstaya-1.jpg"
+   "/assets/products/acc-karta-plastik-mifare-tolstaya-1.jpg?v=hd1",
+   "/assets/products/acc-karta-plastik-mifare-tolstaya-2.jpg?v=hd1",
+   "/assets/products/acc-karta-plastik-mifare-tolstaya-3.jpg?v=hd1"
   ]
  },
  {
@@ -18916,7 +19261,9 @@
   "cost_usd": 1.5,
   "warranty": false,
   "images": [
-   "/assets/products/acc-knopka-exit-vnutrennyy-metal-bolshoy-s86-1.jpg"
+   "/assets/products/acc-knopka-exit-vnutrennyy-metal-bolshoy-s86-1.jpg?v=hd1",
+   "/assets/products/acc-knopka-exit-vnutrennyy-metal-bolshoy-s86-2.jpg?v=hd1",
+   "/assets/products/acc-knopka-exit-vnutrennyy-metal-bolshoy-s86-3.jpg?v=hd1"
   ]
  },
  {
@@ -19006,7 +19353,9 @@
   "cost_usd": 1.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-knopka-exit-metal-tonkiy-s28-1.jpg"
+   "/assets/products/acc-knopka-exit-metal-tonkiy-s28-1.jpg?v=hd1",
+   "/assets/products/acc-knopka-exit-metal-tonkiy-s28-2.jpg?v=hd1",
+   "/assets/products/acc-knopka-exit-metal-tonkiy-s28-3.jpg?v=hd1"
   ]
  },
  {
@@ -19066,7 +19415,9 @@
   "cost_usd": 4.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-knopka-exit-metal-z30-1.jpg"
+   "/assets/products/acc-knopka-exit-metal-z30-1.jpg?v=hd1",
+   "/assets/products/acc-knopka-exit-metal-z30-2.jpg?v=hd1",
+   "/assets/products/acc-knopka-exit-metal-z30-3.jpg?v=hd1"
   ]
  },
  {
@@ -19096,7 +19447,8 @@
   "cost_usd": 6.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-knopka-exit-naruzhnyy-skrytyy-sensornyy-cher-1.jpg"
+   "/assets/products/acc-knopka-exit-naruzhnyy-skrytyy-sensornyy-cher-1.jpg?v=hd1",
+   "/assets/products/acc-knopka-exit-naruzhnyy-skrytyy-sensornyy-cher-2.jpg?v=hd1"
   ]
  },
  {
@@ -19126,7 +19478,7 @@
   "cost_usd": 8.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-knopka-exit-ok-kora-1.jpg"
+   "/assets/products/acc-knopka-exit-ok-kora-1.jpg?v=hd1"
   ]
  },
  {
@@ -19186,7 +19538,7 @@
   "cost_usd": 4.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-knopka-exit-sensornyy-metall-k286-1.jpg"
+   "/assets/products/acc-knopka-exit-sensornyy-metall-k286-1.jpg?v=hd1"
   ]
  },
  {
@@ -19216,7 +19568,8 @@
   "cost_usd": 7.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-knopka-exit-skrytyy-sensornyy-chernyy-1.jpg"
+   "/assets/products/acc-knopka-exit-skrytyy-sensornyy-chernyy-1.jpg?v=hd1",
+   "/assets/products/acc-knopka-exit-skrytyy-sensornyy-chernyy-2.jpg?v=hd1"
   ]
  },
  {
@@ -19246,7 +19599,8 @@
   "cost_usd": 4.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-knopka-exit-skrytyy-sensornyy-chernyy-c286-1.jpg"
+   "/assets/products/acc-knopka-exit-skrytyy-sensornyy-chernyy-c286-1.jpg?v=hd1",
+   "/assets/products/acc-knopka-exit-skrytyy-sensornyy-chernyy-c286-2.jpg?v=hd1"
   ]
  },
  {
@@ -19341,11 +19695,11 @@
  },
  {
   "sku": "ACC-KNOPKA-PEREKLYUCHATEL-KPASS",
-  "name": "Tugma-o'chirgich KPASS",
+  "name": "Sensorli chiqish tugmasi KPASS (ko‘k)",
   "model": "",
   "cat": "Kirish nazorati",
   "badge": "Tugma",
-  "spec": "Tugma-o'chirgich KPASS",
+  "spec": "Sensorli chiqish tugmasi KPASS (ko‘k)",
   "tags": [
    "Tugma",
    "Kirish nazorati"
@@ -19356,11 +19710,11 @@
    "night": 0,
    "spin": 0
   },
-  "desc": "Tugma-o'chirgich KPASS — kirish nazorati va xavfsizlik tizimlari uchun.",
+  "desc": "Eshikni ichkaridan ochish uchun chiqish tugmasi (EXIT) — elektromagnit qulf va kirish nazorati tizimlari bilan ishlaydi.",
   "rows": [
    [
     "Turi",
-    "Tugma-o'chirgich KPASS"
+    "Sensorli chiqish tugmasi KPASS (ko‘k)"
    ]
   ],
   "cost_usd": 25.0,
@@ -19396,7 +19750,8 @@
   "cost_usd": 1.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-knopka-trevozhnaya-kalit-1.jpg"
+   "/assets/products/acc-knopka-trevozhnaya-kalit-1.jpg?v=hd1",
+   "/assets/products/acc-knopka-trevozhnaya-kalit-2.jpg?v=hd1"
   ]
  },
  {
@@ -19426,7 +19781,7 @@
   "cost_usd": 7.5,
   "warranty": false,
   "images": [
-   "/assets/products/acc-knopka-chernaya-bolshaya-vnutrennyaya-1.jpg"
+   "/assets/products/acc-knopka-chernaya-bolshaya-vnutrennyaya-1.jpg?v=hd1"
   ]
  },
  {
@@ -19455,7 +19810,8 @@
   "cost_usd": 5.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-schityvatel-1.jpg"
+   "/assets/products/acc-schityvatel-1.jpg?v=hd1",
+   "/assets/products/acc-schityvatel-2.jpg?v=hd1"
   ]
  },
  {
@@ -19485,7 +19841,7 @@
   "cost_usd": 370.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-u1000-pro-1.jpg"
+   "/assets/products/acc-u1000-pro-1.jpg?v=hd1"
   ]
  },
  {
@@ -19515,7 +19871,7 @@
   "cost_usd": 15.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-kronshteyn-kab3-zu1-1.jpg"
+   "/assets/products/acc-kronshteyn-kab3-zu1-1.jpg?v=hd1"
   ]
  },
  {
@@ -19545,7 +19901,9 @@
   "cost_usd": 25.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-kronshteyn-kab6-zu1-1.jpg"
+   "/assets/products/acc-kronshteyn-kab6-zu1-1.jpg?v=hd1",
+   "/assets/products/acc-kronshteyn-kab6-zu1-2.jpg?v=hd1",
+   "/assets/products/acc-kronshteyn-kab6-zu1-3.jpg?v=hd1"
   ]
  },
  {
@@ -19575,7 +19933,7 @@
   "cost_usd": 30.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-kronshteyn-kab7-zu1-1.jpg"
+   "/assets/products/acc-kronshteyn-kab7-zu1-1.jpg?v=hd1"
   ]
  },
  {
@@ -19605,7 +19963,9 @@
   "cost_usd": 500.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-ld-b503-turniket-odin-prohod-1.jpg"
+   "/assets/products/acc-ld-b503-turniket-odin-prohod-1.jpg?v=hd1",
+   "/assets/products/acc-ld-b503-turniket-odin-prohod-2.jpg?v=hd1",
+   "/assets/products/acc-ld-b503-turniket-odin-prohod-3.jpg?v=hd1"
   ]
  },
  {
@@ -19639,11 +19999,11 @@
  },
  {
   "sku": "ACC-AKTIV-DLYA-SHLAGBAUM-ABO-20M-BEZPROVODNOY",
-  "name": "Shlagbaum uchun simsiz qurilma ABO-20M",
+  "name": "Shlagbaum fotoelementi ABO-20M (simsiz)",
   "model": "",
   "cat": "Kirish nazorati",
   "badge": "Shlagbaum",
-  "spec": "Shlagbaum uchun simsiz qurilma ABO-20M",
+  "spec": "Shlagbaum fotoelementi ABO-20M (simsiz)",
   "tags": [
    "Shlagbaum",
    "Pult"
@@ -19654,11 +20014,11 @@
    "night": 0,
    "spin": 0
   },
-  "desc": "Shlagbaum uchun simsiz qurilma ABO-20M (distribyutor ro'yxatidagi nomi: «Актив для шлагбаум»).",
+  "desc": "Shlagbaum ostidan o‘tayotgan avtomobil yoki odamni sezib, strelaning tushishini to‘xtatuvchi xavfsizlik fotoelementi (juftlik), simsiz.",
   "rows": [
    [
     "Model",
-    "Shlagbaum uchun simsiz qurilma ABO-20M"
+    "Shlagbaum fotoelementi ABO-20M (simsiz)"
    ]
   ],
   "cost_usd": 25.0,
@@ -19669,11 +20029,11 @@
  },
  {
   "sku": "ACC-AKTIV-DLYA-SHLAGBAUM",
-  "name": "Shlagbaum uchun qurilma (aktiv)",
+  "name": "Shlagbaum fotoelementi",
   "model": "",
   "cat": "Kirish nazorati",
   "badge": "Shlagbaum",
-  "spec": "Shlagbaum uchun qurilma (aktiv)",
+  "spec": "Shlagbaum fotoelementi",
   "tags": [
    "Shlagbaum",
    "Pult"
@@ -19684,11 +20044,11 @@
    "night": 0,
    "spin": 0
   },
-  "desc": "Shlagbaum uchun qurilma (distribyutor ro'yxatidagi nomi: «Актив для шлагбаум»).",
+  "desc": "Shlagbaum ostidan o‘tayotgan avtomobil yoki odamni sezib, strelaning tushishini to‘xtatuvchi xavfsizlik fotoelementi (juftlik).",
   "rows": [
    [
     "Model",
-    "Shlagbaum uchun qurilma (aktiv)"
+    "Shlagbaum fotoelementi"
    ]
   ],
   "cost_usd": 10.0,
@@ -19724,7 +20084,8 @@
   "cost_usd": 30.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-plata-dlya-shlagbauma-sim-karta-2g-rtu5024-1.jpg"
+   "/assets/products/acc-plata-dlya-shlagbauma-sim-karta-2g-rtu5024-1.jpg?v=hd1",
+   "/assets/products/acc-plata-dlya-shlagbauma-sim-karta-2g-rtu5024-2.jpg?v=hd1"
   ]
  },
  {
@@ -19754,7 +20115,7 @@
   "cost_usd": 4.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-pult-dlya-shlagbauma-au518-4xx-learning-code-1.jpg"
+   "/assets/products/acc-pult-dlya-shlagbauma-au518-4xx-learning-code-1.jpg?v=hd1"
   ]
  },
  {
@@ -19784,7 +20145,7 @@
   "cost_usd": 8.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-pult-dlya-shlagbauma-universal-siniy-au666-4-1.jpg"
+   "/assets/products/acc-pult-dlya-shlagbauma-universal-siniy-au666-4-1.jpg?v=hd1"
   ]
  },
  {
@@ -20024,7 +20385,9 @@
   "cost_usd": 5.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-tpb-3-pult-upravleniya-turniketom-shlagbaumo-1.jpg"
+   "/assets/products/acc-tpb-3-pult-upravleniya-turniketom-shlagbaumo-1.jpg?v=hd1",
+   "/assets/products/acc-tpb-3-pult-upravleniya-turniketom-shlagbaumo-2.jpg?v=hd1",
+   "/assets/products/acc-tpb-3-pult-upravleniya-turniketom-shlagbaumo-3.jpg?v=hd1"
   ]
  },
  {
@@ -20059,11 +20422,11 @@
  },
  {
   "sku": "ACC-IBA-7612",
-  "name": "IBA 7612 (shlagbaum aksessuari)",
+  "name": "Kodli klaviatura IBA 7612",
   "model": "",
   "cat": "Kirish nazorati",
   "badge": "Shlagbaum",
-  "spec": "IBA 7612 (shlagbaum aksessuari)",
+  "spec": "Kodli klaviatura IBA 7612",
   "tags": [
    "Shlagbaum",
    "Pult"
@@ -20074,17 +20437,17 @@
    "night": 0,
    "spin": 0
   },
-  "desc": "IBA 7612 — shlagbaum va avtomatika bo'limidagi aksessuar (distribyutor ro'yxati).",
+  "desc": "IBA 7612 — metall korpusli kodli klaviatura: kod terib eshik yoki shlagbaumni ochish uchun (distribyutor rasmi bo‘yicha).",
   "rows": [
    [
     "Model",
-    "IBA 7612 (shlagbaum aksessuari)"
+    "Kodli klaviatura IBA 7612"
    ]
   ],
   "cost_usd": 28.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-iba-7612-1.jpg"
+   "/assets/products/acc-iba-7612-1.jpg?v=hd1"
   ]
  },
  {
@@ -20186,7 +20549,8 @@
   "cost_usd": 500.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-e-lprc500-1.jpg"
+   "/assets/products/acc-e-lprc500-1.jpg?v=hd1",
+   "/assets/products/acc-e-lprc500-2.jpg?v=hd1"
   ]
  },
  {
@@ -20285,7 +20649,7 @@
   "cost_usd": 40.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-lizhachiy-politseyskiy-premium-size-600-x-47-1.jpg"
+   "/assets/products/acc-lizhachiy-politseyskiy-premium-size-600-x-47-1.jpg?v=hd1"
   ]
  },
  {
@@ -20318,7 +20682,8 @@
   "cost_usd": 7.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-konets-lezhachego-politseyskogo-premium-size-1.jpg"
+   "/assets/products/acc-konets-lezhachego-politseyskogo-premium-size-1.jpg?v=hd1",
+   "/assets/products/acc-konets-lezhachego-politseyskogo-premium-size-2.jpg?v=hd1"
   ]
  },
  {
@@ -20351,7 +20716,8 @@
   "cost_usd": 60.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-lizhachiy-politseyskiy-tselyy-dlinnyy-size-1-1.jpg"
+   "/assets/products/acc-lizhachiy-politseyskiy-tselyy-dlinnyy-size-1-1.jpg?v=hd1",
+   "/assets/products/acc-lizhachiy-politseyskiy-tselyy-dlinnyy-size-1-2.jpg?v=hd1"
   ]
  },
  {
@@ -20417,7 +20783,9 @@
   "cost_usd": 7.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-zaschita-uglov-rezinovaya-height-800mm-1.jpg"
+   "/assets/products/acc-zaschita-uglov-rezinovaya-height-800mm-1.jpg?v=hd1",
+   "/assets/products/acc-zaschita-uglov-rezinovaya-height-800mm-2.jpg?v=hd1",
+   "/assets/products/acc-zaschita-uglov-rezinovaya-height-800mm-3.jpg?v=hd1"
   ]
  },
  {
@@ -20450,7 +20818,9 @@
   "cost_usd": 12.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-parkovochnyy-ogranichitel-kolesa-size-550-x-1.jpg"
+   "/assets/products/acc-parkovochnyy-ogranichitel-kolesa-size-550-x-1.jpg?v=hd1",
+   "/assets/products/acc-parkovochnyy-ogranichitel-kolesa-size-550-x-2.jpg?v=hd1",
+   "/assets/products/acc-parkovochnyy-ogranichitel-kolesa-size-550-x-3.jpg?v=hd1"
   ]
  },
  {
@@ -20508,7 +20878,7 @@
   "cost_usd": 0.55,
   "warranty": false,
   "images": [
-   "/assets/products/acc-ankernyy-bolt-dlya-lezhachiy-1.jpg"
+   "/assets/products/acc-ankernyy-bolt-dlya-lezhachiy-1.jpg?v=hd1"
   ]
  },
  {
@@ -20537,7 +20907,8 @@
   "cost_usd": 22.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-lizhachiy-politseyskiy-5-sm-cs-5trf-1.jpg"
+   "/assets/products/acc-lizhachiy-politseyskiy-5-sm-cs-5trf-1.jpg?v=hd1",
+   "/assets/products/acc-lizhachiy-politseyskiy-5-sm-cs-5trf-2.jpg?v=hd1"
   ]
  },
  {
@@ -20566,7 +20937,8 @@
   "cost_usd": 26.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-lizhachiy-politseyskiy-standart-black-za-1-m-1.jpg"
+   "/assets/products/acc-lizhachiy-politseyskiy-standart-black-za-1-m-1.jpg?v=hd1",
+   "/assets/products/acc-lizhachiy-politseyskiy-standart-black-za-1-m-2.jpg?v=hd1"
   ]
  },
  {
@@ -20595,7 +20967,8 @@
   "cost_usd": 26.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-lizhachiy-politseyskiy-standart-yellow-za-1-1.jpg"
+   "/assets/products/acc-lizhachiy-politseyskiy-standart-yellow-za-1-1.jpg?v=hd1",
+   "/assets/products/acc-lizhachiy-politseyskiy-standart-yellow-za-1-2.jpg?v=hd1"
   ]
  },
  {
@@ -20637,7 +21010,9 @@
   "cost_usd": 32.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-ratsiya-baofeng-888s-v-komplekte-2sht-naushn-1.jpg"
+   "/assets/products/acc-ratsiya-baofeng-888s-v-komplekte-2sht-naushn-1.jpg?v=hd1",
+   "/assets/products/acc-ratsiya-baofeng-888s-v-komplekte-2sht-naushn-2.jpg?v=hd1",
+   "/assets/products/acc-ratsiya-baofeng-888s-v-komplekte-2sht-naushn-3.jpg?v=hd1"
   ]
  },
  {
@@ -20675,7 +21050,9 @@
   "cost_usd": 50.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-ratsiya-baofeng-9700-1.jpg"
+   "/assets/products/acc-ratsiya-baofeng-9700-1.jpg?v=hd1",
+   "/assets/products/acc-ratsiya-baofeng-9700-2.jpg?v=hd1",
+   "/assets/products/acc-ratsiya-baofeng-9700-3.jpg?v=hd1"
   ]
  },
  {
@@ -20705,7 +21082,9 @@
   "cost_usd": 35.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-ratsiya-baofeng-999s-v-komplekte-2sht-naushn-1.jpg"
+   "/assets/products/acc-ratsiya-baofeng-999s-v-komplekte-2sht-naushn-1.jpg?v=hd1",
+   "/assets/products/acc-ratsiya-baofeng-999s-v-komplekte-2sht-naushn-2.jpg?v=hd1",
+   "/assets/products/acc-ratsiya-baofeng-999s-v-komplekte-2sht-naushn-3.jpg?v=hd1"
   ]
  },
  {
@@ -20735,7 +21114,9 @@
   "cost_usd": 300.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-ipc-9800c-pro-tester-ip-kamery-1.jpg"
+   "/assets/products/acc-ipc-9800c-pro-tester-ip-kamery-1.jpg?v=hd1",
+   "/assets/products/acc-ipc-9800c-pro-tester-ip-kamery-2.jpg?v=hd1",
+   "/assets/products/acc-ipc-9800c-pro-tester-ip-kamery-3.jpg?v=hd1"
   ]
  },
  {
@@ -20765,7 +21146,9 @@
   "cost_usd": 250.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-ipc-5100c-plus-tester-ip-kamery-1.jpg"
+   "/assets/products/acc-ipc-5100c-plus-tester-ip-kamery-1.jpg?v=hd1",
+   "/assets/products/acc-ipc-5100c-plus-tester-ip-kamery-2.jpg?v=hd1",
+   "/assets/products/acc-ipc-5100c-plus-tester-ip-kamery-3.jpg?v=hd1"
   ]
  },
  {
@@ -20794,7 +21177,8 @@
   "cost_usd": 50.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-k68-detektor-skrytyh-kamer-i-zhuchkov-1.jpg"
+   "/assets/products/acc-k68-detektor-skrytyh-kamer-i-zhuchkov-1.jpg?v=hd1",
+   "/assets/products/acc-k68-detektor-skrytyh-kamer-i-zhuchkov-2.jpg?v=hd1"
   ]
  },
  {
@@ -20823,7 +21207,9 @@
   "cost_usd": 10.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-super-scaner-gp-3003b1-1.jpg"
+   "/assets/products/acc-super-scaner-gp-3003b1-1.jpg?v=hd1",
+   "/assets/products/acc-super-scaner-gp-3003b1-2.jpg?v=hd1",
+   "/assets/products/acc-super-scaner-gp-3003b1-3.jpg?v=hd1"
   ]
  },
  {
@@ -20988,7 +21374,9 @@
   "cost_usd": 45.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-babyphone-vb610-1.jpg"
+   "/assets/products/acc-babyphone-vb610-1.jpg?v=hd1",
+   "/assets/products/acc-babyphone-vb610-2.jpg?v=hd1",
+   "/assets/products/acc-babyphone-vb610-3.jpg?v=hd1"
   ]
  },
  {
@@ -21018,7 +21406,8 @@
   "cost_usd": 35.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-p20-4g-povorotnaya-kamera-1.jpg"
+   "/assets/products/acc-p20-4g-povorotnaya-kamera-1.jpg?v=hd1",
+   "/assets/products/acc-p20-4g-povorotnaya-kamera-2.jpg?v=hd1"
   ]
  },
  {
@@ -21108,7 +21497,7 @@
   "cost_usd": 20.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-v380-pro-povorotnaya-kamera-s-tremya-obektiv-1.jpg"
+   "/assets/products/acc-v380-pro-povorotnaya-kamera-s-tremya-obektiv-1.jpg?v=hd1"
   ]
  },
  {
@@ -21137,16 +21526,18 @@
   "cost_usd": 3000.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-sti-xmec0-h1ag-1.jpg"
+   "/assets/products/acc-sti-xmec0-h1ag-1.jpg?v=hd1",
+   "/assets/products/acc-sti-xmec0-h1ag-2.jpg?v=hd1",
+   "/assets/products/acc-sti-xmec0-h1ag-3.jpg?v=hd1"
   ]
  },
  {
   "sku": "ACC-BALONCHIK-5MPX",
-  "name": "Balonchik 5MP",
+  "name": "Video balun 5MP",
   "model": "",
   "cat": "Aksessuar",
   "badge": "5MP",
-  "spec": "Balonchik 5MP",
+  "spec": "Video balun 5MP",
   "tags": [
    "5MP"
   ],
@@ -21156,11 +21547,11 @@
    "night": 0,
    "spin": 0
   },
-  "desc": "Balonchik 5MP — kamera aksessuari (distribyutor nomi bo'yicha).",
+  "desc": "Analog (HDCVI / AHD / TVI) kamera signalini UTP kabel orqali uzatish uchun passiv video balun, 5MP gacha.",
   "rows": [
    [
     "Turi",
-    "Balonchik 5MP"
+    "Video balun 5MP"
    ]
   ],
   "cost_usd": 1.5,
@@ -21171,11 +21562,11 @@
  },
  {
   "sku": "ACC-BALONCHIK-8MPX",
-  "name": "Balonchik 8MP",
+  "name": "Video balun 8MP",
   "model": "",
   "cat": "Aksessuar",
   "badge": "8MP",
-  "spec": "Balonchik 8MP",
+  "spec": "Video balun 8MP",
   "tags": [
    "8MP"
   ],
@@ -21185,11 +21576,11 @@
    "night": 0,
    "spin": 0
   },
-  "desc": "Balonchik 8MP — kamera aksessuari (distribyutor nomi bo'yicha).",
+  "desc": "Analog (HDCVI / AHD / TVI) kamera signalini UTP kabel orqali uzatish uchun passiv video balun, 8MP gacha.",
   "rows": [
    [
     "Turi",
-    "Balonchik 8MP"
+    "Video balun 8MP"
    ]
   ],
   "cost_usd": 1.5,
@@ -21224,7 +21615,8 @@
   "cost_usd": 7.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-velosipednyy-fonar-1.jpg"
+   "/assets/products/acc-velosipednyy-fonar-1.jpg?v=hd1",
+   "/assets/products/acc-velosipednyy-fonar-2.jpg?v=hd1"
   ]
  },
  {
@@ -21253,7 +21645,9 @@
   "cost_usd": 5.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-pulsoksimetr-1.jpg"
+   "/assets/products/acc-pulsoksimetr-1.jpg?v=hd1",
+   "/assets/products/acc-pulsoksimetr-2.jpg?v=hd1",
+   "/assets/products/acc-pulsoksimetr-3.jpg?v=hd1"
   ]
  },
  {
@@ -21282,7 +21676,9 @@
   "cost_usd": 3.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-myshka-besprovodnaya-wireless-1.jpg"
+   "/assets/products/acc-myshka-besprovodnaya-wireless-1.jpg?v=hd1",
+   "/assets/products/acc-myshka-besprovodnaya-wireless-2.jpg?v=hd1",
+   "/assets/products/acc-myshka-besprovodnaya-wireless-3.jpg?v=hd1"
   ]
  },
  {
@@ -21311,7 +21707,9 @@
   "cost_usd": 13.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-pilot-dlya-yunit-6-gnezd-1.jpg"
+   "/assets/products/acc-pilot-dlya-yunit-6-gnezd-1.jpg?v=hd1",
+   "/assets/products/acc-pilot-dlya-yunit-6-gnezd-2.jpg?v=hd1",
+   "/assets/products/acc-pilot-dlya-yunit-6-gnezd-3.jpg?v=hd1"
   ]
  },
  {
@@ -21340,18 +21738,20 @@
   "cost_usd": 15.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-pilot-dlya-yunit-8-gnezd-1.jpg"
+   "/assets/products/acc-pilot-dlya-yunit-8-gnezd-1.jpg?v=hd1",
+   "/assets/products/acc-pilot-dlya-yunit-8-gnezd-2.jpg?v=hd1",
+   "/assets/products/acc-pilot-dlya-yunit-8-gnezd-3.jpg?v=hd1"
   ]
  },
  {
   "sku": "ACC-FLESHKA-128GB-DLYA-DOMOFON",
-  "name": "USB fleshka 128 GB (domofon uchun)",
+  "name": "microSD karta 128 GB (domofon uchun)",
   "model": "",
   "cat": "Xotira",
   "badge": "128 GB",
-  "spec": "USB fleshka · 128 GB",
+  "spec": "microSD · 128 GB",
   "tags": [
-   "Fleshka",
+   "microSD",
    "Xotira"
   ],
   "flags": {
@@ -21360,28 +21760,29 @@
    "night": 0,
    "spin": 0
   },
-  "desc": "USB fleshka 128 GB — videodomofon yozuvlarini saqlash uchun.",
+  "desc": "microSD xotira kartasi 128 GB — videodomofon va kameralar yozuvini saqlash uchun.",
   "rows": [
    [
-    "Sig'im",
+    "Sig‘im",
     "128 GB"
    ]
   ],
   "cost_usd": 16.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-fleshka-128gb-dlya-domofon-1.jpg"
+   "/assets/products/acc-fleshka-128gb-dlya-domofon-1.jpg?v=hd1",
+   "/assets/products/acc-fleshka-128gb-dlya-domofon-2.jpg?v=hd1"
   ]
  },
  {
   "sku": "ACC-FLESHKA-32GB-DLYA-DOMOFON",
-  "name": "USB fleshka 32 GB (domofon uchun)",
+  "name": "microSD karta 32 GB (domofon uchun)",
   "model": "",
   "cat": "Xotira",
   "badge": "32 GB",
-  "spec": "USB fleshka · 32 GB",
+  "spec": "microSD · 32 GB",
   "tags": [
-   "Fleshka",
+   "microSD",
    "Xotira"
   ],
   "flags": {
@@ -21390,28 +21791,29 @@
    "night": 0,
    "spin": 0
   },
-  "desc": "USB fleshka 32 GB — videodomofon yozuvlarini saqlash uchun.",
+  "desc": "microSD xotira kartasi 32 GB — videodomofon va kameralar yozuvini saqlash uchun.",
   "rows": [
    [
-    "Sig'im",
+    "Sig‘im",
     "32 GB"
    ]
   ],
   "cost_usd": 8.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-fleshka-32gb-dlya-domofon-1.jpg"
+   "/assets/products/acc-fleshka-32gb-dlya-domofon-1.jpg?v=hd1",
+   "/assets/products/acc-fleshka-32gb-dlya-domofon-2.jpg?v=hd1"
   ]
  },
  {
   "sku": "ACC-FLESHKA-64GB-DLYA-DOMOFON",
-  "name": "USB fleshka 64 GB (domofon uchun)",
+  "name": "microSD karta 64 GB (domofon uchun)",
   "model": "",
   "cat": "Xotira",
   "badge": "64 GB",
-  "spec": "USB fleshka · 64 GB",
+  "spec": "microSD · 64 GB",
   "tags": [
-   "Fleshka",
+   "microSD",
    "Xotira"
   ],
   "flags": {
@@ -21420,10 +21822,10 @@
    "night": 0,
    "spin": 0
   },
-  "desc": "USB fleshka 64 GB — videodomofon yozuvlarini saqlash uchun.",
+  "desc": "microSD xotira kartasi 64 GB — videodomofon va kameralar yozuvini saqlash uchun.",
   "rows": [
    [
-    "Sig'im",
+    "Sig‘im",
     "64 GB"
    ]
   ],
@@ -21435,13 +21837,13 @@
  },
  {
   "sku": "ACC-FLESHKA-256GB-DLYA-DOMOFON",
-  "name": "USB fleshka 256 GB (domofon uchun)",
+  "name": "microSD karta 256 GB (domofon uchun)",
   "model": "",
   "cat": "Xotira",
   "badge": "256 GB",
-  "spec": "USB fleshka · 256 GB",
+  "spec": "microSD · 256 GB",
   "tags": [
-   "Fleshka",
+   "microSD",
    "Xotira"
   ],
   "flags": {
@@ -21450,28 +21852,29 @@
    "night": 0,
    "spin": 0
   },
-  "desc": "USB fleshka 256 GB — videodomofon yozuvlarini saqlash uchun.",
+  "desc": "microSD xotira kartasi 256 GB — videodomofon va kameralar yozuvini saqlash uchun.",
   "rows": [
    [
-    "Sig'im",
+    "Sig‘im",
     "256 GB"
    ]
   ],
   "cost_usd": 45.0,
   "warranty": false,
   "images": [
-   "/assets/products/acc-fleshka-256gb-dlya-domofon-1.jpg"
+   "/assets/products/acc-fleshka-256gb-dlya-domofon-1.jpg?v=hd1",
+   "/assets/products/acc-fleshka-256gb-dlya-domofon-2.jpg?v=hd1"
   ]
  },
  {
   "sku": "ACC-FLESHKA-512GB-DLYA-DOMOFON",
-  "name": "USB fleshka 512 GB (domofon uchun)",
+  "name": "microSD karta 512 GB (domofon uchun)",
   "model": "",
   "cat": "Xotira",
   "badge": "512 GB",
-  "spec": "USB fleshka · 512 GB",
+  "spec": "microSD · 512 GB",
   "tags": [
-   "Fleshka",
+   "microSD",
    "Xotira"
   ],
   "flags": {
@@ -21480,10 +21883,10 @@
    "night": 0,
    "spin": 0
   },
-  "desc": "USB fleshka 512 GB — videodomofon yozuvlarini saqlash uchun.",
+  "desc": "microSD xotira kartasi 512 GB — videodomofon va kameralar yozuvini saqlash uchun.",
   "rows": [
    [
-    "Sig'im",
+    "Sig‘im",
     "512 GB"
    ]
   ],

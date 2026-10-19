@@ -2679,6 +2679,38 @@
       border-top: 0
     }
 
+    .kb-ln {
+      flex-wrap: wrap
+    }
+
+    .kb-open {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-align: left;
+      padding: 2px 0;
+      border-radius: 12px
+    }
+
+    .kb-open:not([disabled]):active {
+      background: var(--surface2)
+    }
+
+    .kb-arr {
+      display: inline-flex;
+      vertical-align: -2px;
+      color: var(--acc)
+    }
+
+    .kb-qty {
+      flex-basis: 100%;
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 4px
+    }
+
     .kb-lf {
       display: flex;
       flex-wrap: wrap;
@@ -5752,7 +5784,13 @@
         },
         spinAuto: () => toggleSpin(),
         closeP: () => { stopSpin(); set({ sel: null, selImgIdx: 0, spinDeg: 0 }); },
-        goKit: () => { stopSpin(); kbStartFrom(prodBySku(s.sel)); set({ sel: null, selImgIdx: 0, spinDeg: 0, tab: 'kit' }); },
+        goKit: () => {
+          stopSpin();
+          // komplekt tarkibidan ochilgan kamera bo'lsa — komplekt saqlanadi, aks holda shu kameradan yangi komplekt boshlanadi
+          const kk = S.kb;
+          if (!(kk && kk.view === 'build' && kk.cams && kk.cams[s.sel])) kbStartFrom(prodBySku(s.sel));
+          set({ sel: null, selImgIdx: 0, spinDeg: 0, tab: 'kit' });
+        },
         goCatalog: () => set({ tab: 'catalog', cat: '' }),
         isPopularCat: !q && (s.cat === '★ Ommabop' || s.cat === 'Ommabop'),
         showPopularBanner: !q && (s.cat !== '★ Ommabop' && s.cat !== 'Ommabop'),
@@ -6966,6 +7004,30 @@
       return S.kb;
     }
     function kbSet(patch) { set({ kb: kbFix({ ...kbState(), ...patch }) }); }
+    /* Komplekt tarkibidagi kamera sonini o'zgartirish: registrator, switch, konnektor va microSD yangi songa moslanadi */
+    function kbChangeCam(sku, q) {
+      const k = kbState(), oldN = kbCamCount(k);
+      const cams = { ...k.cams };
+      if (q > 0) cams[sku] = Math.min(64, q); else delete cams[sku];
+      const nk = { ...k, cams };
+      const n = kbCamCount(nk);
+      if (!n) { kbSet({ cams, step: 'cams' }); return; }
+      let note = '';
+      if (nk.rec && nk.rec !== 'none' && !kbRecs(nk).some(p => p.sku === nk.rec)) {
+        const r = kbRecs(nk).filter(p => kbCh(p) >= n)[0];
+        nk.rec = r ? r.sku : null;
+        note = r ? 'Registrator ' + n + ' kameraga moslab almashtirildi' : n + ' kameraga mos registrator yo‘q — registrator bosqichini tekshiring';
+      }
+      if (nk.sw && nk.sw !== 'none' && kbNeedSwitch(nk) && !kbSwitches(nk).some(p => p.sku === nk.sw)) {
+        const w = kbSwitches(nk)[0];
+        nk.sw = w ? w.sku : null;
+        if (!note) note = 'PoE switch ' + n + ' kameraga moslab almashtirildi';
+      }
+      if (nk.rj) nk.rj = rjBest(n);
+      if (kbUsesSd(nk) && nk.store && nk.store !== 'none' && +nk.storeQ === oldN) nk.storeQ = n;
+      set({ kb: kbFix(nk) });
+      if (note) flash(note);
+    }
     function kbCamList(k) { return Object.keys(k.cams || {}).map(s => ({ p: kbProd(s), q: +k.cams[s] || 0 })).filter(x => x.p && x.q > 0); }
     const kbCamCount = k => kbCamList(k).reduce((n, x) => n + x.q, 0);
     const kbMaxMp = k => kbCamList(k).reduce((m, x) => Math.max(m, kbMp(x.p)), 0);
@@ -7343,7 +7405,20 @@
         const perCam = pricing.installPerCamera || 250000;
         body = `<section class="card">
             <div class="lbl" style="margin-bottom:10px">Komplekt tarkibi</div>
-            ${tot.lines.map(l => `<div class="kb-ln"><div class="kb-img sm">${l.p.sd ? ic('sd', 18, 1.6) : prodMedia(l.p, 28, 28)}</div><div class="kb-b"><div class="kb-s" style="margin:0">${esc(l.role)}</div><div class="kb-n">${esc(l.p.name)}</div><div class="kb-lf"><span>${l.q}${l.unit ? ' ' + l.unit : ' dona'} × ${esc(fmt(l.p.price))}</span><b class="kb-sum">${esc(fmt(l.sum))}</b></div></div></div>`).join('')}
+            ${tot.lines.map(l => {
+              const rec = k.rec && k.rec !== 'none' ? kbProd(k.rec) : null;
+              const maxQ = l.role === 'Xotira' ? (l.p.sd ? 64 : (rec ? kbSata(rec) : 1)) : 64;
+              const qty = l.role === 'Kamera' ? kbQty(l.q, () => kbChangeCam(l.p.sku, l.q - 1), () => kbChangeCam(l.p.sku, l.q + 1))
+                : l.role === 'Xotira' && maxQ > 1 ? kbQty(l.q, () => kbSet({ storeQ: Math.max(1, l.q - 1) }), () => kbSet({ storeQ: Math.min(maxQ, l.q + 1) })) : '';
+              return `<div class="kb-ln">
+              <button class="kb-open" ${l.p.sd ? 'disabled' : `onclick="${h(() => set({ sel: l.p.sku, selImgIdx: 0 }))}"`} aria-label="${esc(l.p.name)}">
+                <div class="kb-img sm">${l.p.sd ? ic('sd', 18, 1.6) : prodMedia(l.p, 28, 28)}</div>
+                <div class="kb-b"><div class="kb-s" style="margin:0">${esc(l.role)}</div><div class="kb-n">${esc(l.p.name)}${l.p.sd ? '' : ` <span class="kb-arr">${ic('chevR', 13, 2.4)}</span>`}</div><div class="kb-lf"><span>${l.q}${l.unit ? ' ' + l.unit : ' dona'} × ${esc(fmt(l.p.price))}</span><b class="kb-sum">${esc(fmt(l.sum))}</b></div></div>
+              </button>
+              ${qty ? `<div class="kb-qty">${qty}</div>` : ''}
+            </div>`;
+            }).join('')}
+            <button class="btn btn-g sm w" style="margin-top:12px" onclick="${h(() => kbSet({ step: 'cams' }))}">${ic('plus', 16, 2.2)} Kamera qo‘shish</button>
           </section>
           ${kbMod('install') ? kbOpt(k.install, 'O‘rnatish va sozlash', fmt(perCam) + ' / kamera · usta kabel tortadi, sozlaydi va telefoningizga ulaydi', () => kbSet({ install: !k.install }), pr(fmt(n * perCam))) : ''}
           <section class="rcpt">
@@ -9488,6 +9563,8 @@ ${mProfHead(v, 'Yordam va biz haqida', "Qarshi shahar bosh do‘koni")}
       "Tayyor komplektlar":"Готовые комплекты",
       "IP (simli)":"IP (проводные)","Tayyor to‘plamlar":"Готовые наборы","Tayyor to‘plamlar (bitta qutida)":"Готовые наборы (в одной коробке)","Barcha brendlar":"Все бренды",
       "ommabop":"популярные","uy":"дом","do‘kon":"магазин","ombor":"склад",
+      "Kamera qo‘shish":"Добавить камеру","Registrator {n} kameraga moslab almashtirildi":"Регистратор заменён под {n} камер",
+      "PoE switch {n} kameraga moslab almashtirildi":"PoE-коммутатор заменён под {n} камер","{n} kameraga mos registrator yo‘q":"Нет подходящего регистратора на {n} камер","registrator bosqichini tekshiring":"проверьте шаг «Регистратор»",
       "Ommabop to‘plamlar":"Популярные комплекты","Eng ko‘p tanlanadigan kameralardan":"Из самых популярных камер","Aksiya to‘plamlar":"Акционные комплекты","Chegirmadagi kameralar bilan":"С камерами по скидке",
       "Uy va kvartira uchun":"Для дома и квартиры","{n} kamera · hovli, kirish va xonalar":"{n} камеры · двор, вход и комнаты","Do‘kon va ofis uchun":"Для магазина и офиса","{n} kamera · kirish, zal va kassa":"{n} камер · вход, зал и касса",
       "Ombor va katta hudud":"Склад и большая территория","{n}–{n} kamera · perimetr va hudud":"{n}–{n} камер · периметр и территория","Tayyor qutidagi to‘plamlar":"Готовые наборы в коробке","Ishlab chiqaruvchining to‘liq to‘plamlari":"Полные наборы от производителя",

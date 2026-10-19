@@ -6463,6 +6463,11 @@
 <section class="sec" style="gap:12px">
   <div class="sec-h"><h2 class="sec-t">Asosiy kataloglar</h2><span class="sec-n">${v.cats.length} ta turkum</span></div>
   <div class="ccats">
+    <button class="ccat all" style="--i:0;border:1.5px solid var(--acc-line)" onclick="${h(() => { kbState(); S.kb = { ...S.kb, view: 'ready', rcat: null, rsub: null }; set({ tab: 'kit' }); })}">
+      <span class="ccat-ic">${ic('box', 22, 1.8)}</span>
+      <span style="flex:1;min-width:0"><span class="ccat-n" style="display:block;margin:0">Tayyor to‘plamlar</span><span class="ccat-s" style="display:block">${kbReady().length} ta turkum · ommabop, uy, do‘kon, ombor</span></span>
+      ${ic('chevR', 20, 2)}
+    </button>
     ${v.cats.map((c, i) => `
     <button class="ccat${c.name === '★ Ommabop' ? ' hot' : ''}" style="--i:${i}" onclick="${h(c.go)}">
       <span class="ccat-go">${ic('arrowUR', 17, 2)}</span>
@@ -9482,6 +9487,7 @@ ${mProfHead(v, 'Yordam va biz haqida', "Qarshi shahar bosh do‘koni")}
       "aks holda {n} so‘m":"иначе {n} сум",
       "Tayyor komplektlar":"Готовые комплекты",
       "IP (simli)":"IP (проводные)","Tayyor to‘plamlar":"Готовые наборы","Tayyor to‘plamlar (bitta qutida)":"Готовые наборы (в одной коробке)","Barcha brendlar":"Все бренды",
+      "ommabop":"популярные","uy":"дом","do‘kon":"магазин","ombor":"склад",
       "Ommabop to‘plamlar":"Популярные комплекты","Eng ko‘p tanlanadigan kameralardan":"Из самых популярных камер","Aksiya to‘plamlar":"Акционные комплекты","Chegirmadagi kameralar bilan":"С камерами по скидке",
       "Uy va kvartira uchun":"Для дома и квартиры","{n} kamera · hovli, kirish va xonalar":"{n} камеры · двор, вход и комнаты","Do‘kon va ofis uchun":"Для магазина и офиса","{n} kamera · kirish, zal va kassa":"{n} камер · вход, зал и касса",
       "Ombor va katta hudud":"Склад и большая территория","{n}–{n} kamera · perimetr va hudud":"{n}–{n} камер · периметр и территория","Tayyor qutidagi to‘plamlar":"Готовые наборы в коробке","Ishlab chiqaruvchining to‘liq to‘plamlari":"Полные наборы от производителя",

@@ -2715,22 +2715,6 @@
       box-shadow: var(--shadow)
     }
 
-    .kb-chips {
-      gap: 7px
-    }
-
-    .kb-chips .chip {
-      height: 36px;
-      padding: 0 13px;
-      gap: 6px;
-      font-size: 13px
-    }
-
-    .kb-chips .chip i {
-      font-style: normal;
-      opacity: .6
-    }
-
     .step[disabled] {
       opacity: .45;
       cursor: default
@@ -7055,8 +7039,8 @@
     }
 
     /* Tayyor komplekt: brend + tur + kamera soni — eng arzon mos mahsulotlardan, bosqichlarga yuklanadi */
-    function kbBuild(brand, tech, nOut, nIn) {
-      const pool = kbBrandCams(brand, tech).filter(kbInStock);
+    function kbBuild(brand, tech, nOut, nIn, only) {
+      const pool = kbBrandCams(brand, tech).filter(p => kbInStock(p) && (!only || only(p)));
       const pick = place => {
         const ps = pool.filter(p => kbPlace(p) === place).sort((a, b) => a.price - b.price);
         return ps.find(p => kbMp(p) >= 4) || ps[0] || null;
@@ -7087,19 +7071,43 @@
       }
       return kbFix(k);
     }
+    /* Tayyor komplekt turkumlari: Ommabop / Aksiya — admin belgilagan kameralardan (HIT, ommabop, CHEGIRMA);
+       obyekt turlari — kamera soni bo'yicha; ichki turkum — brend yoki tizim turi. Bo'sh turkum ko'rsatilmaydi. */
+    const KB_GROUPS = [
+      { id: 'pop', n: 'Ommabop to‘plamlar', s: 'Eng ko‘p tanlanadigan kameralardan', ic: 'star', sub: 'brand', only: p => !!p.is_popular || p.promo === 'HIT' },
+      { id: 'sale', n: 'Aksiya to‘plamlar', s: 'Chegirmadagi kameralar bilan', ic: 'cash', sub: 'brand', only: p => p.promo === 'CHEGIRMA' },
+      { id: 'home', n: 'Uy va kvartira uchun', s: '4 kamera · hovli, kirish va xonalar', ic: 'home', sub: 'tech', sizes: [[2, 2]] },
+      { id: 'shop', n: 'Do‘kon va ofis uchun', s: '6 kamera · kirish, zal va kassa', ic: 'store', sub: 'tech', sizes: [[2, 4]] },
+      { id: 'big', n: 'Ombor va katta hudud', s: '8–16 kamera · perimetr va hudud', ic: 'factory', sub: 'tech', techs: ['ip', 'analog'], sizes: [[6, 2], [12, 4]] },
+      { id: 'box', n: 'Tayyor qutidagi to‘plamlar', s: 'Ishlab chiqaruvchining to‘liq to‘plamlari', ic: 'box', sub: 'brand', sets: true }
+    ];
+    const KB_SUBN = { ip: 'IP kameralar (simli)', analog: 'Analog kameralar', wifi: 'Wi-Fi / 4G (simsiz)' };
+    function kbKit(b, t, o, i, only) {
+      const k = kbBuild(b, t, o, i, only);
+      if (!k) return null;
+      const what = o && i ? o + ' ko‘cha + ' + i + ' xona kamera' : o ? o + ' ta ko‘cha kamerasi' : i + ' ta xona kamerasi';
+      return { brand: b, tech: t, title: b + ' · ' + what, sub: KB_TECH[t].n.split(' (')[0] + ' · ' + (o + i) + ' kamera', k, goods: kbTotals(k).goods, cover: kbCamList(k)[0].p };
+    }
     let _kbReady = null, _kbReadyKey = null;
     function kbReady() {
       if (_kbReadyKey === DATA.products && _kbReady) return _kbReady;
-      const T = [['Dahua', 'ip', 4, 0], ['Dahua', 'ip', 6, 2], ['HiLook', 'ip', 4, 0], ['HiLook', 'ip', 6, 2], ['NEOCAM', 'ip', 4, 0], ['NEOCAM', 'ip', 6, 2],
-        ['Dahua', 'analog', 4, 0], ['Dahua', 'analog', 6, 2], ['HiLook', 'analog', 2, 2], ['HiLook', 'analog', 4, 0],
-        ['Ezviz', 'wifi', 2, 2], ['Ezviz', 'wifi', 4, 0], ['Tapo', 'wifi', 2, 2], ['Tapo', 'wifi', 4, 0], ['Dahua', 'wifi', 2, 2], ['HiLook', 'wifi', 0, 2]];
-      _kbReady = T.map(([b, t, o, i]) => {
-        const k = kbBuild(b, t, o, i);
-        if (!k) return null;
-        const tot = kbTotals(k);
-        const what = o && i ? o + ' ko‘cha + ' + i + ' xona kamera' : o ? o + ' ta ko‘cha kamerasi' : i + ' ta xona kamerasi';
-        return { id: b + t + o + i, brand: b, tech: t, title: b + ' · ' + what, sub: KB_TECH[t].n.split(' (')[0] + ' · ' + (o + i) + ' kamera', k, goods: tot.goods, cover: kbCamList(k)[0].p };
-      }).filter(Boolean);
+      _kbReady = KB_GROUPS.map(g => {
+        let items = [];
+        if (g.sets) {
+          items = kbAll().filter(p => p.cat === 'Komplekt' && kbInStock(p)).map(p => ({ brand: kbBrand(p) || 'Boshqa', tech: 'set', set: p, goods: p.price, cover: p }));
+        } else if (g.only) {
+          KB_BRANDS.forEach(b => Object.keys(KB_TECH).forEach(t => {
+            const r = kbKit(b, t, 2, 2, g.only) || kbKit(b, t, 4, 0, g.only) || kbKit(b, t, 0, 4, g.only);
+            if (r) items.push(r);
+          }));
+        } else {
+          (g.techs || Object.keys(KB_TECH)).forEach(t => KB_BRANDS.forEach(b => g.sizes.forEach(([o, i]) => { const r = kbKit(b, t, o, i); if (r) items.push(r); })));
+        }
+        const key = r => g.sub === 'tech' ? r.tech : r.brand;
+        const order = g.sub === 'tech' ? Object.keys(KB_TECH) : [...KB_BRANDS, 'Boshqa'];
+        const subs = order.map(id => ({ id, n: g.sub === 'tech' ? KB_SUBN[id] : id, items: items.filter(r => key(r) === id).sort((a, b) => a.goods - b.goods) })).filter(x => x.items.length);
+        return { ...g, items, subs };
+      }).filter(g => g.items.length);
       _kbReadyKey = DATA.products;
       return _kbReady;
     }
@@ -7142,20 +7150,17 @@
       const tot = kbTotals(k);
       const seg = `<div class="seg"><button class="${k.view === 'ready' ? 'on' : ''}" onclick="${h(() => kbSet({ view: 'ready' }))}">Tayyor komplektlar</button><button class="${k.view === 'build' ? 'on' : ''}" onclick="${h(() => kbSet({ view: 'build' }))}">Bosqichma-bosqich</button></div>`;
       if (k.view === 'ready') {
-        const R = kbReady();
-        const sets = kbAll().filter(p => p.cat === 'Komplekt' && kbInStock(p)).map(p => ({ id: p.sku, brand: kbBrand(p) || '', tech: 'set', p }));
-        const all = [...R, ...sets];
-        const TYPES = [['all', 'Hammasi'], ['ip', 'IP (simli)'], ['analog', 'Analog'], ['wifi', 'Wi-Fi / 4G'], ['set', 'Tayyor to‘plamlar']];
-        const GT = { ip: KB_TECH.ip.n, analog: KB_TECH.analog.n, wifi: KB_TECH.wifi.n, set: 'Tayyor to‘plamlar (bitta qutida)' };
-        const cnt = t => all.filter(r => t === 'all' || r.tech === t).length;
-        const rt = TYPES.some(t => t[0] === k.rt && cnt(t[0])) ? k.rt : 'all';
-        const byType = all.filter(r => rt === 'all' || r.tech === rt);
-        const brands = KB_BRANDS.filter(b => byType.some(r => r.brand === b));
-        const rb = brands.includes(k.rb) ? k.rb : 'all';
-        const list = byType.filter(r => rb === 'all' || r.brand === rb);
-        const groups = (rt === 'all' ? ['ip', 'analog', 'wifi', 'set'] : [rt]).map(t => [t, list.filter(r => r.tech === t)]).filter(g => g[1].length);
-        const card = r => r.k ? `
-    <button class="kb-kit" onclick="${h(() => set({ kb: JSON.parse(JSON.stringify(r.k)) }))}">
+        const G = kbReady();
+        const g = G.find(x => x.id === k.rcat) || null;
+        const sub = g ? (g.subs.length === 1 ? g.subs[0] : g.subs.find(x => x.id === k.rsub) || null) : null;
+        const thumbs = items => items.slice(0, 3).map(r => `<i>${prodMedia(r.cover, 18, 18)}</i>`).join('');
+        const card = r => r.set ? `
+    <button class="kb-kit" onclick="${h(() => set({ sel: r.set.sku, selImgIdx: 0 }))}">
+      <div class="kb-img">${prodMedia(r.set, 40, 40)}</div>
+      <div class="kb-b"><span class="tag ink">${esc(r.brand)}</span><div class="kb-n" style="margin-top:6px">${esc(r.set.name)}</div><div class="kb-s">${esc(r.set.spec || '')}</div><div class="kb-p">${pr(fmt(r.set.price))}</div></div>
+      <span class="kb-go">${ic('chevR', 18, 2.2)}</span>
+    </button>` : `
+    <button class="kb-kit" onclick="${h(() => set({ kb: { ...JSON.parse(JSON.stringify(r.k)), rcat: k.rcat, rsub: k.rsub } }))}">
       <div class="kb-img">${prodMedia(r.cover, 40, 40)}</div>
       <div class="kb-b">
         <span class="tag ink">${esc(r.brand)}</span>
@@ -7165,31 +7170,49 @@
         <div class="kb-p">${pr(fmt(r.goods))}</div>
       </div>
       <span class="kb-go">${ic('chevR', 18, 2.2)}</span>
-    </button>` : `
-    <button class="kb-kit" onclick="${h(() => set({ sel: r.p.sku, selImgIdx: 0 }))}">
-      <div class="kb-img">${prodMedia(r.p, 40, 40)}</div>
-      <div class="kb-b"><span class="tag ink">${esc(r.brand || 'To‘plam')}</span><div class="kb-n" style="margin-top:6px">${esc(r.p.name)}</div><div class="kb-s">${esc(r.p.spec || '')}</div><div class="kb-p">${pr(fmt(r.p.price))}</div></div>
-      <span class="kb-go">${ic('chevR', 18, 2.2)}</span>
     </button>`;
+        const back = to => `<button class="ibtn" onclick="${h(() => kbSet(to))}" aria-label="Orqaga">${ic('chevL', 20, 2.2)}</button>`;
+        let body;
+        if (!g) {
+          body = `
+  <section class="sec" style="gap:12px">
+    <div class="sec-h"><h2 class="sec-t">Tayyor komplektlar</h2><span class="sec-n">${G.length} ta turkum</span></div>
+    <div class="ccats">
+      ${G.map((x, i) => `
+      <button class="ccat${x.id === 'pop' || x.id === 'sale' ? ' hot' : ''}" style="--i:${i}" onclick="${h(() => kbSet({ rcat: x.id, rsub: null }))}">
+        <span class="ccat-go">${ic('arrowUR', 17, 2)}</span>
+        <span class="ccat-ic">${ic(x.ic, 24, 1.7)}</span>
+        <span class="ccat-n">${esc(x.n)}</span>
+        <span class="ccat-s">${esc(x.s)}</span>
+        <span class="ccat-f"><span class="ccat-c">${x.items.length}</span><span class="ccat-th">${thumbs(x.items)}</span></span>
+      </button>`).join('')}
+    </div>
+  </section>`;
+        } else if (!sub) {
+          body = `
+  <div class="ttl" style="justify-content:flex-start;gap:12px">${back({ rcat: null, rsub: null })}<div style="min-width:0"><h2 class="h3">${esc(g.n)}</h2><div class="opt-s">${esc(g.s)}</div></div></div>
+  <div class="ccats">
+    ${g.subs.map((x, i) => `
+    <button class="ccat" style="--i:${i}" onclick="${h(() => kbSet({ rsub: x.id }))}">
+      <span class="ccat-go">${ic('arrowUR', 17, 2)}</span>
+      <span class="ccat-ic">${ic(g.sub === 'tech' ? x.id : 'cam', 24, 1.7)}</span>
+      <span class="ccat-n">${esc(x.n)}</span>
+      <span class="ccat-s">${esc(g.sub === 'tech' ? [...new Set(x.items.map(r => r.brand))].join(', ') : ([...new Set(x.items.map(r => KB_TECH[r.tech] ? KB_TECH[r.tech].n.split(' (')[0] : ''))].filter(Boolean).join(', ') || 'Tayyor to‘plam'))}</span>
+      <span class="ccat-f"><span class="ccat-c">${x.items.length}</span><span class="ccat-th">${thumbs(x.items)}</span></span>
+    </button>`).join('')}
+  </div>`;
+        } else {
+          body = `
+  <div class="ttl" style="justify-content:flex-start;gap:12px">${back(g.subs.length === 1 ? { rcat: null, rsub: null } : { rsub: null })}<div style="min-width:0"><h2 class="h3">${esc(sub.n)}</h2><div class="opt-s">${esc(g.n)} · ${sub.items.length} ta</div></div></div>
+  <section class="sec" style="gap:12px">${sub.items.map(card).join('')}</section>
+  <div class="opt-s">Komplekt bitta brend mahsulotlaridan tuzilgan va bir-biriga mos. Tanlang — keyin har bir bosqichda o‘zgartira olasiz.</div>`;
+        }
         return `
 <div class="pg" style="gap:18px">
-  <div class="ttl"><h1 class="h2">Komplekt</h1><span class="sec-n">${list.length} ta tayyor</span></div>
+  <div class="ttl"><h1 class="h2">Komplekt</h1></div>
   ${seg}
-  <div class="rail kb-chips" data-keep="kbtypes">
-    ${TYPES.filter(t => cnt(t[0])).map(([t, nm]) => `<button class="chip ${rt === t ? 'on' : ''}" onclick="${h(() => kbSet({ rt: t, rb: 'all' }))}">${esc(nm)}<i>${cnt(t)}</i></button>`).join('')}
-  </div>
-  ${brands.length > 1 ? `
-  <div class="rail kb-chips" data-keep="kbbrands" style="margin-top:-8px">
-    <button class="chip ${rb === 'all' ? 'on' : ''}" onclick="${h(() => kbSet({ rb: 'all' }))}">Barcha brendlar</button>
-    ${brands.map(b => `<button class="chip ${rb === b ? 'on' : ''}" onclick="${h(() => kbSet({ rb: b }))}">${esc(b)}<i>${byType.filter(r => r.brand === b).length}</i></button>`).join('')}
-  </div>` : ''}
-  <div class="opt-s" style="margin-top:-4px">Har bir komplekt bitta brend mahsulotlaridan tuzilgan va bir-biriga mos. Tanlang — keyin har bir bosqichda o‘zgartira olasiz.</div>
-  ${groups.map(([t, items]) => `
-  <section class="sec" style="gap:12px">
-    ${rt === 'all' ? `<div class="sec-h"><h2 class="sec-t">${esc(GT[t])}</h2><span class="sec-n">${items.length} ta</span></div>` : ''}
-    ${items.map(card).join('')}
-  </section>`).join('')}
-  <button class="btn btn-o w" onclick="${h(() => kbSet({ view: 'build', step: 'brand' }))}">${ic('layers', 18, 2)} O‘zim bosqichma-bosqich yig‘aman</button>
+  ${body}
+  ${!g ? `<button class="btn btn-o w" onclick="${h(() => kbSet({ view: 'build', step: 'brand' }))}">${ic('layers', 18, 2)} O‘zim bosqichma-bosqich yig‘aman</button>` : ''}
 </div>`;
       }
 
@@ -9459,6 +9482,11 @@ ${mProfHead(v, 'Yordam va biz haqida', "Qarshi shahar bosh do‘koni")}
       "aks holda {n} so‘m":"иначе {n} сум",
       "Tayyor komplektlar":"Готовые комплекты",
       "IP (simli)":"IP (проводные)","Tayyor to‘plamlar":"Готовые наборы","Tayyor to‘plamlar (bitta qutida)":"Готовые наборы (в одной коробке)","Barcha brendlar":"Все бренды",
+      "Ommabop to‘plamlar":"Популярные комплекты","Eng ko‘p tanlanadigan kameralardan":"Из самых популярных камер","Aksiya to‘plamlar":"Акционные комплекты","Chegirmadagi kameralar bilan":"С камерами по скидке",
+      "Uy va kvartira uchun":"Для дома и квартиры","{n} kamera · hovli, kirish va xonalar":"{n} камеры · двор, вход и комнаты","Do‘kon va ofis uchun":"Для магазина и офиса","{n} kamera · kirish, zal va kassa":"{n} камер · вход, зал и касса",
+      "Ombor va katta hudud":"Склад и большая территория","{n}–{n} kamera · perimetr va hudud":"{n}–{n} камер · периметр и территория","Tayyor qutidagi to‘plamlar":"Готовые наборы в коробке","Ishlab chiqaruvchining to‘liq to‘plamlari":"Полные наборы от производителя",
+      "IP kameralar (simli)":"IP-камеры (проводные)","Wi-Fi / 4G (simsiz)":"Wi-Fi / 4G (беспроводные)","{n} ta turkum":"{n} категорий","Tayyor to‘plam":"Готовый набор",
+      "Komplekt bitta brend mahsulotlaridan tuzilgan va bir-biriga mos. Tanlang — keyin har bir bosqichda o‘zgartira olasiz.":"Комплект собран из совместимых товаров одного бренда. Выберите — затем можно изменить любой шаг.",
       "{n} ko‘cha + {n} xona kamera":"{n} уличных + {n} внутренних камер","{n} ta ko‘cha kamerasi":"{n} уличных камер","{n} ta xona kamerasi":"{n} внутренних камер",
       "Bosqichma-bosqich":"Пошагово",
       "{n} ta tayyor":"{n} готовых",

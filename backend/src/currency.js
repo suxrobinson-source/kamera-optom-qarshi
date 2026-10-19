@@ -78,7 +78,13 @@ export async function planPricing(opts = {}) {
   const step = ROUNDING_STEPS.includes(+opts.rounding) ? +opts.rounding : cur.rounding;
   const margins = { ...cur.margins, ...(opts.margins || {}) };
   const baseRate = cur.usdRate > 0 ? cur.usdRate : rate;
+  const pricing = (await getSetting('pricing')) || {};
+  // Qat'iy so'm narxli tovarlar (masalan, RJ45 to'plamlari: dona 650 so'm) — kurs/marja ularga tegmaydi
+  const fixed = new Set(Array.isArray(pricing.fixedSkus) ? pricing.fixedSkus : []);
   const items = (await db.all('SELECT sku, name, price, price_usta, price_usd, margin, margin_usta FROM products')).map(p => {
+    if (fixed.has(p.sku)) {
+      return { sku: p.sku, name: p.name, cost: p.price_usd, baselined: false, old: p.price, next: p.price, nextUsta: p.price_usta ?? p.price, custom: true };
+    }
     const baselined = !(p.price_usd > 0);
     const cost = baselined ? round4(p.price / baseRate) : p.price_usd;
     return {
@@ -88,7 +94,6 @@ export async function planPricing(opts = {}) {
       custom: p.margin !== null || p.margin_usta !== null,
     };
   });
-  const pricing = (await getSetting('pricing')) || {};
   const hdd = Array.isArray(pricing.hddOptions)
     ? pricing.hddOptions.map(o => {
       const usd = o.usd > 0 ? o.usd : round4(o.price / baseRate);

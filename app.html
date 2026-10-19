@@ -5225,7 +5225,7 @@
       { k: cableActive ? 'UTP kabel ' + (+s.cable || 0) + ' m' : 'UTP kabel', v: cableActive ? fmt(cablePrice) : '—' },
       { k: 'Xotira ' + (hddActive ? hddSel.size : '—'), v: hddActive ? fmt(hddSel.price) : '—' },
       { k: 'Yetkazish · ' + regSel.name, v: kitShip ? fmt(kitShip) : 'Bepul' }];
-      kitExtraItems.forEach(x => lines.push({ k: x.p.name.split(' ').slice(0, 2).join(' ') + ' × ' + x.q, v: fmt(x.p.price * x.q) }));
+      kitExtraItems.forEach(x => lines.push({ k: x.p.sku.startsWith('RJ45-') ? 'RJ45 konnektor · ' + x.p.sku.slice(5) + ' dona' : x.p.name.split(' ').slice(0, 2).join(' ') + ' × ' + x.q, v: fmt(x.p.price * x.q) }));
       lines.push({ k: 'O‘rnatish xizmati', v: instPrice ? fmt(instPrice) : '—' });
       if (s.cloud) lines.push({ k: 'Bulutli arxiv 12 oy', v: fmt(cloudPrice) });
 
@@ -5611,12 +5611,14 @@
             on, name: p.name, note: p.note, mark: p.mark,
             border: on ? 'rgba(47,224,182,.4)' : 'var(--line)', bg: on ? 'rgba(47,224,182,.07)' : 'var(--card)',
             iconFg: on ? A : 'var(--dim3)',
-            go: () => set({ preset: p.name, cams: p.cams, cableUse: p.cable > 0, cable: p.cable || 60, install: p.install })
+            go: () => set({ preset: p.name, cams: p.cams, cableUse: p.cable > 0, cable: p.cable || 60, install: p.install, kitExtra: rjSet(s.kitExtra, p.cable > 0 ? rjBest(p.cams) : null) })
           };
         }),
         cams: s.cams, cable: s.cable,
         cableLabel: s.cableUse ? (+s.cable || 0) + ' m UTP · ~' + fmt(9000) + '/m' : 'Kabel kerak emas',
-        cableOn: s.cableUse && MOD('cable'), toggleCable: () => set({ cableUse: !s.cableUse }),
+        cableOn: s.cableUse && MOD('cable'), toggleCable: () => set({ cableUse: !s.cableUse, kitExtra: rjSet(s.kitExtra, !s.cableUse ? rjBest(s.cams) : null) }),
+        rjOn: rjPacks().length > 0, rjNeed: s.cams * 2,
+        rjPacks: rjPacks().map(p => { const on = !!s.kitExtra[p.sku]; return { n: p.sku.slice(5), price: fmt(p.price).replace(" so‘m", ''), best: p.sku === rjBest(s.cams), ...chip(on), go: () => set({ kitExtra: rjSet(s.kitExtra, on ? null : p.sku) }) }; }),
         cabTrack: s.cableUse ? A : 'var(--line4)', cabKnob: s.cableUse ? 'flex-end' : 'flex-start', cabKnobBg: s.cableUse ? '#06231d' : 'var(--dim)',
         inc: () => set({ cams: Math.min(16, s.cams + 1) }), dec: () => set({ cams: Math.max(1, s.cams - 1) }),
         setCable: e => { const v = String(e.target.value).replace(/[^0-9]/g, ''); set({ cable: v === '' ? '' : Math.min(500, +v) }); },
@@ -5903,6 +5905,18 @@
     const LOGO2 = '<svg width="38" height="38" viewBox="0 0 34 34" aria-hidden="true"><rect width="34" height="34" rx="11" fill="var(--acc)"/><circle cx="17" cy="17" r="8.4" fill="none" stroke="#fff" stroke-width="2.6"/><circle cx="17" cy="17" r="3.3" fill="#fff"/><circle cx="25" cy="9" r="1.8" fill="#fff"/></svg>';
     const stop = e => { if (e && e.stopPropagation) e.stopPropagation(); };
 
+    /* RJ45 konnektor to'plamlari (RJ45-10/20/30): har kamera kabeliga 2 ta konnektor kerak */
+    function rjPacks() { return [10, 20, 30].map(n => (DATA.products || []).find(p => p.sku === 'RJ45-' + n)).filter(Boolean); }
+    function rjBest(cams) {
+      const ps = rjPacks(), need = Math.max(1, +cams || 1) * 2;
+      return (ps.find(p => +p.sku.slice(5) >= need) || ps[ps.length - 1] || {}).sku || null;
+    }
+    function rjSet(extra, sku) {
+      const out = {};
+      Object.keys(extra || {}).forEach(k => { if (!k.startsWith('RJ45-')) out[k] = extra[k]; });
+      if (sku) out[sku] = 1;
+      return out;
+    }
     /* "690 000 so‘m" → katta raqam + kichik valyuta */
     function pr(str) {
       const s = String(str == null ? '' : str);
@@ -6481,6 +6495,10 @@
           });
         }
       }
+      if (wired && cams) {
+        const rs = rjBest(cams), rp = rs && PRODUCTS.find(p => p.sku === rs);
+        if (rp) lines.push({ key: 'rj', title: 'RJ45 konnektor', where: rp.sku.slice(5) + ' dona · har kameraga 2 ta', p: rp, q: 1, sum: rp.price, why: 'kabel uchlariga qisiladi — kamera va registratorga ulash uchun' });
+      }
       const pricing = (DATA.config && DATA.config.pricing) || {};
       const cableM = wired ? cams * place.m : 0;
       const cablePrice = cableM * (pricing.cablePerMeter || 9000);
@@ -6746,7 +6764,14 @@
         </label>
         <button class="pl" onclick="${h(v.cableInc)}" aria-label="+10 m">${ic('plus', 18, 2.2)}</button>
       </div>
-    </div>` : ''}` : ''}
+    </div>
+    ${v.rjOn ? `
+    <div style="margin-top:16px">
+      <div style="display:flex;align-items:baseline;justify-content:space-between;gap:10px"><span class="lbl">RJ45 konnektor</span><span class="opt-s">Kerak: ${v.rjNeed} ta</span></div>
+      <div class="hdds" style="margin-top:10px">
+        ${v.rjPacks.map(x => `<button class="hdd ${x.on ? 'on' : ''}" onclick="${h(x.go)}"><b>${esc(x.n)}</b><small>dona</small><small>${esc(x.price)}</small></button>`).join('')}
+      </div>
+    </div>` : ''}` : ''}` : ''}
   </section>` : ''}
 
   ${v.kStep2 ? `
@@ -8754,7 +8779,14 @@ ${mProfHead(v, 'Yordam va biz haqida', "Qarshi shahar bosh do‘koni")}
       "Buyurtma yuborilmadi":"Заказ не отправлен",
       "Ruxsat":"Разрешение",
       "{n} so‘mdan ortiq buyurtmada bepul":"бесплатно при заказе от {n} сум",
-      "aks holda {n} so‘m":"иначе {n} сум"};
+      "aks holda {n} so‘m":"иначе {n} сум",
+      "RJ45 konnektor":"Коннектор RJ45",
+      "RJ45 konnektor · {n} dona":"Коннектор RJ45 · {n} шт",
+      "{n} dona · har kameraga {n} ta":"{n} шт · по {n} на камеру",
+      "kabel uchlariga qisiladi — kamera va registratorga ulash uchun":"обжимаются на концах кабеля — для подключения камер и регистратора",
+      "Kerak: {n} ta":"Нужно: {n} шт",
+      "RJ45 konnektor — {n} dona":"Коннектор RJ45 — {n} шт",
+      "dona":"шт"};
     /* ═══ Tillar: O‘zbek (lotin — manba), Ўзбек (кирилл — qoidaviy transliteratsiya), Русский (lug‘at) ═══
        Har render() dan keyin ekrandagi matn tugunlari va placeholder/aria-label/title tanlangan tilga
        o‘giriladi. Mahsulot nomlari, SKU, kiritish maydonlari va `.nt` elementlari tarjima qilinmaydi. */

@@ -2701,6 +2701,20 @@
       flex: 3.2
     }
 
+    /* Komplekt: keyingi bosqich tugmasi doim ko'rinib tursin — pastki menyu ustida qotiriladi, uni izlab aylantirish shart emas */
+    .kb-nextbar {
+      position: sticky;
+      bottom: 94px;
+      z-index: 6;
+      margin: 0 -8px;
+      padding: 8px;
+      border-radius: 99px;
+      background: var(--glass);
+      backdrop-filter: blur(16px) saturate(1.3);
+      -webkit-backdrop-filter: blur(16px) saturate(1.3);
+      box-shadow: var(--shadow)
+    }
+
     .step[disabled] {
       opacity: .45;
       cursor: default
@@ -7274,7 +7288,7 @@
             <div class="rcpt-tot"><span class="lbl">Jami</span>${pr(fmt(tot.total))}</div>
             ${S.creditService !== false && kbMod('credit') && monthly >= 10000 ? `<div class="opt-s" style="margin-top:10px">Muddatli to‘lov: ${term} oyga oyiga ~${esc(fmt(monthly))}</div>` : ''}
           </section>
-          <div class="btn-row">
+          <div class="btn-row kb-nextbar">
             <button class="btn btn-g f" onclick="${h(() => { const b = { ...S.bag }; skus.forEach(([s, q]) => { b[s] = (b[s] || 0) + q; }); set({ bag: b, bagOpen: true }); flash('Komplekt savatga qo‘shildi'); })}">${ic('bag', 18, 2)} Savatga</button>
             <button class="btn btn-p f" onclick="${h(() => placeOrder(what, fmt(tot.total), skus, { install: k.install, cloud: false }))}">Buyurtma ${ic('arrowR', 18, 2.2)}</button>
           </div>
@@ -7303,7 +7317,7 @@
   </div>` : ''}
   ${body}
   ${key !== 'sum' ? `
-  <div class="btn-row">
+  <div class="btn-row kb-nextbar">
     ${idx > 0 ? `<button class="btn btn-g" onclick="${h(() => go(KB_STEPS[idx - 1][0]))}" aria-label="Orqaga">${ic('chevL', 20, 2.2)}</button>` : ''}
     <button class="btn ${canNext ? 'btn-p' : 'btn-off'} f" onclick="${h(() => { if (!canNext) { flash(hint); return; } go(nextKey); })}">Davom etish ${ic('arrowR', 18, 2.2)}</button>
   </div>` : `

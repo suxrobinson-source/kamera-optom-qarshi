@@ -15,6 +15,15 @@ export const RATE_MAX = 1000000;
 export const MARGIN_MAX = 300;
 export const DEFAULT_MARGINS = { default: 15, usta: 12 };
 
+/* Yetkazish: mahsulotlar summasi `freeShipFrom` dan oshsa bepul, aks holda `shipFee` (barcha hududlar uchun bir xil). */
+export const DEFAULT_SHIPPING = { freeShipFrom: 1000000, shipFee: 30000 };
+export function shippingFee(goodsSum, pricing = {}) {
+  const num = (v, d) => (v === undefined || v === null || !(+v >= 0) ? d : +v);
+  const from = num(pricing && pricing.freeShipFrom, DEFAULT_SHIPPING.freeShipFrom);
+  const fee = num(pricing && pricing.shipFee, DEFAULT_SHIPPING.shipFee);
+  return goodsSum > from ? 0 : fee;
+}
+
 const round4 = v => Math.round(v * 10000) / 10000;
 export const roundSom = (v, step) => Math.max(0, Math.round(v / step) * step);
 

@@ -123,6 +123,8 @@ const DEFAULT_PRICING = {
   cablePerMeter: 9000,
   installPerCamera: 250000,
   cloudPerCameraMonth: 35000,
+  freeShipFrom: 1000000,
+  shipFee: 30000,
   usdRate: 12600,
   hddOptions: [
     { size: '16 GB', days: '~1 kun', price: 65000, sku: 'SD-16' },

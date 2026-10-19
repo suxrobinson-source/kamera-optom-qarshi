@@ -1,5 +1,6 @@
 import { db, getSetting, nowStr } from '../db.js';
 import { asyncRouter, parseDataUrl, saveUpload } from '../uploads.js';
+import { shippingFee } from '../currency.js';
 
 export const publicRouter = asyncRouter();
 
@@ -182,6 +183,7 @@ publicRouter.post('/kit/calc', async (req, res) => {
     const p = await db.get('SELECT * FROM products WHERE sku = ?', String(sku));
     if (p && +qty > 0) { const s = p.price * +qty; lines.push({ k: `${p.name} × ${+qty}`, v: s }); total += s; }
   }
+  const goodsSum = total; // kamera, kabel, xotira va qo'shimcha mahsulotlar (xizmatlarsiz)
   if (install) {
     const s = nCams * pricing.installPerCamera;
     lines.push({ k: 'O\'rnatish xizmati', v: s });
@@ -193,7 +195,7 @@ publicRouter.post('/kit/calc', async (req, res) => {
     total += s;
   }
   const reg = region ? await db.get('SELECT * FROM regions WHERE name = ?', String(region)) : null;
-  const ship = reg ? reg.price : 0;
+  const ship = shippingFee(goodsSum, pricing);
   lines.push({ k: `Yetkazish · ${reg ? reg.name : 'Qarshi shahri'}`, v: ship });
   total += ship;
 

@@ -1,5 +1,6 @@
 import { db, getSetting, nextSeq } from '../db.js';
 import { asyncRouter } from '../uploads.js';
+import { shippingFee } from '../currency.js';
 
 export const ordersRouter = asyncRouter();
 
@@ -54,7 +55,7 @@ ordersRouter.post('/orders', async (req, res) => {
       const installPrice = b.install ? Math.max(1, cams) * pricing.installPerCamera : 0;
       const cloudPrice = b.cloud ? Math.max(1, cams) * pricing.cloudPerCameraMonth * 12 : 0;
       const reg = b.region ? await db.get('SELECT * FROM regions WHERE name = ?', String(b.region)) : null;
-      const shipPrice = reg ? reg.price : 0;
+      const shipPrice = shippingFee(goodsSum, pricing);
       const total = goodsSum + installPrice + cloudPrice + shipPrice;
 
       const id = `#KO-${await nextSeq('orderSeq', 4822)}`;

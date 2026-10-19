@@ -5110,7 +5110,7 @@
         features: [
           "Yagona EZVIZ ilovasi: bir marta sozlash, doimiy qulaylik",
           "O'zbekiston bo'ylab rasmiy 1 yil kafolat va servis",
-          "Qarshi shahri bo'ylab bepul yetkazish va professional o'rnatish"
+          "1 mln so'mdan ortiq buyurtmada bepul yetkazish va professional o'rnatish"
         ]
       }
     ];
@@ -5161,6 +5161,11 @@
       const day = s.theme === 'day';
 
       const pricing = (DATA.config && DATA.config.pricing) || { cablePerMeter: 9000, installPerCamera: 250000, cloudPerCameraMonth: 35000 };
+      /* Yetkazish: mahsulotlar summasi SHIP_FREE dan oshsa bepul, aks holda SHIP_FEE (barcha hududlar uchun) */
+      const SHIP_FREE = pricing.freeShipFrom >= 0 && pricing.freeShipFrom != null ? +pricing.freeShipFrom : 1000000;
+      const SHIP_FEE = pricing.shipFee >= 0 && pricing.shipFee != null ? +pricing.shipFee : 30000;
+      const shipFor = goods => goods > SHIP_FREE ? 0 : SHIP_FEE;
+      const SHIP_RULE = fmt(SHIP_FREE) + 'dan ortiq buyurtmada bepul, aks holda ' + fmt(SHIP_FEE);
       const hddActive = s.hddUse && MOD('memory'), cableActive = s.cableUse && MOD('cable');
       const HDD = (DATA.config && DATA.config.pricing && DATA.config.pricing.hddOptions) || [
         { size: '16 GB', days: '~1 kun', price: 65000 },
@@ -5180,16 +5185,16 @@
       const regSel = REG.find(r => r.name === s.region) || REG[0];
       const rq = s.rq.trim().toLowerCase();
       const regMatch = REG.filter(r => !rq || r.name.toLowerCase().includes(rq));
-      const regionGroups = [['Qashqadaryo viloyati', 'YETKAZISH BEPUL'], ['Boshqa viloyatlar', '30 000 SO’M']]
+      const regionGroups = [['Qashqadaryo viloyati', ''], ['Boshqa viloyatlar', '']]
         .map(([zone, tag]) => ({
-          title: zone.toUpperCase(), tag, tagFg: zone === 'Qashqadaryo viloyati' ? A : AMB,
+          title: zone.toUpperCase(), tag: tag || ('1 MLN+ BEPUL · ' + fmt(SHIP_FEE).toUpperCase()), tagFg: zone === 'Qashqadaryo viloyati' ? A : AMB,
           tagBg: zone === 'Qashqadaryo viloyati' ? 'rgba(47,224,182,.12)' : 'rgba(255,176,32,.12)',
           items: regMatch.filter(r => r.zone === zone).map(r => {
             const on = regSel.name === r.name; return {
               on, name: r.name, note: r.note, eta: r.eta,
-              price: r.price ? fmt(r.price) : 'Bepul', priceFg: r.price ? 'var(--fg)' : A,
+              price: fmt(SHIP_FEE) + ' / 1 mln+ bepul', priceFg: 'var(--fg)',
               border: on ? A : 'var(--line)', bg: on ? 'rgba(47,224,182,.1)' : 'var(--card)', mark: on ? A : 'var(--line4)', dot: on ? A : 'transparent',
-              go: () => { S.region = r.name; S.regionOpen = false; S.gpsState = 'idle'; flash(r.name + ' tanlandi · yetkazish ' + (r.price ? fmt(r.price) : 'bepul')); }
+              go: () => { S.region = r.name; S.regionOpen = false; S.gpsState = 'idle'; flash(r.name + ' tanlandi · yetkazish: ' + SHIP_RULE); }
             };
           })
         }))
@@ -5202,7 +5207,7 @@
         + bagItems.filter(it => it.p.cat === 'Komplekt').reduce((n, it) => n + it.q * 4, 0);
       const bagInstallPrice = s.bagInstall ? Math.max(1, bagCams) * pricing.installPerCamera : 0;
       const bagCloudPrice = s.bagCloud ? Math.max(1, bagCams) * pricing.cloudPerCameraMonth * 12 : 0;
-      const bagShip = bagItems.length ? regSel.price : 0;
+      const bagShip = bagItems.length ? shipFor(bagGoods) : 0;
       const bagTotal = bagGoods + bagInstallPrice + bagCloudPrice + bagShip;
       const bagLines = [{ k: 'Mahsulotlar · ' + bagQty + ' dona', v: fmt(bagGoods) }];
       if (s.bagInstall) bagLines.push({ k: "O'rnatish · " + Math.max(1, bagCams) + ' kamera', v: fmt(bagInstallPrice) });
@@ -5214,11 +5219,12 @@
       const kitExtraSum = kitExtraItems.reduce((n, x) => n + x.p.price * x.q, 0);
       const camPrice = camSel.price, cablePrice = cableActive ? (+s.cable || 0) * pricing.cablePerMeter : 0;
       const instPrice = s.install && MOD('install') ? s.cams * pricing.installPerCamera : 0, cloudPrice = s.cloud && MOD('cloud') ? s.cams * pricing.cloudPerCameraMonth * 12 : 0;
-      const total = camPrice * s.cams + kitExtraSum + cablePrice + instPrice + cloudPrice + (hddActive ? hddSel.price : 0) + regSel.price;
+      const kitShip = shipFor(camPrice * s.cams + kitExtraSum + cablePrice + (hddActive ? hddSel.price : 0));
+      const total = camPrice * s.cams + kitExtraSum + cablePrice + instPrice + cloudPrice + (hddActive ? hddSel.price : 0) + kitShip;
       const lines = [{ k: camSel.name.split(' ')[0] + ' × ' + s.cams, v: fmt(camPrice * s.cams) },
       { k: cableActive ? 'UTP kabel ' + (+s.cable || 0) + ' m' : 'UTP kabel', v: cableActive ? fmt(cablePrice) : '—' },
       { k: 'Xotira ' + (hddActive ? hddSel.size : '—'), v: hddActive ? fmt(hddSel.price) : '—' },
-      { k: 'Yetkazish · ' + regSel.name, v: regSel.price ? fmt(regSel.price) : 'Bepul' }];
+      { k: 'Yetkazish · ' + regSel.name, v: kitShip ? fmt(kitShip) : 'Bepul' }];
       kitExtraItems.forEach(x => lines.push({ k: x.p.name.split(' ').slice(0, 2).join(' ') + ' × ' + x.q, v: fmt(x.p.price * x.q) }));
       lines.push({ k: 'O’rnatish xizmati', v: instPrice ? fmt(instPrice) : '—' });
       if (s.cloud) lines.push({ k: 'Bulut arxiv 12 oy', v: fmt(cloudPrice) });
@@ -5439,7 +5445,7 @@
         phCancel: () => set({ ph: null }),
         phConfirmGo: () => set({ phStep: 'deliver' }),
         phDeliver: !!s.ph && s.phStep === 'deliver',
-        deliverSub: regSel.name + ' · ' + (regSel.price ? fmt(regSel.price) : 'yetkazish bepul'),
+        deliverSub: regSel.name + ' · yetkazish ' + (bagShip ? fmt(bagShip) : 'bepul'),
         addrItems: s.addrList.map(a => {
           const on = s.addrSel === a.id; return {
             label: a.label, text: a.text, note: a.note || 'Qo’shimcha izoh yo’q',
@@ -5623,13 +5629,13 @@
         openRegion: () => set({ regionOpen: true }), closeRegion: () => set({ regionOpen: false }),
         rq: s.rq, hasRq: !!s.rq, setRq: e => set({ rq: e.target.value }), clearRq: () => set({ rq: '' }),
         gpsTitle: s.gpsState === 'busy' ? 'Joylashuv aniqlanmoqda…' : s.gpsState === 'done' ? 'Joylashuv aniqlandi' : 'GPS orqali aniqlash',
-        gpsNote: s.gpsState === 'busy' ? 'GPS signali o’qilmoqda' : s.gpsState === 'done' ? regSel.name + ' · yetkazish ' + (regSel.price ? fmt(regSel.price) : 'bepul') : 'Eng yaqin hudud avtomatik tanlanadi',
+        gpsNote: s.gpsState === 'busy' ? 'GPS signali o’qilmoqda' : s.gpsState === 'done' ? regSel.name + ' · yetkazish: ' + SHIP_RULE : 'Eng yaqin hudud avtomatik tanlanadi',
         gpsMark: s.gpsState === 'busy' ? '◌' : s.gpsState === 'done' ? '✓' : '◎',
         gpsBorder: s.gpsState === 'idle' ? 'rgba(47,224,182,.3)' : A, gpsBg: s.gpsState === 'idle' ? 'var(--card)' : 'rgba(47,224,182,.1)',
         gpsOn: MOD('gps'),
         gps: () => {
           S.gpsState = 'busy'; render(); clearTimeout(_g);
-          _g = setTimeout(() => { S.gpsState = 'done'; S.region = 'Qarshi shahri'; flash('Joylashuv: Qarshi shahri · yetkazish bepul'); }, 1400);
+          _g = setTimeout(() => { S.gpsState = 'done'; S.region = 'Qarshi shahri'; flash('Joylashuv: Qarshi shahri'); }, 1400);
         },
         bn: BAN[s.bannerIdx % BAN.length],
         dots: BAN.map((b, i) => ({ on: i === s.bannerIdx, w: i === s.bannerIdx ? '16px' : '5px', bg: i === s.bannerIdx ? 'var(--acc)' : 'rgba(255,255,255,.35)', go: () => { S.bannerIdx = i; renderBanner(); } })),
@@ -5711,7 +5717,7 @@
             mark: '✉', name: 'Bildirishnomalar', note: 'Menejer xabarlari va holat o’zgarishi',
             tag: 'YANGI', tagFg: '#06231d', tagBg: A, tagOn: noteKeys.length > 0, markFg: A, go: () => { set({ profPage: 'notif' }); syncMyOrders(); }
           },
-          { mark: '◎', name: 'Manzil va yetkazish', note: regSel.name + ' · ' + (regSel.price ? fmt(regSel.price) : 'bepul'), markFg: A, go: () => set({ profPage: 'addr' }) },
+          { mark: '◎', name: 'Manzil va yetkazish', note: regSel.name + ' · ' + SHIP_RULE, markFg: A, go: () => set({ profPage: 'addr' }) },
           {
             mark: '▭', name: "To'lov usullari", note: creditOn ? "Naqd, karta · muddatli to'lov yoqilgan" : 'Naqd va karta',
             markFg: 'var(--dim)', go: () => set({ profPage: 'payment' })
@@ -5754,7 +5760,7 @@
         notifLabel: noteKeys.length ? noteKeys.length + ' ta xabar' : 'Xabar yo’q', notifEmpty: noteKeys.length === 0,
         notifList: noteKeys.map(id => ({ id, text: s.notes[id].text, time: s.notes[id].time, go: () => set({ profPage: 'orders', openOrd: id }) })),
         addrRegion: regSel.name, addrEta: regSel.eta,
-        addrPrice: 'Yetkazish: ' + (regSel.price ? fmt(regSel.price) : 'bepul') + ' · ' + regSel.eta,
+        addrPrice: 'Yetkazish: ' + SHIP_RULE + ' · ' + regSel.eta,
         pastLabel: (s.myOrders || []).length + ' ta buyurtma',
         pastEmpty: !(s.myOrders && s.myOrders.length),
         hasPhone: !!(s.myPhone && String(s.myPhone).replace(/[^0-9]/g, '').length === 9),
@@ -6229,7 +6235,7 @@
 
   <section class="trust ${rvc('trust')}" data-rv="trust">
     <div class="rs" style="--i:0"><span class="ico ok" style="width:36px;height:36px;border-radius:12px">${ic('shield', 18)}</span><b>1 yil</b><span>rasmiy kafolat</span></div>
-    <div class="rs" style="--i:1"><span class="ico blue" style="width:36px;height:36px;border-radius:12px">${ic('truck', 18)}</span><b>Bepul</b><span>Qarshi bo‘ylab yetkazish</span></div>
+    <div class="rs" style="--i:1"><span class="ico blue" style="width:36px;height:36px;border-radius:12px">${ic('truck', 18)}</span><b>Bepul</b><span>1 mln+ buyurtmada yetkazish</span></div>
     <div class="rs" style="--i:2"><span class="ico acc" style="width:36px;height:36px;border-radius:12px">${ic('tool', 18)}</span><b>Usta</b><span>o‘rnatib beradi</span></div>
   </section>
 </div>`;
@@ -8367,7 +8373,9 @@ ${mProfHead(v, 'Yordam va biz haqida', "Qarshi shahar bosh do'koni")}
       "Qarshi sh., Mustaqillik ko'chasi {n}, {n}-xonadon":"г. Карши, ул. Мустакиллик, {n}, кв. {n}",
       "Qarshi shahar bosh do'koni":"Главный магазин в г. Карши",
       "Qarshi shahri":"г. Карши",
-      "Qarshi shahri bo'ylab bepul yetkazish va professional o'rnatish":"Бесплатная доставка по г. Карши и профессиональная установка",
+      "1 mln so'mdan ortiq buyurtmada bepul yetkazish va professional o'rnatish":"Бесплатная доставка при заказе от 1 млн сум и профессиональная установка",
+      "1 mln+ buyurtmada yetkazish":"доставка при заказе от 1 млн",
+      "1 MLN+ BEPUL · 30 000 SO'M":"ОТ 1 МЛН БЕСПЛАТНО · 30 000 СУМ",
       "Qarshi tumani":"Каршинский район",
       "Qarshi · optom narxlar · {n} yil kafolat":"Карши · оптовые цены · гарантия {n} год",
       "Qashqadaryo bo'ylab bepul · boshqa viloyatlar {n} so'm":"По Кашкадарье бесплатно · другие области {n} сум",

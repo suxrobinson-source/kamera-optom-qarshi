@@ -519,7 +519,10 @@
 
     .hd-name {
       font: 600 15px/1 var(--fd);
-      letter-spacing: -.02em
+      letter-spacing: -.02em;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis
     }
 
     .hd-loc {
@@ -534,6 +537,39 @@
     .hd-loc b {
       color: var(--ink);
       font-weight: 600
+    }
+
+    .hd-end {
+      flex: none;
+      display: flex;
+      align-items: center;
+      gap: 8px
+    }
+
+    /* qurilma ID — mijoz call-markazga aytadi, operator shu ID ga komplekt yuboradi */
+    .hd-id {
+      display: inline-flex;
+      align-items: baseline;
+      gap: 5px;
+      height: 32px;
+      padding: 0 11px;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background: var(--card);
+      color: var(--ink);
+      white-space: nowrap
+    }
+
+    .hd-id span {
+      font: 700 10px/32px var(--fb);
+      letter-spacing: .06em;
+      color: var(--muted)
+    }
+
+    .hd-id b {
+      font: 700 13.5px/32px var(--fd);
+      letter-spacing: .04em;
+      font-variant-numeric: tabular-nums
     }
 
     .ibtn {
@@ -4624,6 +4660,7 @@
         DATA.error = 'Ma\'lumot yuklanmadi — internetni tekshiring';
       }
       render();
+      deviceSync();
     }
 
     async function syncMyOrders() {
@@ -4693,7 +4730,7 @@
       recent: _loadStorage('ko_recent', ['4MP', 'PoE', 'komplekt']), theme: _loadStr('ko2_theme', 'day'), creditService: true, expertService: true,
       cb: 'idle', cbName: '', cbPhone: '', cbNote: '', cbSlot: 'Tezroq', topic: null, channel: 'Telefon', expStep: 1,
       hddUse: false, creditUse: false, bag: _loadStorage('ko_bag', {}), added: null, ok: null, story: null, cmt: null, cname: _loadStr('ko_cname', ''), seen: _loadStorage('ko_seen', {}),
-      ph: null, phVal: '', phStep: 'enter', myPhone: _loadStr('ko_my_phone', null),
+      ph: null, phVal: '', phStep: 'enter', myPhone: _loadStr('ko_my_phone', null), devId: _loadStr('ko_did', ''),
       storyList: [
         { id: 'st-dokon', label: "Do‘kon · Qarshi", mark: '▤', title: "Savdo do‘koni · 8 kamera", meta: "Qarshi sh. · Mustaqillik ko‘chasi", dur: '0:42', views: 1240, tags: ['8 kamera', 'NVR 4TB', 'Kassa zonasi'], text: "Kassa, ombor va kirish zonasi to‘liq nazoratga olindi. Egasi telefonidan jonli ko‘rib turadi." },
         { id: 'st-hovli', label: 'Hovli · Koson', mark: '▭', title: 'Xususiy hovli · 4 kamera', meta: 'Koson tumani', dur: '0:36', views: 890, tags: ['4 kamera', 'Tungi rejim', 'IP67'], text: "Darvoza, hovli va garaj. Yomg‘ir va sovuqqa chidamli tashqi kameralar." },
@@ -5854,6 +5891,7 @@
         hddLabel: 'microSD · ' + hddSel.days + ' uzluksiz arxiv',
         regionShort: regSel.short, regionOn: s.regionOpen, regionGroups, regionEmpty: regionGroups.length === 0,
         openRegion: () => set({ regionOpen: true }), closeRegion: () => set({ regionOpen: false }),
+        devId: s.devId, copyDevId: copyDevId,
         rq: s.rq, hasRq: !!s.rq, setRq: e => set({ rq: e.target.value }), clearRq: () => set({ rq: '' }),
         gpsTitle: s.gpsState === 'busy' ? 'Joylashuv aniqlanmoqda…' : s.gpsState === 'done' ? 'Joylashuv aniqlandi' : 'GPS orqali aniqlash',
         gpsNote: s.gpsState === 'busy' ? 'GPS signali o‘qilmoqda' : s.gpsState === 'done' ? regSel.name + ' · yetkazish: ' + SHIP_RULE : 'Eng yaqin hudud avtomatik tanlanadi',
@@ -6164,10 +6202,13 @@
       <button class="hd-loc" onclick="${h(v.openRegion)}">${ic('pin', 13, 2)}<b>${esc(v.regionShort)}</b>${ic('chevD', 13, 2.2)}</button>
     </div>
   </div>
-  <button class="ibtn" onclick="${h(v.openCart)}" aria-label="Savat">
-    ${ic('bag', 21)}
-    ${v.cartAny ? `<span class="cnt">${v.cartCount}</span>` : ''}
-  </button>
+  <div class="hd-end">
+    ${v.devId ? `<button class="hd-id" onclick="${h(v.copyDevId)}" aria-label="Qurilma ID" title="Qurilma ID — call-markazga ayting"><span>ID</span><b class="nt">${esc(v.devId)}</b></button>` : ''}
+    <button class="ibtn" onclick="${h(v.openCart)}" aria-label="Savat">
+      ${ic('bag', 21)}
+      ${v.cartAny ? `<span class="cnt">${v.cartCount}</span>` : ''}
+    </button>
+  </div>
 </header>`;
     }
 
@@ -8378,6 +8419,56 @@ ${mProfHead(v, 'Yordam va biz haqida', "Qarshi shahar bosh do‘koni")}
       }
       return _cid;
     }
+    /* ═══ Qurilma ID · call-markaz komplekti ═══
+       Server qurilmaga 6 xonali qisqa ID beradi (tepada ko‘rinadi). Mijoz uni call-markazga aytadi,
+       operator komplekt yig‘ib yuboradi — keyingi so‘rovda u savatga tushadi va serverga tasdiq ketadi. */
+    let _devBusy = false;
+    function devLabel() {
+      const ua = (typeof navigator !== 'undefined' && navigator.userAgent) || '';
+      const os = /iPhone|iPad|iPod/.test(ua) ? 'iOS' : /Android/.test(ua) ? 'Android' : /Windows/.test(ua) ? 'Windows' : /Mac OS X/.test(ua) ? 'macOS' : /Linux/.test(ua) ? 'Linux' : '';
+      const br = /Telegram/.test(ua) ? 'Telegram' : /YaBrowser/.test(ua) ? 'Yandex' : /Edg\//.test(ua) ? 'Edge' : /OPR\//.test(ua) ? 'Opera' : /Chrome\//.test(ua) ? 'Chrome' : /Firefox\//.test(ua) ? 'Firefox' : /Safari\//.test(ua) ? 'Safari' : '';
+      return [os, br].filter(Boolean).join(' · ');
+    }
+    async function deviceSync() {
+      if (_devBusy) return;
+      _devBusy = true;
+      try {
+        const r = await j('/api/device', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ cid: storyCid(), phone: S.myPhone || '', dev: devLabel() })
+        });
+        if (r && r.code && r.code !== S.devId) {
+          S.devId = r.code;
+          try { localStorage.setItem('ko_did', r.code); } catch (e) { }
+          render();
+        }
+        const inbox = (r && Array.isArray(r.inbox)) ? r.inbox : [];
+        if (!inbox.length) return;
+        const b = { ...S.bag };
+        inbox.forEach(p => (p.items || []).forEach(it => {
+          const q = parseInt(it.qty, 10);
+          if (it.sku && q > 0) b[it.sku] = (b[it.sku] || 0) + q;
+        }));
+        /* avval savat saqlanadi, keyin tasdiq — tasdiq yetib bormasa ham komplekt yo‘qolmaydi */
+        set({ bag: b, added: null, ...(S.ph || S.ok ? {} : { bagOpen: true }) });
+        flash('Call-markaz komplekti savatga qo‘shildi');
+        await j('/api/device/ack', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ cid: storyCid(), ids: inbox.map(p => p.id) })
+        }).catch(() => { });
+      } catch (e) {
+      } finally { _devBusy = false; }
+    }
+    function copyDevId() {
+      const id = S.devId;
+      if (!id) return;
+      const done = () => flash('ID nusxalandi — uni call-markaz operatoriga ayting');
+      try {
+        if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(id).then(done, () => flash('Sizning ID — ' + id)); return; }
+      } catch (e) { }
+      flash('Sizning ID — ' + id);
+    }
+
     const _dbStory = st => !!(st && st.id && DATA.stories && DATA.stories.includes(st));
     const cntFmt = n => { n = +n || 0; return n < 1000 ? String(n) : (n < 10000 ? (n / 1000).toFixed(1).replace(/\.0$/, '') : Math.round(n / 1000)) + 'K'; };
     function agoTxt(ts) {
@@ -8740,6 +8831,9 @@ ${mProfHead(v, 'Yordam va biz haqida', "Qarshi shahar bosh do‘koni")}
 
     /* Русский: o‘zbekcha (lotin) matn → ruscha. {n} — raqam o‘rni. */
     const I18N_RU = {"Izohlar":"Комментарии",
+      "Qurilma ID":"ID устройства","Qurilma ID — call-markazga ayting":"ID устройства — назовите его колл-центру",
+      "ID nusxalandi — uni call-markaz operatoriga ayting":"ID скопирован — назовите его оператору колл-центра",
+      "Call-markaz komplekti savatga qo‘shildi":"Комплект от колл-центра добавлен в корзину","Sizning ID":"Ваш ID",
       "Izoh yozing…":"Напишите комментарий…",
       "Hali izoh yo‘q":"Комментариев пока нет",
       "Birinchi bo‘lib fikr bildiring":"Будьте первым, кто оставит отзыв",
@@ -9889,6 +9983,9 @@ ${mProfHead(v, 'Yordam va biz haqida', "Qarshi shahar bosh do‘koni")}
         if (S.tab === 'home' && !S.sel && !S.bagOpen && !S.smartTour && !S.suggest) renderBanner();
       }
     }, 5000);
+    /* call-markaz komplektini kutish: ilova ochiq bo‘lsa har 20 soniyada, qaytib kirilganda darhol */
+    setInterval(() => { if (!document.hidden) deviceSync(); }, 20000);
+    if (document.addEventListener) document.addEventListener('visibilitychange', () => { if (!document.hidden) deviceSync(); });
     render();
     bootstrap();
   </script>

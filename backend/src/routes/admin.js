@@ -346,6 +346,59 @@ adminRouter.patch('/callbacks/:id', async (req, res) => {
   res.json({ ok: true });
 });
 
+// ── Call-markaz: mijoz aytgan qurilma ID siga komplekt yuborish ──
+const pushRow = (p) => { let items = []; try { items = JSON.parse(p.items); } catch (e) { } return { ...p, items }; };
+const deviceRow = ({ cid, ...d }) => d; // maxfiy cid adminga ham berilmaydi
+
+// GET /api/admin/devices/:code — qurilma haqida (oxirgi faollik, telefon) + unga yuborilganlar
+adminRouter.get('/devices/:code', async (req, res) => {
+  const code = String(req.params.code || '').replace(/[^0-9]/g, '');
+  const dev = await db.get('SELECT * FROM devices WHERE code = ?', code);
+  if (!dev) return res.status(404).json({ error: 'Bu ID li qurilma topilmadi' });
+  const pushes = (await db.all('SELECT * FROM device_pushes WHERE cid = ? ORDER BY id DESC LIMIT 20', dev.cid)).map(p => deviceRow(pushRow(p)));
+  res.json({ ...deviceRow(dev), pushes });
+});
+
+// POST /api/admin/devices/:code/push — { title?, note?, items: [{sku, qty}] }
+adminRouter.post('/devices/:code/push', async (req, res) => {
+  const code = String(req.params.code || '').replace(/[^0-9]/g, '');
+  const dev = await db.get('SELECT cid, code FROM devices WHERE code = ?', code);
+  if (!dev) return res.status(404).json({ error: 'Bu ID li qurilma topilmadi' });
+  const b = req.body || {};
+  const want = new Map();
+  for (const it of (Array.isArray(b.items) ? b.items : [])) {
+    const sku = String(it?.sku || '').trim(), qty = parseInt(it?.qty, 10);
+    if (sku && qty > 0) want.set(sku, Math.min(999, (want.get(sku) || 0) + qty));
+  }
+  if (!want.size) return res.status(400).json({ error: 'Komplektga kamida bitta mahsulot qo‘shing' });
+  if (want.size > 60) return res.status(400).json({ error: 'Juda ko‘p pozitsiya' });
+  const items = [];
+  let total = 0;
+  for (const [sku, qty] of want) {
+    const p = await db.get('SELECT sku, price FROM products WHERE sku = ? AND active = 1', sku);
+    if (!p) return res.status(400).json({ error: `Mahsulot topilmadi yoki o‘chirilgan: ${sku}` });
+    items.push({ sku, qty });
+    total += (p.price || 0) * qty;
+  }
+  const clip = (v, n) => String(v || '').replace(/[\u0000-\u001f\u007f]/g, ' ').trim().slice(0, n);
+  const row = await db.get(
+    'INSERT INTO device_pushes (cid, code, title, note, items, total, admin) VALUES (?, ?, ?, ?, ?, ?, ?) RETURNING *',
+    dev.cid, dev.code, clip(b.title, 80), clip(b.note, 300), JSON.stringify(items), total, req.admin?.username || '');
+  res.status(201).json(deviceRow(pushRow(row)));
+});
+
+// GET /api/admin/device-pushes — oxirgi yuborilgan komplektlar
+adminRouter.get('/device-pushes', async (_req, res) => {
+  res.json((await db.all('SELECT * FROM device_pushes ORDER BY id DESC LIMIT 50')).map(p => deviceRow(pushRow(p))));
+});
+
+// DELETE /api/admin/device-pushes/:id — hali savatga tushmagan komplektni bekor qilish
+adminRouter.delete('/device-pushes/:id', async (req, res) => {
+  const r = await db.run("UPDATE device_pushes SET status = 'Bekor' WHERE id = ? AND status = 'Kutilmoqda'", parseInt(req.params.id, 10) || 0);
+  if (!r.changes) return res.status(409).json({ error: 'Komplekt allaqachon savatga tushgan yoki bekor qilingan' });
+  res.json({ ok: true });
+});
+
 // KPI panel
 adminRouter.get('/kpis', async (_req, res) => {
   const today = await db.get('SELECT COUNT(*) AS n, COALESCE(SUM(total),0) AS sum FROM orders WHERE substr(created_at, 1, 10) = ?', nowStr().slice(0, 10));

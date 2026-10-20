@@ -190,6 +190,32 @@ CREATE TABLE IF NOT EXISTS uploads (
   created_at TEXT DEFAULT ${NOW_SQL}
 );
 
+-- Mijoz qurilmalari: tasodifiy maxfiy cid (localStorage) ↔ ilova tepasida ko'rinadigan qisqa ID.
+-- Mijoz call-markazga qisqa ID ni aytadi, operator shu ID ga komplekt yuboradi.
+CREATE TABLE IF NOT EXISTS devices (
+  cid        TEXT PRIMARY KEY,
+  code       TEXT NOT NULL UNIQUE,
+  phone      TEXT DEFAULT '',
+  dev        TEXT DEFAULT '',
+  created_at TEXT DEFAULT ${NOW_SQL},
+  last_seen  TEXT DEFAULT ${NOW_SQL}
+);
+-- Operator yig'gan komplekt: qurilma navbatdagi so'rovda uni savatga qo'shadi va tasdiqlaydi
+CREATE TABLE IF NOT EXISTS device_pushes (
+  id         ${ID},
+  cid        TEXT NOT NULL,
+  code       TEXT NOT NULL,
+  title      TEXT DEFAULT '',
+  note       TEXT DEFAULT '',
+  items      TEXT NOT NULL,
+  total      ${MONEY} DEFAULT 0,
+  status     TEXT DEFAULT 'Kutilmoqda',
+  admin      TEXT DEFAULT '',
+  created_at TEXT DEFAULT ${NOW_SQL},
+  applied_at TEXT
+);
+
+CREATE INDEX IF NOT EXISTS idx_device_pushes_cid ON device_pushes(cid, status);
 CREATE INDEX IF NOT EXISTS idx_orders_phone  ON orders(phone);
 CREATE INDEX IF NOT EXISTS idx_orders_status ON orders(status);
 CREATE INDEX IF NOT EXISTS idx_events_order  ON order_events(order_id);

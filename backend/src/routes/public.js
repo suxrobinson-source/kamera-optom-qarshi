@@ -137,6 +137,47 @@ publicRouter.delete('/stories/comments/:cmt', async (req, res) => {
   res.json({ ok: true });
 });
 
+// ── Qurilma ID va call-markaz komplektlari ──
+// Har bir qurilma 6 xonali qisqa ID oladi (ilova tepasida ko'rinadi). Maxfiy `cid` faqat qurilmada —
+// navbatdagi komplektlarni faqat o'sha qurilma ola oladi, qisqa ID bo'yicha esa faqat admin yuboradi.
+const newCode = () => String(100000 + Math.floor(Math.random() * 900000));
+const devLabel = (v) => cleanText(v, 40).replace(/[^\w .·()/-]/g, '');
+async function pendingPushes(cid) {
+  return (await db.all("SELECT id, title, note, items FROM device_pushes WHERE cid = ? AND status = 'Kutilmoqda' ORDER BY id", cid))
+    .map(p => { let items = []; try { items = JSON.parse(p.items); } catch (e) { } return { ...p, items }; });
+}
+
+// POST /api/device — { cid, phone?, dev? } → { code, inbox: [{ id, title, note, items: [{sku, qty}] }] }
+// Ilova ochilganda va har ~20 soniyada chaqiriladi (last_seen ham yangilanadi).
+publicRouter.post('/device', async (req, res) => {
+  const b = req.body || {};
+  const cid = normCid(b.cid);
+  if (!cid) return res.status(400).json({ error: 'cid kerak' });
+  const ph = String(b.phone || '').replace(/[^0-9]/g, '').slice(-9);
+  const phone = ph.length === 9 ? ph : '';
+  const dev = devLabel(b.dev);
+  let row = await db.get('SELECT code, phone, dev FROM devices WHERE cid = ?', cid);
+  for (let i = 0; !row && i < 8; i++) {
+    await db.run('INSERT INTO devices (cid, code, phone, dev) VALUES (?, ?, ?, ?) ON CONFLICT DO NOTHING', cid, newCode(), phone, dev);
+    row = await db.get('SELECT code, phone, dev FROM devices WHERE cid = ?', cid);
+  }
+  if (!row) return res.status(503).json({ error: 'ID berilmadi — qayta urinib ko‘ring' });
+  await db.run('UPDATE devices SET last_seen = ?, phone = ?, dev = ? WHERE cid = ?', nowStr(), phone || row.phone || '', dev || row.dev || '', cid);
+  res.json({ code: row.code, inbox: await pendingPushes(cid) });
+});
+
+// POST /api/device/ack — { cid, ids: [..] } — qurilma komplektni savatga qo'shib bo'ldi
+publicRouter.post('/device/ack', async (req, res) => {
+  const cid = normCid(req.body?.cid);
+  const ids = (Array.isArray(req.body?.ids) ? req.body.ids : []).map(n => parseInt(n, 10)).filter(Number.isInteger).slice(0, 50);
+  if (!cid) return res.status(400).json({ error: 'cid kerak' });
+  let n = 0;
+  for (const id of ids) {
+    n += (await db.run("UPDATE device_pushes SET status = 'Qo‘shildi', applied_at = ? WHERE id = ? AND cid = ? AND status = 'Kutilmoqda'", nowStr(), id, cid)).changes;
+  }
+  res.json({ ok: true, applied: n });
+});
+
 publicRouter.get('/regions', async (_req, res) => {
   res.json(await db.all('SELECT * FROM regions ORDER BY sort'));
 });

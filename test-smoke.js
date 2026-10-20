@@ -82,6 +82,8 @@ function testHtml(filePath, options = {}) {
     '/api/stories': [
       { id: 's1', label: 'Anor Market', mark: 'AM', title: '"Anor Market" · Qarshi', meta: '8 kamera · 12-avgust', dur: '0:42', views: 1284, live: true, file: 'anor-market.mp4', tags: ['8 × IPC-2410'], text: 'Sinov matni', likes: 3, comments: 1, liked: false }
     ],
+    '/api/device': { code: '482913', inbox: [] },
+    '/api/admin/device-pushes': [],
     '/api/admin/story-comments': [
       { id: 1, story_id: 's1', story_label: 'Anor Market', name: 'Aziz', text: 'Zo‘r <ish>', hidden: false, created_at: '2026-09-27 10:00:00' }
     ],
@@ -170,13 +172,27 @@ try {
 
   // Test 2: admin.html logged in — barcha bo'limlar
   const adminSandbox = testHtml('admin.html', { name: 'Admin logged in', localStorage: { ko_admin_token: 'fake_jwt_token' } });
-  ['orders', 'callbacks', 'products', 'credit', 'stories', 'settings', 'stats', 'install', 'clients', 'ustas'].forEach(tab => {
+  ['orders', 'callbacks', 'callcenter', 'products', 'credit', 'stories', 'settings', 'stats', 'install', 'clients', 'ustas'].forEach(tab => {
     adminSandbox.set({ adminTab: tab });
     const out = adminSandbox.document.getElementById('root').innerHTML;
     const bad = out.search(/undefined|NaN|\[object Object\]/);
     if (bad >= 0) throw new Error('Admin tab ' + tab + ' contains undefined/NaN: …' + out.slice(Math.max(0, bad - 140), bad + 20).replace(/\s+/g, ' '));
     console.log('✓ Admin tab "' + tab + '" rendered successfully');
   });
+  // Call-markaz: topilgan qurilma + tanlangan komplekt + yuborilganlar ro'yxati
+  {
+    const sku = (adminSandbox.mockData['/api/admin/stock'][0] || {}).sku || 'X-1';
+    adminSandbox.set({
+      adminTab: 'callcenter',
+      cc: { err: '', busy: false, q: '', title: '', note: '', code: '482913', dev: { code: '482913', dev: 'Android · Chrome', phone: '901234567', created_at: '2026-10-20 08:00:00', last_seen: '2026-10-20 08:00:00', pushes: [] }, items: { [sku]: 2 } },
+      ccPushes: [{ id: 1, code: '482913', title: 'Hovli', items: [{ sku, qty: 2 }], total: 100000, status: 'Kutilmoqda', created_at: '2026-10-20 08:01:00', admin: 'admin' }]
+    });
+    const out = adminSandbox.document.getElementById('root').innerHTML;
+    const bad = out.search(/undefined|NaN|\[object Object\]/);
+    if (bad >= 0) throw new Error('Call-markaz contains undefined/NaN: …' + out.slice(Math.max(0, bad - 140), bad + 20).replace(/\s+/g, ' '));
+    if (!out.includes('ID 482913') || !out.includes('+998 90 123 45 67') || !out.includes('Mijoz savatiga yuborish') || !out.includes('KUTILMOQDA')) throw new Error('Call-markaz content missing');
+    console.log('✓ Admin call-markaz: device, kit and pushes rendered');
+  }
   adminSandbox.set({ adminTab: 'stories', storyCmts: adminSandbox.mockData['/api/admin/story-comments'] });
   { const out = adminSandbox.document.getElementById('root').innerHTML;
     if (!out.includes('Izohlar · moderatsiya') || !out.includes('Zo‘r &lt;ish&gt;') || !out.includes('YASHIRISH')) throw new Error('Admin story comment moderation missing');
@@ -236,6 +252,16 @@ async function testAppV2() {
 
   if (sb.S.theme !== 'day') throw new Error('v2 default theme should be day');
   check('home', 'Obyektingiz');
+  // Qurilma ID tepada; call-markaz yuborgan komplekt savatga tushadi
+  await new Promise(r => setImmediate(r));
+  check('header device ID', '482913');
+  sb.mockData['/api/device'] = { code: '482913', inbox: [{ id: 5, title: 'Hovli', note: '', items: [{ sku: 'IPC-2410', qty: 3 }] }] };
+  const before = sb.S.bag['IPC-2410'] || 0;
+  await sb.deviceSync();
+  sb.mockData['/api/device'] = { code: '482913', inbox: [] };
+  if ((sb.S.bag['IPC-2410'] || 0) !== before + 3 || !sb.S.bagOpen) throw new Error('call-markaz kit was not added to the cart');
+  check('call-markaz kit in cart', 'IPC-2410 Bullet 4MP');
+  sb.set({ bag: {}, bagOpen: false });
   sb.set({ tab: 'catalog' }); check('catalog landing (asosiy kataloglar)', 'Asosiy kataloglar');
   if (html().includes('pc-grid')) throw new Error('v2 catalog landing should not list products before a category is chosen');
   sb.set({ cat: 'Tashqi' }); check('catalog category chosen', 'Tashqi kameralar');

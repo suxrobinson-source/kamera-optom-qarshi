@@ -228,6 +228,7 @@
       storyList: [],
       callbacks: [],
       currency: null, fx: null, ustas: [], storyCmts: [], cmtFilter: 'all',
+      cc: { code: '', dev: null, err: '', busy: false, q: '', items: {}, title: '', note: '' }, ccPushes: [],
       loading: false, loaded: false
     };
 
@@ -258,7 +259,7 @@
       if (!S.token) return;
       set({ loading: true });
       try {
-        const [orders, kpis, stock, settings, stories, callbacks, banners, schedule, currency, ustas, storyCmts] = await Promise.all([
+        const [orders, kpis, stock, settings, stories, callbacks, banners, schedule, currency, ustas, storyCmts, ccPushes] = await Promise.all([
           api('/api/admin/orders'),
           api('/api/admin/kpis'),
           api('/api/admin/stock'),
@@ -269,7 +270,8 @@
           api('/api/admin/schedule').catch(() => []),
           api('/api/admin/currency').catch(() => null),
           api('/api/admin/ustas').catch(() => []),
-          api('/api/admin/story-comments').catch(() => [])
+          api('/api/admin/story-comments').catch(() => []),
+          api('/api/admin/device-pushes').catch(() => [])
         ]);
         const promoMap = {};
         const qtyMap = {};
@@ -324,6 +326,7 @@
           currency: currency && currency.margins ? currency : null, fx: currency && currency.margins ? fxInit(currency) : null,
           ustas: Array.isArray(ustas) ? ustas : [],
           storyCmts: Array.isArray(storyCmts) ? storyCmts : [],
+          ccPushes: Array.isArray(ccPushes) ? ccPushes : [],
           loading: false,
           loaded: true
         });
@@ -539,6 +542,7 @@
       const aNav = [
         ['orders', 'Buyurtmalar', openOrdersCount],
         ['callbacks', 'Arizalar', newCallbacksCount],
+        ['callcenter', 'Call-markaz', (Array.isArray(s.ccPushes) ? s.ccPushes.filter(p => p.status === 'Kutilmoqda').length : 0) || ''],
         ['products', 'Mahsulotlar', stockCount],
         ['credit', "Muddatli to'lov", creditCount],
         ['stories', 'Ishlarimiz video', storiesCount],
@@ -559,6 +563,9 @@
             ustaRefresh();
           } else if (k === 'clients') {
             set({ adminTab: 'clients', sideOpen: false });
+          } else if (k === 'callcenter') {
+            set({ adminTab: 'callcenter', sideOpen: false });
+            ccRefresh();
           } else {
             set({ adminTab: k, sideOpen: false });
           }
@@ -677,6 +684,7 @@
         stats: ['Statistika', 'Barcha savdo va ko\'rsatkichlar'],
         install: ["O'rnatish jadvali", (Array.isArray(s.schedule) ? s.schedule.length : 0) ? `Jami ${(Array.isArray(s.schedule) ? s.schedule.length : 0)} ta o'rnatish rejalashtirilgan` : 'O\'rnatish xizmati bilan buyurtmalar'],
         clients: ['Mijozlar bazasi', `${clientRows.length} nafar mijoz tarixi`],
+        callcenter: ['Call-markaz · komplekt yuborish', 'Mijoz ilovasi tepasidagi ID ni ayting — yig‘ilgan komplekt uning savatiga tushadi'],
         ustas: ['Usta arizalari', `Tasdiqlangan ustalar ilovada usta narxini ko'radi · marja ${s.currency ? s.currency.margins.usta : 12}%`]
       }[s.adminTab] || ['Boshqaruv', ''];
 
@@ -915,7 +923,7 @@
         exportCsv: () => exportCSV(orders),
         aOrders: s.adminTab === 'orders', aCallbacks: s.adminTab === 'callbacks', aProducts: s.adminTab === 'products', aStats: s.adminTab === 'stats',
         aCredit: s.adminTab === 'credit', aStories: s.adminTab === 'stories', aSettings: s.adminTab === 'settings',
-        aInstall: s.adminTab === 'install', aClients: s.adminTab === 'clients', aUstas: s.adminTab === 'ustas',
+        aInstall: s.adminTab === 'install', aClients: s.adminTab === 'clients', aUstas: s.adminTab === 'ustas', aCall: s.adminTab === 'callcenter',
         sideOpen: !!s.sideOpen, toggleSide: () => set(p => ({ sideOpen: !p.sideOpen })), closeSide: () => set({ sideOpen: false }),
         confirmOn: !!s.confirmModal,
         confirmTitle: s.confirmModal ? s.confirmModal.title : '',
@@ -1144,6 +1152,7 @@
       tool: '<path d="M14.7 6.3a4 4 0 0 0-5.4 5.2L3.5 17.3l3.2 3.2 5.8-5.8a4 4 0 0 0 5.2-5.4l-2.6 2.6-2.3-.6-.6-2.3z"/>',
       user: '<circle cx="12" cy="8" r="4"/><path d="M4.5 20.5a7.5 7.5 0 0 1 15 0"/>',
       shield: '<path d="M12 3 4.5 6v6c0 4.4 3.2 7.9 7.5 9 4.3-1.1 7.5-4.6 7.5-9V6z"/><path d="m8.8 12 2.3 2.3 4.2-4.6"/>',
+      send: '<path d="M21 3 10.5 13.5"/><path d="M21 3l-6.5 18-4-7.5L3 9.5z"/>', minus: '<path d="M5 12h14"/>',
       plus: '<path d="M12 5v14M5 12h14"/>', menu: '<path d="M4 7h16M4 12h16M4 17h16"/>', x: '<path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/>',
       sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M4.6 4.6 6 6M18 18l1.4 1.4M2.5 12h2M19.5 12h2M4.6 19.4 6 18M18 6l1.4-1.4"/>',
       moon: '<path d="M20 14.5A8 8 0 0 1 9.5 4 8 8 0 1 0 20 14.5z"/>',
@@ -1153,8 +1162,8 @@
       alert: '<path d="M12 4 2.5 20h19z"/><path d="M12 10v4.5M12 17.5v.01"/>'
     };
     const aic = (n, sz = 20, w = 1.8) => `<svg width="${sz}" height="${sz}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${AIC[n] || ''}</svg>`;
-    const ADMIN_KEYS = ['orders', 'callbacks', 'products', 'credit', 'stories', 'settings', 'stats', 'install', 'clients', 'ustas'];
-    const ADMIN_IC = { orders: 'receipt', callbacks: 'headset', products: 'box', credit: 'clock', stories: 'play', settings: 'gear', stats: 'chart', install: 'tool', clients: 'user', ustas: 'shield' };
+    const ADMIN_KEYS = ['orders', 'callbacks', 'callcenter', 'products', 'credit', 'stories', 'settings', 'stats', 'install', 'clients', 'ustas'];
+    const ADMIN_IC = { orders: 'receipt', callbacks: 'headset', callcenter: 'send', products: 'box', credit: 'clock', stories: 'play', settings: 'gear', stats: 'chart', install: 'tool', clients: 'user', ustas: 'shield' };
     const KPI_IC = ['cash', 'receipt', 'tool', 'alert'];
     const LOGO2 = '<svg width="38" height="38" viewBox="0 0 34 34" aria-hidden="true"><rect width="34" height="34" rx="11" fill="var(--acc)"/><circle cx="17" cy="17" r="8.4" fill="none" stroke="#fff" stroke-width="2.6"/><circle cx="17" cy="17" r="3.3" fill="#fff"/><circle cx="25" cy="9" r="1.8" fill="#fff"/></svg>';
     function adTheme() { try { return localStorage.getItem('ko2_admin_theme') || 'day'; } catch (e) { return 'day'; } }
@@ -1734,6 +1743,145 @@
 </div>`;
     }
 
+    /* ═══ Call-markaz: mijoz qurilma ID si bo‘yicha komplekt yig‘ib, uning savatiga yuborish ═══ */
+    function ccSet(o) { set({ cc: { ...S.cc, ...o } }); }
+    async function ccRefresh() {
+      try { set({ ccPushes: await api('/api/admin/device-pushes') }); } catch (e) { flash(e.message); }
+    }
+    async function ccFind() {
+      const code = String(S.cc.code || '').replace(/[^0-9]/g, '');
+      if (code.length !== 6) { ccSet({ err: 'ID 6 ta raqamdan iborat', dev: null }); return; }
+      ccSet({ busy: true, err: '' });
+      try { ccSet({ dev: await api('/api/admin/devices/' + code), busy: false }); }
+      catch (e) { ccSet({ dev: null, err: e.message, busy: false }); }
+    }
+    function ccQty(sku, d) {
+      const items = { ...S.cc.items };
+      items[sku] = Math.max(0, Math.min(999, (items[sku] || 0) + d));
+      if (!items[sku]) delete items[sku];
+      ccSet({ items });
+    }
+    async function ccSend() {
+      const c = S.cc;
+      if (c.busy) return;
+      if (!c.dev) { ccSet({ err: 'Avval mijoz ID sini toping' }); return; }
+      const items = Object.keys(c.items).map(sku => ({ sku, qty: c.items[sku] }));
+      if (!items.length) { flash('Komplektga mahsulot qo‘shing'); return; }
+      ccSet({ busy: true, err: '' });
+      try {
+        await api('/api/admin/devices/' + c.dev.code + '/push', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ title: c.title, note: c.note, items })
+        });
+        const dev = await api('/api/admin/devices/' + c.dev.code).catch(() => c.dev);
+        set({ cc: { ...S.cc, busy: false, items: {}, title: '', note: '', dev } });
+        flash('Komplekt yuborildi — mijoz ilovasi ochiq bo‘lsa, 20 soniyada savatga tushadi');
+        ccRefresh();
+      } catch (e) { ccSet({ busy: false, err: e.message }); }
+    }
+    async function ccCancel(p) {
+      try {
+        await api('/api/admin/device-pushes/' + p.id, { method: 'DELETE' });
+        flash('Komplekt bekor qilindi');
+        if (S.cc.dev) ccFind();
+        ccRefresh();
+      } catch (e) { flash(e.message); }
+    }
+    const ccAgo = ts => {
+      const t = Date.parse(String(ts || '').replace(' ', 'T') + 'Z');
+      if (!t) return '—';
+      const m = Math.max(0, Math.floor((Date.now() - t) / 60000));
+      return m < 1 ? 'hozir onlayn' : m < 60 ? m + ' daqiqa oldin' : m < 1440 ? Math.floor(m / 60) + ' soat oldin' : Math.floor(m / 1440) + ' kun oldin';
+    };
+    const ccPh = p => { const d = String(p || '').replace(/[^0-9]/g, ''); return d.length === 9 ? '+998 ' + d.replace(/(\d{2})(\d{3})(\d{2})(\d{2})/, '$1 $2 $3 $4') : ''; };
+    const CC_ST = { 'Kutilmoqda': [AMB, 'rgba(255,176,32,.12)'], 'Qo‘shildi': ['var(--ok)', 'rgba(18,161,80,.12)'], 'Bekor': [RED, 'rgba(255,77,61,.1)'] };
+
+    function mCallCenter() {
+      const c = S.cc;
+      const prods = (Array.isArray(S.stockProducts) ? S.stockProducts : []).filter(p => p.active !== false);
+      const bySku = new Map(prods.map(p => [p.sku, p]));
+      const q = String(c.q || '').trim().toLowerCase();
+      const found = q
+        ? prods.filter(p => `${p.name} ${p.sku} ${p.spec || ''} ${p.cat}`.toLowerCase().includes(q)).slice(0, 40)
+        : prods.filter(p => p.cat === 'Komplekt').slice(0, 40);
+      const chosen = Object.keys(c.items).map(sku => ({ p: bySku.get(sku) || { sku, name: sku, price: 0 }, qty: c.items[sku] }));
+      const total = chosen.reduce((n, it) => n + (it.p.price || 0) * it.qty, 0);
+      const lbl = t => `<div style="font:600 9.5px var(--fm);color:var(--dim2);letter-spacing:.05em">${t}</div>`;
+      const box = 'margin-top:5px;border:1px solid var(--line3);border-radius:14px;padding:9px 10px;background:var(--tile)';
+      const inp = 'width:100%;border:none;outline:none;background:transparent;color:var(--fg);font:400 12.5px var(--fb)';
+      const qb = 'width:28px;height:28px;border-radius:9px;border:1px solid var(--line3);display:inline-flex;align-items:center;justify-content:center;color:var(--fg2);cursor:pointer;flex:none';
+      const online = c.dev && ccAgo(c.dev.last_seen) === 'hozir onlayn';
+      const pushRow = p => {
+        const [fg, bg] = CC_ST[p.status] || CC_ST['Kutilmoqda'];
+        const its = (p.items || []).map(it => `${(bySku.get(it.sku) || {}).name || it.sku} × ${it.qty}`).join(', ');
+        return `<div style="display:grid;grid-template-columns:70px 1fr 120px 110px 96px;gap:12px;padding:12px 16px;border-top:1px solid var(--fill);align-items:center;font:400 12px var(--fb)">
+          <span style="font:700 12px var(--fm)">${esc(p.code)}</span>
+          <div style="min-width:0"><div style="font-weight:600">${esc(p.title || 'Komplekt')}</div><div style="font:400 11px var(--fb);color:var(--dim2);margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${esc(its)}">${esc(its)}</div></div>
+          <span style="font:600 11.5px var(--fm)">${fmt(p.total || 0)}</span>
+          <span style="font:400 10.5px var(--fm);color:var(--dim2)">${esc(String(p.created_at || '').slice(5, 16))}${p.admin ? ' · ' + esc(p.admin) : ''}</span>
+          ${p.status === 'Kutilmoqda'
+            ? `<div onclick="${h(() => ccCancel(p))}" title="Bekor qilish" style="cursor:pointer;justify-self:start;font:600 9.5px var(--fm);color:${fg};background:${bg};padding:5px 8px;border-radius:6px">KUTILMOQDA ✕</div>`
+            : `<div style="justify-self:start;font:600 9.5px var(--fm);color:${fg};background:${bg};padding:5px 8px;border-radius:6px">${esc(String(p.status).toUpperCase())}</div>`}
+        </div>`;
+      };
+      return `
+<div style="margin-top:20px;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(340px,100%),1fr));gap:16px;align-items:start">
+  <div style="border:1px solid var(--line);border-radius:20px;padding:16px;background:var(--card)">
+    ${lbl('1 · MIJOZ ID SI (ILOVA TEPASIDA)')}
+    <form onsubmit="${h(e => { e.preventDefault(); ccFind(); })}" style="display:flex;gap:8px;margin-top:5px">
+      <div style="${box};margin-top:0;flex:1"><input data-k="cc_code" value="${esc(c.code)}" inputmode="numeric" maxlength="6" placeholder="482913" oninput="${h(e => { S.cc.code = String(e.target.value).replace(/[^0-9]/g, '').slice(0, 6); })}" style="${inp};font:700 16px var(--fm);letter-spacing:.12em"></div>
+      <button type="submit" class="ad-btn p" ${c.busy ? 'disabled style="opacity:.6"' : ''}>Topish</button>
+    </form>
+    ${c.err ? `<div style="margin-top:10px;padding:10px 12px;border-radius:14px;background:rgba(229,55,42,.1);color:var(--red);font:500 12px var(--fb)">${esc(c.err)}</div>` : ''}
+    ${c.dev ? `
+    <div style="margin-top:12px;padding:12px;border-radius:16px;background:var(--tile);border:1px solid var(--line3)">
+      <div style="display:flex;justify-content:space-between;gap:10px;align-items:center">
+        <div style="font:700 15px var(--fm);letter-spacing:.08em">ID ${esc(c.dev.code)}</div>
+        <span style="font:600 10px var(--fm);color:${online ? 'var(--ok)' : 'var(--dim2)'}">● ${esc(ccAgo(c.dev.last_seen))}</span>
+      </div>
+      <div style="font:400 11px/1.5 var(--fm);color:var(--dim2);margin-top:6px">${esc([c.dev.dev, ccPh(c.dev.phone), 'birinchi kirish: ' + String(c.dev.created_at || '').slice(0, 10)].filter(Boolean).join(' · '))}</div>
+      ${(c.dev.pushes || []).length ? `<div style="font:400 11px var(--fb);color:var(--dim3);margin-top:6px">Oldin yuborilgan: ${c.dev.pushes.length} ta · ${c.dev.pushes.filter(p => p.status === 'Kutilmoqda').length} tasi hali savatga tushmagan</div>` : ''}
+    </div>` : `<div style="font:400 11.5px/1.5 var(--fb);color:var(--dim3);margin-top:10px">Mijozdan ilova tepasidagi «ID» yonidagi 6 xonali raqamni so‘rang.</div>`}
+
+    <div style="margin-top:18px">${lbl('2 · KOMPLEKT TARKIBI')}</div>
+    ${chosen.length ? `<div style="margin-top:6px;display:flex;flex-direction:column;gap:6px">
+      ${chosen.map(it => `<div style="display:flex;align-items:center;gap:8px;padding:8px 10px;border:1px solid var(--line3);border-radius:14px">
+        <div style="flex:1;min-width:0"><div style="font:600 12px var(--fb);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(it.p.name)}</div><div style="font:400 10.5px var(--fm);color:var(--dim2);margin-top:2px">${esc(it.p.sku)} · ${fmt(it.p.price || 0)}</div></div>
+        <span onclick="${h(() => ccQty(it.p.sku, -1))}" style="${qb}">${aic('minus', 14, 2.2)}</span>
+        <b style="min-width:22px;text-align:center;font:700 13px var(--fm)">${it.qty}</b>
+        <span onclick="${h(() => ccQty(it.p.sku, 1))}" style="${qb}">${aic('plus', 14, 2.2)}</span>
+      </div>`).join('')}
+      <div style="display:flex;justify-content:space-between;padding:6px 4px 0;font:700 13px var(--fm)"><span>JAMI</span><span>${fmt(total)}</span></div>
+    </div>` : `<div style="margin-top:6px;padding:16px;border:1px dashed var(--line4);border-radius:14px;text-align:center;font:400 11.5px var(--fb);color:var(--dim3)">Ro‘yxatdan mahsulot qo‘shing</div>`}
+    <div style="margin-top:12px">${lbl('KOMPLEKT NOMI (IXTIYORIY)')}<div style="${box}"><input data-k="cc_title" value="${esc(c.title)}" maxlength="80" placeholder="Hovli uchun 4 kamera" oninput="${h(e => { S.cc.title = e.target.value; })}" style="${inp}"></div></div>
+    <div style="margin-top:9px">${lbl('IZOH (IXTIYORIY)')}<div style="${box}"><input data-k="cc_note" value="${esc(c.note)}" maxlength="300" placeholder="Masalan: o‘rnatish bilan, ertaga 10:00" oninput="${h(e => { S.cc.note = e.target.value; })}" style="${inp}"></div></div>
+    <button onclick="${h(ccSend)}" class="ad-btn p" style="width:100%;justify-content:center;margin-top:14px;${!c.dev || !chosen.length || c.busy ? 'opacity:.5' : ''}">${aic('send', 16, 2)} Mijoz savatiga yuborish</button>
+  </div>
+
+  <div style="border:1px solid var(--line);border-radius:20px;padding:16px;background:var(--card)">
+    ${lbl(q ? 'QIDIRUV NATIJASI' : 'TAYYOR KOMPLEKTLAR · YOKI QIDIRING')}
+    <div style="${box}"><input data-k="cc_q" value="${esc(c.q)}" placeholder="Model, SKU yoki turkum: 4MP, NVR, kabel…" oninput="${h(e => ccSet({ q: e.target.value }))}" style="${inp}"></div>
+    <div style="margin-top:8px;display:flex;flex-direction:column;max-height:560px;overflow:auto">
+      ${found.length ? found.map(p => `<div style="display:flex;align-items:center;gap:10px;padding:9px 4px;border-top:1px solid var(--fill)">
+        <div style="flex:1;min-width:0"><div style="font:600 12px var(--fb);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(p.name)}</div><div style="font:400 10.5px var(--fm);color:var(--dim2);margin-top:2px">${esc(p.cat)} · ${esc(p.sku)} · omborda ${p.qty ?? 0}</div></div>
+        <span style="font:600 11.5px var(--fm);white-space:nowrap">${fmt(p.price || 0)}</span>
+        <span onclick="${h(() => ccQty(p.sku, 1))}" style="${qb};background:${c.items[p.sku] ? 'var(--acc)' : 'transparent'};color:${c.items[p.sku] ? '#fff' : 'var(--fg2)'};border-color:${c.items[p.sku] ? 'transparent' : 'var(--line3)'}">${c.items[p.sku] ? `<b style="font:700 11px var(--fm)">${c.items[p.sku]}</b>` : aic('plus', 14, 2.2)}</span>
+      </div>`).join('') : `<div style="padding:20px;text-align:center;font:400 12px var(--fb);color:var(--dim3)">Hech narsa topilmadi</div>`}
+    </div>
+  </div>
+</div>
+
+<div style="margin-top:18px;border:1px solid var(--line);border-radius:20px;overflow:auto">
+  <div style="min-width:700px">
+    <div style="display:grid;grid-template-columns:70px 1fr 120px 110px 96px;gap:12px;padding:12px 16px;background:var(--thead);font:600 10px var(--fm);color:var(--dim2);letter-spacing:.05em">
+      <span>ID</span><span>KOMPLEKT</span><span>SUMMA</span><span>YUBORILDI</span><span>HOLAT</span>
+    </div>
+    ${(S.ccPushes || []).length ? S.ccPushes.map(pushRow).join('') : `<div style="padding:28px 16px;text-align:center;color:var(--dim3);font:400 12.5px var(--fb)">Hali komplekt yuborilmagan</div>`}
+  </div>
+</div>
+<div style="font:400 11px var(--fm);color:var(--dim5);margin-top:10px">Mijoz ilovasi ochiq bo‘lsa komplekt ~20 soniyada savatga tushadi, yopiq bo‘lsa — keyingi kirishda. «Kutilmoqda» belgisini bosib bekor qilish mumkin.</div>`;
+    }
+
     function mInstall(v) {
       return `
 <div style="margin-top:20px;border:1px solid var(--line);border-radius:20px;overflow:auto">
@@ -2058,6 +2206,7 @@
       ${v.aInstall ? mInstall(v) : ''}
       ${v.aClients ? mClients(v) : ''}
       ${v.aUstas ? mUstas() : ''}
+      ${v.aCall ? mCallCenter() : ''}
     </div>
   </div>
   ${v.noteOn ? mNote(v) : ''}

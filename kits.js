@@ -189,16 +189,16 @@ function kbBuild(brand, tech, nOut, nIn, only) {
     if (!r) return null;
     k.rec = r.sku;
     if (kbNeedSwitch(k)) { const sw = kbSwitches(k)[0]; if (!sw) return null; k.sw = sw.sku; }
+    /* tayyor komplekt arzon ko'rinsin: hammasida 500 GB disk (bo'lmasa — eng arzoni); kattaroq diskni mijoz xulosada tanlaydi */
     const hd = kbHdds();
-    const want = n <= 4 ? 1000 : 2000;
     const gb = p => { const m = String(p.badge || '').match(/(\d+)\s*(TB|GB)/); return m ? +m[1] * (m[2] === 'TB' ? 1000 : 1) : 0; };
-    const hdd = hd.find(p => gb(p) >= want) || hd[hd.length - 1];
+    const hdd = hd.find(p => gb(p) === 500) || hd[0];
     k.store = hdd ? hdd.sku : 'none';
     if (tech === 'ip') k.rj = rjBest(n);
     if (tech === 'analog') { const pw = kbPowers().filter(p => /IBP-12V/.test(p.sku)); k.power = ((n <= 4 ? pw[0] : pw[1] || pw[0]) || {}).sku || null; }
   } else {
     k.rec = 'none';
-    const sd = sdOptions().find(x => /64/.test(x.size)) || sdOptions()[0];
+    const sd = sdOptions().find(x => /^32\b/.test(x.size)) || sdOptions()[0];
     k.store = sd ? sd.sku : 'none';
     k.storeQ = n;
   }

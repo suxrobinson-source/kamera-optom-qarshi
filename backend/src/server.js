@@ -40,7 +40,7 @@ app.use('/assets', express.static(path.join(__dirname, '..', 'assets'), { maxAge
 
 // Faqat frontend fayllari beriladi (baza, .env, ichki hujjatlar va kod tashqariga chiqmaydi)
 const ROOT = path.join(__dirname, '..', '..');
-for (const f of ['index.html', 'app.html', 'admin.html', 'config.js']) {
+for (const f of ['index.html', 'app.html', 'admin.html', 'config.js', 'kits.js']) {
   app.get('/' + f, (_req, res) => res.sendFile(path.join(ROOT, f)));
 }
 

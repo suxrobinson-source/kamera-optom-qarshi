@@ -9,7 +9,9 @@ function testHtml(filePath, options = {}) {
   if (startIdx === -1 || endIdx === -1) {
     throw new Error(`No <script> tag found in ${filePath}`);
   }
-  const scriptContent = content.slice(startIdx + 8, endIdx);
+  let scriptContent = content.slice(startIdx + 8, endIdx);
+  // umumiy komplekt hisoblari alohida faylda — sahifadagi kabi asosiy skriptdan oldin yuklanadi
+  if (content.includes('<script src="kits.js"></script>')) scriptContent = fs.readFileSync('kits.js', 'utf8') + '\n' + scriptContent;
 
   // 1. Syntax check
   new vm.Script(scriptContent, { filename: filePath });
@@ -255,6 +257,11 @@ async function testAppV2() {
   // Qurilma ID tepada; call-markaz yuborgan komplekt savatga tushadi
   await new Promise(r => setImmediate(r));
   check('header device ID', '482913');
+  // komplekt tahallusi: kirill/kichik harf/nolsiz yozilsa ham bir xil kod
+  for (const [a, b] of [['U-07', 'U-7'], ['у 07', 'U-7'], ['q-195', 'Q-195'], ['salom', '']]) {
+    if (sb.kbAliasNorm(a) !== b) throw new Error(`kbAliasNorm(${a}) = ${sb.kbAliasNorm(a)}, kutilgan ${b}`);
+  }
+  console.log('✓ v2 kit alias normalisation');
   sb.mockData['/api/device'] = { code: '482913', inbox: [{ id: 5, title: 'Hovli', note: '', items: [{ sku: 'IPC-2410', qty: 3 }] }] };
   const before = sb.S.bag['IPC-2410'] || 0;
   await sb.deviceSync();

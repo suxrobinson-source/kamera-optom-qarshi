@@ -374,8 +374,11 @@ adminRouter.post('/devices/:code/push', async (req, res) => {
   if (want.size > 60) return res.status(400).json({ error: 'Juda ko‘p pozitsiya' });
   const items = [];
   let total = 0;
+  // microSD kartalar mahsulotlar jadvalida emas — narx sozlamalaridagi variantlar (Wi-Fi komplektlarida bo'ladi)
+  const sdOpts = ((await getSetting('pricing')) || {}).hddOptions || [];
   for (const [sku, qty] of want) {
-    const p = await db.get('SELECT sku, price FROM products WHERE sku = ? AND active = 1', sku);
+    const p = await db.get('SELECT sku, price FROM products WHERE sku = ? AND active = 1', sku)
+      || sdOpts.find(o => o && o.sku === sku) || null;
     if (!p) return res.status(400).json({ error: `Mahsulot topilmadi yoki o‘chirilgan: ${sku}` });
     items.push({ sku, qty });
     total += (p.price || 0) * qty;

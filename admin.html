@@ -132,6 +132,7 @@
 <body>
   <div id="root"></div>
   <script src="config.js"></script>
+  <script src="kits.js"></script>
   <script>
     /* ═══ KAMERA OPTOM QARSHI — admin panel (Claude Design "1b" prototipi) ═══ */
     const A = 'var(--acc)', RED = 'var(--red)', AMB = 'var(--warn)';
@@ -1745,8 +1746,28 @@
 
     /* ═══ Call-markaz: mijoz qurilma ID si bo‘yicha komplekt yig‘ib, uning savatiga yuborish ═══ */
     function ccSet(o) { set({ cc: { ...S.cc, ...o } }); }
+    /* Tayyor komplektlar mijoz ilovasidagi bilan aynan bir xil bo'lishi uchun kits.js shu ommaviy ma'lumotdan hisoblaydi */
+    const DATA = { products: [], config: {} };
+    let _ccKitsAt = 0;
+    async function ccKitsLoad() {
+      if (Date.now() - _ccKitsAt < 60000) return;
+      try {
+        const [products, config] = await Promise.all([api('/api/products'), api('/api/config')]);
+        DATA.products = Array.isArray(products) ? products : [];
+        DATA.config = config || {};
+        _ccKitsAt = Date.now();
+        render();
+      } catch (e) { flash('Tayyor komplektlar yuklanmadi: ' + e.message); }
+    }
     async function ccRefresh() {
+      ccKitsLoad();
       try { set({ ccPushes: await api('/api/admin/device-pushes') }); } catch (e) { flash(e.message); }
+    }
+    function ccAddKit(r) {
+      const items = { ...S.cc.items };
+      kbKitItems(r).forEach(it => { items[it.sku] = Math.min(999, (items[it.sku] || 0) + it.qty); });
+      ccSet({ items, title: S.cc.title || (r.alias + ' · ' + kbKitName(r)) });
+      flash(r.alias + ' komplekti qo‘shildi');
     }
     async function ccFind() {
       const code = String(S.cc.code || '').replace(/[^0-9]/g, '');
@@ -1801,10 +1822,13 @@
       const prods = (Array.isArray(S.stockProducts) ? S.stockProducts : []).filter(p => p.active !== false);
       const bySku = new Map(prods.map(p => [p.sku, p]));
       const q = String(c.q || '').trim().toLowerCase();
-      const found = q
-        ? prods.filter(p => `${p.name} ${p.sku} ${p.spec || ''} ${p.cat}`.toLowerCase().includes(q)).slice(0, 40)
-        : prods.filter(p => p.cat === 'Komplekt').slice(0, 40);
-      const chosen = Object.keys(c.items).map(sku => ({ p: bySku.get(sku) || { sku, name: sku, price: 0 }, qty: c.items[sku] }));
+      const found = q ? prods.filter(p => `${p.name} ${p.sku} ${p.spec || ''} ${p.cat}`.toLowerCase().includes(q)).slice(0, 40) : [];
+      const prodOf = sku => bySku.get(sku) || sdProd(sku) || { sku, name: sku, price: 0 };
+      const chosen = Object.keys(c.items).map(sku => ({ p: prodOf(sku), qty: c.items[sku] }));
+      const kitsReady = DATA.products.length > 0;
+      const allKits = kitsReady ? kbAllKits() : [];
+      const qa = kbAliasNorm(q);
+      const kits = !q ? allKits : allKits.filter(r => (qa && kbAliasNorm(r.alias) === qa) || `${r.alias} ${kbKitName(r)} ${r.group}`.toLowerCase().includes(q));
       const total = chosen.reduce((n, it) => n + (it.p.price || 0) * it.qty, 0);
       const lbl = t => `<div style="font:600 9.5px var(--fm);color:var(--dim2);letter-spacing:.05em">${t}</div>`;
       const box = 'margin-top:5px;border:1px solid var(--line3);border-radius:14px;padding:9px 10px;background:var(--tile)';
@@ -1813,7 +1837,7 @@
       const online = c.dev && ccAgo(c.dev.last_seen) === 'hozir onlayn';
       const pushRow = p => {
         const [fg, bg] = CC_ST[p.status] || CC_ST['Kutilmoqda'];
-        const its = (p.items || []).map(it => `${(bySku.get(it.sku) || {}).name || it.sku} × ${it.qty}`).join(', ');
+        const its = (p.items || []).map(it => `${prodOf(it.sku).name} × ${it.qty}`).join(', ');
         return `<div style="display:grid;grid-template-columns:70px 1fr 120px 110px 96px;gap:12px;padding:12px 16px;border-top:1px solid var(--fill);align-items:center;font:400 12px var(--fb)">
           <span style="font:700 12px var(--fm)">${esc(p.code)}</span>
           <div style="min-width:0"><div style="font-weight:600">${esc(p.title || 'Komplekt')}</div><div style="font:400 11px var(--fb);color:var(--dim2);margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${esc(its)}">${esc(its)}</div></div>
@@ -1859,14 +1883,24 @@
   </div>
 
   <div style="border:1px solid var(--line);border-radius:20px;padding:16px;background:var(--card)">
-    ${lbl(q ? 'QIDIRUV NATIJASI' : 'TAYYOR KOMPLEKTLAR · YOKI QIDIRING')}
-    <div style="${box}"><input data-k="cc_q" value="${esc(c.q)}" placeholder="Model, SKU yoki turkum: 4MP, NVR, kabel…" oninput="${h(e => ccSet({ q: e.target.value }))}" style="${inp}"></div>
+    ${lbl('KOMPLEKT KODI (MASALAN U-07) YOKI MAHSULOT')}
+    <div style="${box}"><input data-k="cc_q" value="${esc(c.q)}" placeholder="U-07, Dahua, 4MP, NVR, kabel…" oninput="${h(e => ccSet({ q: e.target.value }))}" style="${inp}"></div>
     <div style="margin-top:8px;display:flex;flex-direction:column;max-height:560px;overflow:auto">
+      ${!kitsReady ? `<div style="padding:14px;text-align:center;font:400 11.5px var(--fb);color:var(--dim3)">Tayyor komplektlar yuklanmoqda…</div>` : ''}
+      ${kits.length ? `<div style="font:600 9.5px var(--fm);color:var(--dim2);letter-spacing:.05em;padding:6px 4px">TAYYOR KOMPLEKTLAR · ${kits.length}</div>` : ''}
+      ${kits.slice(0, q ? 40 : 80).map(r => `<div style="display:flex;align-items:center;gap:10px;padding:9px 4px;border-top:1px solid var(--fill)">
+        <span style="flex:none;min-width:52px;text-align:center;font:700 11.5px var(--fm);letter-spacing:.04em;color:var(--acc);background:rgba(255,79,18,.1);padding:5px 6px;border-radius:8px">${esc(r.alias)}</span>
+        <div style="flex:1;min-width:0"><div style="font:600 12px var(--fb);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(kbKitName(r))}</div><div style="font:400 10.5px var(--fm);color:var(--dim2);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(r.group)} · ${esc(kbKitItems(r).map(it => prodOf(it.sku).name + ' × ' + it.qty).join(', '))}</div></div>
+        <span style="font:600 11.5px var(--fm);white-space:nowrap">${fmt(r.goods || 0)}</span>
+        <span onclick="${h(() => ccAddKit(r))}" title="Butun komplektni qo‘shish" style="${qb}">${aic('plus', 14, 2.2)}</span>
+      </div>`).join('')}
+      ${found.length ? `<div style="font:600 9.5px var(--fm);color:var(--dim2);letter-spacing:.05em;padding:10px 4px 6px">MAHSULOTLAR · ${found.length}</div>` : ''}
       ${found.length ? found.map(p => `<div style="display:flex;align-items:center;gap:10px;padding:9px 4px;border-top:1px solid var(--fill)">
         <div style="flex:1;min-width:0"><div style="font:600 12px var(--fb);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(p.name)}</div><div style="font:400 10.5px var(--fm);color:var(--dim2);margin-top:2px">${esc(p.cat)} · ${esc(p.sku)} · omborda ${p.qty ?? 0}</div></div>
         <span style="font:600 11.5px var(--fm);white-space:nowrap">${fmt(p.price || 0)}</span>
         <span onclick="${h(() => ccQty(p.sku, 1))}" style="${qb};background:${c.items[p.sku] ? 'var(--acc)' : 'transparent'};color:${c.items[p.sku] ? '#fff' : 'var(--fg2)'};border-color:${c.items[p.sku] ? 'transparent' : 'var(--line3)'}">${c.items[p.sku] ? `<b style="font:700 11px var(--fm)">${c.items[p.sku]}</b>` : aic('plus', 14, 2.2)}</span>
-      </div>`).join('') : `<div style="padding:20px;text-align:center;font:400 12px var(--fb);color:var(--dim3)">Hech narsa topilmadi</div>`}
+      </div>`).join('') : ''}
+      ${q && !found.length && !kits.length ? `<div style="padding:20px;text-align:center;font:400 12px var(--fb);color:var(--dim3)">Hech narsa topilmadi</div>` : ''}
     </div>
   </div>
 </div>
@@ -2224,6 +2258,7 @@
       if (S.token) {
         try {
           await bootstrap();
+          if (S.adminTab === 'callcenter') ccKitsLoad();
         } catch (e) {
           logout();
           return;

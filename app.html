@@ -966,6 +966,15 @@
       color: var(--ok)
     }
 
+    /* videolar: story butun ekran, mahsulot — kartochkada */
+    .vslot .vfill { display: block; width: 100%; height: 100%; object-fit: cover; background: #000 }
+    .st-video { position: absolute; inset: 0; z-index: 0 }
+    .story-view > *:not(.st-video) { position: relative; z-index: 1 }
+    .story-view > .story-tap, .story-view > .st-act { position: absolute }
+    .pvid { aspect-ratio: 16 / 9; background: #000 }
+    .pvid .vfill { object-fit: contain }
+    .st-mute { position: absolute !important; top: 12px; right: 12px; z-index: 3 !important; width: 38px; height: 38px; border-radius: 50%; background: rgba(0, 0, 0, .35); color: #fff; display: flex; align-items: center; justify-content: center }
+
     /* tayyor komplekt tahallusi — mijoz call-markazga aytadi */
     .tag.kb-code {
       background: var(--acc-soft);
@@ -4671,6 +4680,7 @@
         }
         if (config && config.credit && config.credit.rateOn) S.rateOn = { ...S.rateOn, ...config.credit.rateOn };
         if (config && config.credit && config.credit.provOn) S.provOn = { ...S.provOn, ...config.credit.provOn };
+        S.creditTerms = { ...CREDIT_TERMS, ...((config && config.credit && config.credit.terms) || {}) };
         await syncMyOrders();
         await syncUsta();
       } catch (e) {
@@ -4779,6 +4789,48 @@
 
     let _t = null, _g = null, _sp = null, _pushingState = false;
     let _storyTimer = null, _storyStartTime = 0, _storyRemaining = 6000, _storyPaused = false;
+    const CREDIT_TERMS = { commission: 2.5, minSum: 1000000, penalty: 0.2, docs: 'Pasport + ish joyi ma’lumoti' };
+    const creditTerms = () => S.creditTerms || CREDIT_TERMS;
+
+    /* ═══ Video: ilova har harakatda qayta chiziladi — <video> elementi saqlanib, joyiga qaytariladi,
+       aks holda har bosishda boshidan boshlanardi. Story uchun bitta element (iPhone birinchi bosishdan keyin ovozli ijroga ruxsat beradi). */
+    const _vcache = new Map();
+    const isVid = f => /^(https?:)?\/\/|^\/assets\//.test(String(f || ''));
+    function storyVideo() { return _vcache.get('story') || null; }
+    function attachVideos() {
+      if (!APP.querySelectorAll) return;
+      APP.querySelectorAll('.vslot').forEach(slot => {
+        const src = slot.dataset.vsrc, key = slot.dataset.vkey || src, story = slot.dataset.vmode === 'story';
+        if (!src) return;
+        let el = _vcache.get(key);
+        if (!el) {
+          el = document.createElement('video');
+          el.setAttribute('playsinline', ''); el.playsInline = true; el.preload = 'metadata';
+          el.className = 'vfill';
+          if (story) {
+            el.addEventListener('timeupdate', () => {
+              const bar = APP.querySelector('.story-bars > div.cur > div');
+              if (bar && el.duration) bar.style.width = Math.min(100, el.currentTime / el.duration * 100) + '%';
+            });
+            el.addEventListener('ended', () => { if (S.story !== null) storyNext(); });
+          } else el.controls = true;
+          _vcache.set(key, el);
+        }
+        if (el.dataset.src !== src) { el.dataset.src = src; el.src = src; if (story) { el.currentTime = 0; } }
+        if (story) { el.muted = !!S.stMuted; el.poster = slot.dataset.vposter || ''; }
+        if (el.parentNode !== slot) slot.appendChild(el);
+        if (story && !_storyPaused && el.paused) { const pr = el.play(); if (pr && pr.catch) pr.catch(() => { el.muted = true; S.stMuted = true; el.play().catch(() => { }); render(); }); }
+      });
+      /* ekrandan olingan video to'xtaydi; story yopilsa keyingi ochilishda boshidan boshlanadi */
+      _vcache.forEach((el, key) => { if (!el.isConnected) { if (!el.paused) el.pause(); if (key === 'story' && el.currentTime) el.currentTime = 0; } });
+    }
+    /* video tugaganda yoki "keyingi" bosilganda */
+    function storyNext() {
+      const list = ((DATA.stories && DATA.stories.length) ? DATA.stories : (S.storyList || [])).filter(st => st.live !== false);
+      const n = (S.story ?? 0) + 1;
+      if (n >= list.length) { _clearStoryTimer(); set({ story: null, cmt: null }); return; }
+      _startStoryTimer(6000); set(p => ({ story: n, seen: { ...p.seen, [list[n].id]: true } }));
+    }
 
     function _clearStoryTimer() {
       if (_storyTimer) { clearTimeout(_storyTimer); _storyTimer = null; }
@@ -4790,7 +4842,8 @@
       _storyPaused = false;
       _storyTimer = setTimeout(() => {
         if (S.story !== null) {
-          const list = (DATA.stories && DATA.stories.length) ? DATA.stories : (S.storyList || []);
+          const list = ((DATA.stories && DATA.stories.length) ? DATA.stories : (S.storyList || [])).filter(st => st.live !== false);
+          if (list[S.story] && isVid(list[S.story].file)) return;
           const n = S.story + 1;
           if (n >= list.length) {
             _clearStoryTimer();
@@ -4809,12 +4862,14 @@
         const elapsed = Date.now() - _storyStartTime;
         _storyRemaining = Math.max(200, _storyRemaining - elapsed);
         _storyPaused = true;
+        const sv = storyVideo(); if (sv && sv.isConnected) sv.pause();
         render();
       }
     }
     function _resumeStoryTimer() {
       if (_storyPaused && S.story !== null) {
         _startStoryTimer(_storyRemaining);
+        const sv = storyVideo(); if (sv && sv.isConnected) sv.play().catch(() => { });
         render();
       }
     }
@@ -5549,7 +5604,7 @@
         [camSel.sku, S.cams],
         ...kitExtraItems.map(x => [x.p.sku, x.q]),
         ...(hddActive && hddSel && hddSel.sku ? [[hddSel.sku, 1]] : [])
-      ], { credit: credit || (S.creditUse && creditOn ? { provider: provSel.name, term: curTerm, monthly: monthlyFor(curTerm, total) } : null) });
+      ], { credit: credit || (S.creditUse && creditOn && total >= +creditTerms().minSum ? { provider: provSel.name, term: curTerm, monthly: monthlyFor(curTerm, total) } : null) });
 
       const parseAction = (act) => {
         if (!act) return () => { };
@@ -5790,7 +5845,7 @@
         bannersOn: MOD('banners'),
         storyCountLabel: STORY.length + ' ta obyekt',
         stories: STORY.map((st, i) => ({
-          label: st.label, mark: st.mark,
+          label: st.label, mark: st.mark, poster: st.poster || '',
           ring: s.seen[st.id] ? 'var(--line4)' : 'linear-gradient(140deg,#2fe0b6,#ffb020)',
           playFg: s.seen[st.id] ? 'var(--dim4)' : 'var(--fg)', labelFg: s.seen[st.id] ? 'var(--dim2)' : 'var(--fg2)',
           fresh: !s.seen[st.id],
@@ -5798,12 +5853,11 @@
         })),
         storyOn: s.story !== null, curStory: cur, storyPaused: _storyPaused,
         pauseStory: () => _pauseStoryTimer(), resumeStory: () => _resumeStoryTimer(),
-        storyBars: STORY.map((st, i) => ({ w: i < s.story ? '100%' : i === s.story ? '100%' : '0%', anim: i === s.story ? `storyBar 6s linear both` : i < s.story ? 'none' : 'none', playState: _storyPaused ? 'paused' : 'running' })),
+        storyBars: STORY.map((st, i) => { const vid = i === s.story && isVid(st.file); return { cur: i === s.story, w: i < s.story ? '100%' : vid ? '0%' : i === s.story ? '100%' : '0%', anim: i === s.story && !vid ? `storyBar 6s linear both` : 'none', playState: _storyPaused ? 'paused' : 'running' }; }),
+        storyIsVideo: !!(cur && isVid(cur.file)), stMuted: !!s.stMuted,
+        toggleStMute: e => { if (e && e.stopPropagation) e.stopPropagation(); S.stMuted = !S.stMuted; const sv = storyVideo(); if (sv) sv.muted = S.stMuted; render(); },
         closeStory: () => { _clearStoryTimer(); set({ story: null, cmt: null }); },
-        nextStory: () => {
-          const n = (s.story ?? 0) + 1; if (n >= STORY.length) { _clearStoryTimer(); set({ story: null, cmt: null }); return; }
-          _startStoryTimer(6000); set(p => ({ story: n, seen: { ...p.seen, [STORY[n].id]: true } }));
-        },
+        nextStory: () => storyNext(),
         prevStory: () => { const n = Math.max(0, (s.story ?? 0) - 1); _startStoryTimer(6000); set({ story: n }); },
         storyToKit: () => { _clearStoryTimer(); set({ story: null, tab: 'kit' }); },
         storyToExpert: () => { _clearStoryTimer(); set({ story: null, tab: 'expert', expStep: 1, topic: 'Yangi kamera kerak', cb: 'idle' }); },
@@ -5996,7 +6050,10 @@
         monthly: fmt(monthlyFor(curTerm, total)) + '/oy',
         creditTotal: fmt(creditSum),
         rateLabel: provSel.name + ' · ustama ' + (s.rates[curTerm] || 0) + ' % · ' + (s.down[curTerm] ? s.down[curTerm] + ' % boshlang‘ich' : 'boshlang‘ich to‘lovsiz'),
-        applyCredit: () => { if (hddActive && hddSel && !hddSel.sku) { flash('Xotira turini qayta tanlang'); return; } kitOrder({ provider: provSel.name, term: curTerm, monthly: monthlyFor(curTerm, total) }); },
+        creditMinOk: total >= +creditTerms().minSum,
+        creditMinText: 'Muddatli to‘lov ' + fmt(+creditTerms().minSum) + ' dan boshlab · hozir ' + fmt(total),
+        creditDocs: creditTerms().docs + (+creditTerms().penalty ? ' · kechikish jarimasi kuniga ' + creditTerms().penalty + ' %' : '') + ' · 15 daqiqada javob',
+        applyCredit: () => { if (hddActive && hddSel && !hddSel.sku) { flash('Xotira turini qayta tanlang'); return; } if (total < +creditTerms().minSum) { flash('Muddatli to‘lov ' + fmt(+creditTerms().minSum) + ' dan boshlab'); return; } kitOrder({ provider: provSel.name, term: curTerm, monthly: monthlyFor(curTerm, total) }); },
         myPhoneLabel: s.myPhone ? '+998 ' + s.myPhone : 'Raqam kiritilmagan',
         profMenuOn: !s.profPage, profOrdersOn: s.profPage === 'orders', profNotifOn: s.profPage === 'notif', profAddrOn: s.profPage === 'addr',
         profPaymentOn: s.profPage === 'payment', profWarrantyOn: s.profPage === 'warranty', profAboutOn: s.profPage === 'about',
@@ -6422,7 +6479,7 @@
     <div class="rail" data-keep="stories">
       ${v.stories.map((st, i) => `
       <button class="st ${st.fresh ? 'fresh' : ''}" style="--i:${i}" onclick="${h(st.go)}">
-        <span class="st-ring"><span class="st-in">${ic(markIc(st.mark), 24, 1.7)}</span></span>
+        <span class="st-ring"><span class="st-in">${st.poster ? `<img src="${esc(st.poster)}" alt="" loading="lazy" style="width:100%;height:100%;object-fit:cover;border-radius:50%">` : ic(markIc(st.mark), 24, 1.7)}</span></span>
         <span class="st-l">${esc(st.label)}</span>
       </button>`).join('')}
     </div>
@@ -6692,6 +6749,8 @@
     /* ═══ Komplekt: aqlli yordamchi ═══
        Oddiy mijozga texnik atamalarsiz 7 ta savol beriladi, javoblarga qarab
        bazadagi haqiqiy mahsulotlardan tayyor komplekt tuziladi. */
+    IC.sound = '<path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/>';
+    IC.muteOff = '<path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="m16 10 4.5 4.5M20.5 10 16 14.5"/>';
     IC.spark = '<path d="M12 3.5 13.9 9l5.6 1.9-5.6 1.9L12 18.5l-1.9-5.7L4.5 10.9 10.1 9z"/><path d="M19 3v3M17.5 4.5h3M5 17v3M3.5 18.5h3"/>';
     const WZ_PLACES = [
       { id: 'kv', n: 'Kvartira', s: 'Xonadon va eshik oldi', ic: 'building', zones: ['door', 'hall', 'kids'], def: ['door', 'hall'], m: 12 },
@@ -7261,7 +7320,7 @@
             ${k.install ? `<div class="kv"><span>O‘rnatish · ${n} kamera</span><span>${esc(fmt(tot.install))}</span></div>` : ''}
             <div class="kv"><span>Yetkazish</span><span>${tot.ship ? esc(fmt(tot.ship)) : 'Bepul'}</span></div>
             <div class="rcpt-tot"><span class="lbl">Jami</span>${pr(fmt(tot.total))}</div>
-            ${S.creditService !== false && kbMod('credit') && monthly >= 10000 ? `<div class="opt-s" style="margin-top:10px">Muddatli to‘lov: ${term} oyga oyiga ~${esc(fmt(monthly))}</div>` : ''}
+            ${S.creditService !== false && kbMod('credit') && monthly >= 10000 && tot.total >= +creditTerms().minSum ? `<div class="opt-s" style="margin-top:10px">Muddatli to‘lov: ${term} oyga oyiga ~${esc(fmt(monthly))}</div>` : ''}
           </section>
           <div class="btn-row kb-nextbar">
             <button class="btn btn-g f" onclick="${h(() => { const b = { ...S.bag }; skus.forEach(([s, q]) => { b[s] = (b[s] || 0) + q; }); set({ bag: b, bagOpen: true }); flash('Komplekt savatga qo‘shildi'); })}">${ic('bag', 18, 2)} Savatga</button>
@@ -7418,11 +7477,11 @@
     <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
       <div style="display:flex;gap:12px;align-items:center;min-width:0">
         <span class="ico acc">${ic('clock', 20)}</span>
-        <div style="min-width:0"><div class="opt-t">Muddatli to‘lov</div><div class="opt-s">${esc(v.crPick ? v.rateLabel : 'Ixtiyoriy · yoqsangiz oylik to‘lov hisoblanadi')}</div></div>
+        <div style="min-width:0"><div class="opt-t">Muddatli to‘lov</div><div class="opt-s">${esc(!v.creditMinOk ? v.creditMinText : v.crPick ? v.rateLabel : 'Ixtiyoriy · yoqsangiz oylik to‘lov hisoblanadi')}</div></div>
       </div>
-      <button class="sw ${v.crPick ? 'on' : ''}" onclick="${h(v.toggleCredit)}" aria-label="Muddatli to‘lov"></button>
+      ${v.creditMinOk ? `<button class="sw ${v.crPick ? 'on' : ''}" onclick="${h(v.toggleCredit)}" aria-label="Muddatli to‘lov"></button>` : ''}
     </div>
-    ${v.crPick ? `
+    ${v.crPick && v.creditMinOk ? `
     <div class="lbl" style="margin:18px 0 10px">Nasiya servisi</div>
     <div class="seg">${v.providers.map(pv => `<button class="${pv.on ? 'on' : ''}" onclick="${h(pv.go)}">${esc(pv.name)}</button>`).join('')}</div>
     <div class="opt-s" style="margin-top:8px">${esc(v.provNote)}</div>
@@ -7432,7 +7491,7 @@
       <div><div style="font-size:24px">${pr(v.monthly)}</div><div class="opt-s">oyiga · ${esc(v.creditTotal)} jami</div></div>
       <button class="btn btn-p sm" onclick="${h(v.applyCredit)}">Rasmiylashtirish</button>
     </div>
-    <div class="opt-s" style="margin-top:10px">Pasport va ish joyi ma’lumoti kerak · 15 daqiqada javob</div>` : `
+    <div class="opt-s" style="margin-top:10px">${esc(v.creditDocs)}</div>` : `
     <div class="card tint" style="margin-top:14px;padding:14px 16px"><div class="opt-s" style="margin:0">Muddatli to‘lov ixtiyoriy — yoqmasangiz buyurtma naqd yoki karta bilan rasmiylashtiriladi.</div></div>`}
   </section>` : `
   <div class="card tint"><div class="opt-t">Naqd yoki karta orqali</div><div class="opt-s">To‘lov buyurtma yetib kelganda amalga oshiriladi.</div></div>`) : ''}
@@ -8037,6 +8096,11 @@ ${mProfHead(v, 'Yordam va biz haqida', "Qarshi shahar bosh do‘koni")}
       </div>` : ''}
 
       <div class="warr">${ic('shield', 20)} <span>Rasmiy 1 yil to‘liq servis kafolati</span></div>
+      ${p.video ? `
+      <div class="card" style="padding:0;overflow:hidden">
+        <div class="lbl" style="display:flex;align-items:center;gap:6px;color:var(--acc);padding:14px 16px 10px">${ic('play', 15, 2)} VIDEO</div>
+        <div class="vslot pvid" data-vsrc="${esc(p.video)}"></div>
+      </div>` : ''}
 
       ${p.desc ? `
       <div class="card">
@@ -8399,13 +8463,15 @@ ${mProfHead(v, 'Yordam va biz haqida', "Qarshi shahar bosh do‘koni")}
       const c = v.curStory;
       return `
 <div class="story">
-  <div class="story-bars">${v.storyBars.map(b => `<div><div style="width:${b.w};animation:${b.anim};animation-play-state:${b.playState}"></div></div>`).join('')}</div>
+  <div class="story-bars">${v.storyBars.map(b => `<div class="${b.cur ? 'cur' : ''}"><div style="width:${b.w};animation:${b.anim};animation-play-state:${b.playState}"></div></div>`).join('')}</div>
   <div style="display:flex;align-items:center;gap:12px;padding:14px 16px 0">
     <span class="ico" style="width:40px;height:40px;border-radius:50%;background:var(--acc);color:#fff">${ic(markIc(c.mark), 19, 2)}</span>
     <div style="flex:1;min-width:0"><div style="font:600 14px var(--fb)">${esc(c.title)}</div><div style="font:400 12px var(--fb);color:rgba(255,255,255,.6);margin-top:2px">${esc(c.meta)}</div></div>
     <button class="ibtn" style="width:38px;height:38px;background:rgba(255,255,255,.12);color:#fff;box-shadow:none" onclick="${h(v.closeStory)}" aria-label="Yopish">${ic('x', 18, 2.2)}</button>
   </div>
   <div class="story-view" onpointerdown="${h(v.pauseStory)}" onpointerup="${h(v.resumeStory)}" onpointercancel="${h(v.resumeStory)}">
+    ${v.storyIsVideo ? `<div class="vslot st-video" data-vkey="story" data-vmode="story" data-vsrc="${esc(c.file)}" data-vposter="${esc(c.poster || '')}"></div>
+    <button class="st-mute" onpointerdown="event.stopPropagation()" onpointerup="event.stopPropagation()" onclick="${h(v.toggleStMute)}" aria-label="${v.stMuted ? 'Ovozni yoqish' : 'Ovozni o‘chirish'}">${ic(v.stMuted ? 'muteOff' : 'sound', 18, 2)}</button>` : ''}
     <div class="story-tap"><div onclick="${h(v.prevStory)}"></div><div onclick="${h(v.nextStory)}"></div></div>
     ${_likePop && _likePop === c.id ? `<div class="st-burst">${ic('heart', 110, 0)}</div>` : ''}
     <div class="st-act" onpointerdown="event.stopPropagation()" onpointerup="event.stopPropagation()" onpointercancel="event.stopPropagation()">
@@ -8413,7 +8479,7 @@ ${mProfHead(v, 'Yordam va biz haqida', "Qarshi shahar bosh do‘koni")}
       <button class="st-ab" onclick="${h(() => cmtOpen(c))}" aria-label="Izohlar"><span class="st-ai">${ic('chat', 23, 2)}</span><b>${cntFmt(c.comments)}</b></button>
       <button class="st-ab" onclick="${h(() => storyShare(c))}" aria-label="Ulashish"><span class="st-ai">${ic('share', 22, 2)}</span></button>
     </div>
-    <div style="text-align:center;pointer-events:none">
+    <div style="text-align:center;pointer-events:none;${v.storyIsVideo ? (v.storyPaused ? '' : 'opacity:0;') : ''}transition:opacity .2s ease">
       <div style="width:76px;height:76px;margin:0 auto;border-radius:50%;background:rgba(255,255,255,.14);display:flex;align-items:center;justify-content:center">${ic(v.storyPaused ? 'pause' : 'play', 30, 2)}</div>
       <div style="font:600 11px var(--fb);letter-spacing:.1em;color:rgba(255,255,255,.55);margin-top:14px">O‘RNATISH VIDEOSI · ${esc(c.dur)}</div>
     </div>
@@ -9741,6 +9807,7 @@ ${mProfHead(v, 'Yordam va biz haqida', "Qarshi shahar bosh do‘koni")}
 </div>`;
 
         i18nApply(APP);
+        attachVideos();
         const sc = document.getElementById('scroller'); if (sc) sc.scrollTop = _scroll;
         if (APP.querySelectorAll) APP.querySelectorAll('[data-keep]').forEach(n => { if (keep[n.dataset.keep]) n.scrollLeft = keep[n.dataset.keep]; });
         /* turkum almashganda — tanlangan chipni qator o‘rtasiga surish */

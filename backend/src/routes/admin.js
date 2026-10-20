@@ -1,10 +1,12 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import express from 'express';
 import { fileURLToPath } from 'node:url';
 import { db, getSetting, setSetting, nowStr } from '../db.js';
 import { login, requireAdmin } from '../auth.js';
 import { getCurrency, parseRate, parsePct, computeProduct, planPricing, summarize, applyPricing, fetchCbuRate, ROUNDING_STEPS } from '../currency.js';
 import { asyncRouter, parseDataUrl, saveUpload, deleteUpload } from '../uploads.js';
+import { CHUNK, mediaStart, mediaChunk, mediaDone, mediaDelete, mediaUsage } from '../media.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -160,7 +162,7 @@ adminRouter.patch('/products/:sku', async (req, res) => {
   await db.run(`UPDATE products SET
     name = ?, cat = ?, spec = ?, badge = ?,
     price = ?, price_usd = ?, margin = ?, margin_usta = ?, price_usta = ?,
-    qty = ?, promo = ?, is_popular = ?, active = ?
+    qty = ?, promo = ?, is_popular = ?, active = ?, video = ?
     WHERE sku = ?`,
     b.name !== undefined ? String(b.name) : p.name,
     b.cat !== undefined ? String(b.cat) : p.cat,
@@ -171,8 +173,10 @@ adminRouter.patch('/products/:sku', async (req, res) => {
     b.promo === undefined ? p.promo : (b.promo || null),
     b.is_popular !== undefined ? (b.is_popular ? 1 : 0) : (p.is_popular ? 1 : 0),
     b.active === undefined ? p.active : (b.active ? 1 : 0),
+    b.video !== undefined ? String(b.video || '') : (p.video || ''),
     p.sku,
   );
+  if (b.video !== undefined && p.video && p.video !== b.video) await dropAsset(p.video);
   res.json(parseImages(await db.get('SELECT * FROM products WHERE sku = ?', p.sku)));
 });
 
@@ -289,6 +293,7 @@ adminRouter.delete('/products/:sku', async (req, res) => {
   let imgs = [];
   try { imgs = JSON.parse(p.images || '[]'); } catch (e) { }
   if (Array.isArray(imgs)) for (const imgPath of imgs) await removeImage(imgPath);
+  await dropAsset(p.video);
   await db.run('DELETE FROM products WHERE sku = ?', p.sku);
   res.json({ ok: true, sku: p.sku });
 });
@@ -346,6 +351,39 @@ adminRouter.patch('/callbacks/:id', async (req, res) => {
   await db.run('UPDATE callbacks SET status = ? WHERE id = ?', status, parseInt(req.params.id, 10) || 0);
   res.json({ ok: true });
 });
+
+// ── Videolar: bo'laklab yuklash (story, mahsulot, banner) ──
+// POST /api/admin/media { folder, name, mime, size } → { path, chunk, chunks }
+adminRouter.post('/media', async (req, res) => {
+  try { res.status(201).json(await mediaStart(req.body || {})); }
+  catch (e) { res.status(400).json({ error: e.message }); }
+});
+// PUT /api/admin/media/chunk?path=&idx= — xom bayt (application/octet-stream), 1 MB gacha
+adminRouter.put('/media/chunk', express.raw({ type: () => true, limit: CHUNK + 4096 }), async (req, res) => {
+  try { await mediaChunk(req.query.path, req.query.idx, req.body); res.json({ ok: true }); }
+  catch (e) { res.status(400).json({ error: e.message }); }
+});
+adminRouter.post('/media/done', async (req, res) => {
+  try { res.json(await mediaDone(req.body?.path)); }
+  catch (e) { res.status(400).json({ error: e.message }); }
+});
+adminRouter.delete('/media', async (req, res) => {
+  await mediaDelete(req.query.path);
+  res.json({ ok: true });
+});
+adminRouter.get('/media/usage', async (_req, res) => res.json(await mediaUsage()));
+
+/* Eski fayl almashtirilganda yoki o'chirilganda — bazadagi rasm/video ham o'chadi (repodagi statik fayllarga tegilmaydi) */
+async function dropAsset(p) {
+  if (!p || !String(p).startsWith('/assets/')) return;
+  await deleteUpload(p);
+  await mediaDelete(p);
+}
+/* dataURL rasm → bazaga (muqova, banner rasmi) */
+async function saveImageData(folder, dataUrl, prefix) {
+  const { buf, ext } = parseDataUrl(dataUrl, { maxBytes: 3 * 1024 * 1024 });
+  return saveUpload(folder, buf, ext, prefix);
+}
 
 // ── Call-markaz: mijoz aytgan qurilma ID siga komplekt yuborish ──
 const pushRow = (p) => { let items = []; try { items = JSON.parse(p.items); } catch (e) { } return { ...p, items }; };
@@ -440,20 +478,29 @@ adminRouter.get('/banners', async (_req, res) => {
 });
 adminRouter.post('/banners', async (req, res) => {
   const b = req.body || {};
-  if (!b.tag || !b.title) return res.status(400).json({ error: 'tag va title majburiy' });
-  const row = await db.get('INSERT INTO banners (tag,title,sub,cta,action,image,sort,active) VALUES (?,?,?,?,?,?,?,1) RETURNING *',
-    String(b.tag), String(b.title), String(b.sub || ''), String(b.cta || ''), String(b.action || ''), String(b.image || ''), +b.sort || 0);
+  if (!b.tag || !b.title) return res.status(400).json({ error: 'Yorliq va sarlavha majburiy' });
+  let image = String(b.image || '');
+  try { if (b.imageData) image = await saveImageData('banners', b.imageData, 'bn'); }
+  catch (e) { return res.status(400).json({ error: e.message }); }
+  const row = await db.get('INSERT INTO banners (tag,title,sub,cta,action,image,video,sort,active) VALUES (?,?,?,?,?,?,?,?,?) RETURNING *',
+    String(b.tag), String(b.title), String(b.sub || ''), String(b.cta || ''), String(b.action || ''), image, String(b.video || ''), +b.sort || 0, b.active === false ? 0 : 1);
   res.status(201).json(row);
 });
 adminRouter.patch('/banners/:id', async (req, res) => {
   const row = await db.get('SELECT * FROM banners WHERE id = ?', parseInt(req.params.id, 10) || 0);
   if (!row) return res.status(404).json({ error: 'Banner topilmadi' });
   const b = { ...row, ...(req.body || {}) };
-  await db.run('UPDATE banners SET tag=?,title=?,sub=?,cta=?,action=?,image=?,sort=?,active=? WHERE id=?',
-    String(b.tag), String(b.title), String(b.sub), String(b.cta), String(b.action), String(b.image), +b.sort || 0, b.active ? 1 : 0, row.id);
+  try { if (b.imageData) b.image = await saveImageData('banners', b.imageData, 'bn'); }
+  catch (e) { return res.status(400).json({ error: e.message }); }
+  await db.run('UPDATE banners SET tag=?,title=?,sub=?,cta=?,action=?,image=?,video=?,sort=?,active=? WHERE id=?',
+    String(b.tag), String(b.title), String(b.sub || ''), String(b.cta || ''), String(b.action || ''), String(b.image || ''), String(b.video || ''), +b.sort || 0, b.active ? 1 : 0, row.id);
+  if (row.image !== b.image) await dropAsset(row.image);
+  if (row.video && row.video !== b.video) await dropAsset(row.video);
   res.json(await db.get('SELECT * FROM banners WHERE id = ?', row.id));
 });
 adminRouter.delete('/banners/:id', async (req, res) => {
+  const row = await db.get('SELECT image, video FROM banners WHERE id = ?', parseInt(req.params.id, 10) || 0);
+  if (row) { await dropAsset(row.image); await dropAsset(row.video); }
   await db.run('DELETE FROM banners WHERE id = ?', parseInt(req.params.id, 10) || 0);
   res.json({ ok: true });
 });
@@ -485,11 +532,14 @@ adminRouter.delete('/story-comments/:id', async (req, res) => {
 adminRouter.post('/stories', async (req, res) => {
   const b = req.body || {};
   const id = String(b.id || ('s' + Date.now()));
-  const row = await db.get('INSERT INTO stories (id,label,mark,title,meta,dur,views,live,file,tags,text,sort) VALUES (?,?,?,?,?,?,?,?,?,?,?,?) RETURNING *',
+  let poster = String(b.poster || '');
+  try { if (b.posterData) poster = await saveImageData('stories', b.posterData, 'poster'); }
+  catch (e) { return res.status(400).json({ error: e.message }); }
+  const row = await db.get('INSERT INTO stories (id,label,mark,title,meta,dur,views,live,file,tags,text,poster,sort) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?) RETURNING *',
     id, String(b.label || ''), String(b.mark || ''), String(b.title || ''),
     String(b.meta || ''), String(b.dur || '0:30'), +b.views || 0,
     b.live ? 1 : 0, String(b.file || ''), JSON.stringify(b.tags || []),
-    String(b.text || ''), +b.sort || 0
+    String(b.text || ''), poster, +b.sort || 0
   );
   res.status(201).json({ ...row, tags: JSON.parse(row.tags || '[]'), live: !!row.live });
 });
@@ -497,16 +547,22 @@ adminRouter.patch('/stories/:id', async (req, res) => {
   const row = await db.get('SELECT * FROM stories WHERE id = ?', req.params.id);
   if (!row) return res.status(404).json({ error: 'Story topilmadi' });
   const b = { ...row, ...(req.body || {}) };
-  await db.run('UPDATE stories SET label=?,mark=?,title=?,meta=?,dur=?,views=?,live=?,file=?,tags=?,text=?,sort=? WHERE id=?',
+  try { if (b.posterData) b.poster = await saveImageData('stories', b.posterData, 'poster'); }
+  catch (e) { return res.status(400).json({ error: e.message }); }
+  await db.run('UPDATE stories SET label=?,mark=?,title=?,meta=?,dur=?,views=?,live=?,file=?,tags=?,text=?,poster=?,sort=? WHERE id=?',
     String(b.label || ''), String(b.mark || ''), String(b.title || ''),
     String(b.meta || ''), String(b.dur || '0:30'), +b.views || 0,
     b.live ? 1 : 0, String(b.file || ''), JSON.stringify(Array.isArray(b.tags) ? b.tags : JSON.parse(b.tags || '[]')),
-    String(b.text || ''), +b.sort || 0, row.id
+    String(b.text || ''), String(b.poster || ''), +b.sort || 0, row.id
   );
+  if (row.file && row.file !== b.file) await dropAsset(row.file);
+  if (row.poster && row.poster !== b.poster) await dropAsset(row.poster);
   const updated = await db.get('SELECT * FROM stories WHERE id = ?', row.id);
   res.json({ ...updated, tags: JSON.parse(updated.tags || '[]'), live: !!updated.live });
 });
 adminRouter.delete('/stories/:id', async (req, res) => {
+  const st = await db.get('SELECT file, poster FROM stories WHERE id = ?', req.params.id);
+  if (st) { await dropAsset(st.file); await dropAsset(st.poster); }
   await db.tx(async () => {
     await db.run('DELETE FROM stories WHERE id = ?', req.params.id);
     await db.run('DELETE FROM story_likes WHERE story_id = ?', req.params.id);

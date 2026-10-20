@@ -22,6 +22,7 @@ const NOW_SQL = dialect === 'pg' ? `to_char(now() AT TIME ZONE 'UTC', 'YYYY-MM-D
 const ID = dialect === 'pg' ? 'SERIAL PRIMARY KEY' : 'INTEGER PRIMARY KEY AUTOINCREMENT';
 const MONEY = dialect === 'pg' ? 'BIGINT' : 'INTEGER';
 const FLOAT = dialect === 'pg' ? 'DOUBLE PRECISION' : 'REAL';
+const BLOB = dialect === 'pg' ? 'BYTEA' : 'BLOB';
 
 const SCHEMA = `
 CREATE TABLE IF NOT EXISTS products (
@@ -43,6 +44,7 @@ CREATE TABLE IF NOT EXISTS products (
   is_popular  INTEGER DEFAULT 0,
   active      INTEGER DEFAULT 1,
   images      TEXT,
+  video       TEXT DEFAULT '',
   price_usd   ${FLOAT} DEFAULT NULL,
   margin      ${FLOAT} DEFAULT NULL,
   margin_usta ${FLOAT} DEFAULT NULL,
@@ -64,6 +66,7 @@ CREATE TABLE IF NOT EXISTS banners (
   cta    TEXT DEFAULT '',
   action TEXT DEFAULT '',
   image  TEXT DEFAULT '',
+  video  TEXT DEFAULT '',
   sort   INTEGER DEFAULT 0,
   active INTEGER DEFAULT 1
 );
@@ -80,6 +83,7 @@ CREATE TABLE IF NOT EXISTS stories (
   file  TEXT DEFAULT '',
   tags  TEXT DEFAULT '[]',
   text  TEXT DEFAULT '',
+  poster TEXT DEFAULT '',
   sort  INTEGER DEFAULT 0
 );
 
@@ -218,6 +222,23 @@ CREATE TABLE IF NOT EXISTS device_pushes (
   applied_at TEXT
 );
 
+-- Videolar (story, mahsulot, banner): Heroku diski vaqtinchalik, shuning uchun bazada 1 MB lik bo'laklarda.
+-- Bo'laklab saqlash Range so'rovlariga (iPhone video ijrosi) faqat kerakli qismni o'qib berishga imkon beradi.
+CREATE TABLE IF NOT EXISTS media (
+  path       TEXT PRIMARY KEY,
+  mime       TEXT NOT NULL,
+  size       ${MONEY} NOT NULL,
+  chunks     INTEGER NOT NULL,
+  done       INTEGER DEFAULT 0,
+  created_at TEXT DEFAULT ${NOW_SQL}
+);
+CREATE TABLE IF NOT EXISTS media_chunks (
+  path TEXT NOT NULL,
+  idx  INTEGER NOT NULL,
+  data ${BLOB} NOT NULL,
+  PRIMARY KEY (path, idx)
+);
+
 CREATE INDEX IF NOT EXISTS idx_device_pushes_cid ON device_pushes(cid, status);
 CREATE INDEX IF NOT EXISTS idx_orders_phone  ON orders(phone);
 CREATE INDEX IF NOT EXISTS idx_orders_status ON orders(status);
@@ -228,9 +249,11 @@ CREATE INDEX IF NOT EXISTS idx_story_comments_story ON story_comments(story_id, 
 
 /* Eski bazalarda keyin qo'shilgan ustunlar (SQLite va Postgres — CREATE TABLE IF NOT EXISTS mavjud jadvalga ustun qo'shmaydi) */
 const EXTRA_COLUMNS = {
-  products: [['desc', `"desc" TEXT DEFAULT ''`], ['images', 'images TEXT'], ['is_popular', 'is_popular INTEGER DEFAULT 0'],
+  products: [['desc', `"desc" TEXT DEFAULT ''`], ['images', 'images TEXT'], ['is_popular', 'is_popular INTEGER DEFAULT 0'], ['video', "video TEXT DEFAULT ''"],
     ['price_usd', 'price_usd REAL DEFAULT NULL'], ['margin', 'margin REAL DEFAULT NULL'],
     ['margin_usta', 'margin_usta REAL DEFAULT NULL'], ['price_usta', 'price_usta INTEGER DEFAULT NULL']],
+  banners: [['video', "video TEXT DEFAULT ''"]],
+  stories: [['poster', "poster TEXT DEFAULT ''"]],
   orders: [['usta', 'usta INTEGER DEFAULT 0'], ['title', "title TEXT DEFAULT ''"], ['device', "device TEXT DEFAULT ''"], ['credit', "credit TEXT DEFAULT ''"]],
 };
 

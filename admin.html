@@ -237,7 +237,9 @@
         images: []
       },
       bannersList: [],
-      bannerModal: null,
+      bannerModal: null, up: null,
+      cBlob: null, cPreview: '', cDur: '', cPosterData: '', cPoster: '', cFileName: '',
+      creditTerms: { commission: 2.5, minSum: 1000000, penalty: 0.2, docs: 'Pasport + ish joyi ma’lumoti' }, termsDraft: null,
       schedule: [],
       promo: {},
       labelOn: { HIT: true, CHEGIRMA: true, YANGI: true },
@@ -270,6 +272,74 @@
     }
     function flash(t) { S.toast = t; clearTimeout(_t); _t = setTimeout(() => { S.toast = null; render(); }, 2200); render(); }
     function promoStyle(k) { return ({ HIT: { fg: '#2a1a00', bg: '#ffb020', border: '#ffb020' }, CHEGIRMA: { fg: '#ffffff', bg: '#ff4d3d', border: '#ff4d3d' }, YANGI: { fg: '#ffffff', bg: '#ff4f12', border: '#ff4f12' } })[k] || { fg: 'var(--dim2)', bg: 'var(--fill)', border: 'var(--line3)' }; }
+    /* Video bo'laklab yuklanadi (1 MB), har bo'lak 3 marta qayta urinadi; progress pastki chiziqda ko'rinadi */
+    const VIDEO_MAX = 60 * 1024 * 1024;
+    async function uploadVideo(folder, file, label) {
+      if (!file) throw new Error('Video tanlanmagan');
+      if (file.size > VIDEO_MAX) throw new Error('Video 60 MB dan oshmasligi kerak — qisqaroq yoki siqilgan video tanlang');
+      const init = await api('/api/admin/media', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ folder, name: file.name, mime: file.type, size: file.size }) });
+      try {
+        for (let i = 0; i < init.chunks; i++) {
+          const part = await file.slice(i * init.chunk, Math.min(file.size, (i + 1) * init.chunk)).arrayBuffer();
+          for (let t = 1; ; t++) {
+            try { await api('/api/admin/media/chunk?path=' + encodeURIComponent(init.path) + '&idx=' + i, { method: 'PUT', headers: { 'Content-Type': 'application/octet-stream' }, body: part }); break; }
+            catch (err) { if (t >= 3) throw err; await new Promise(r => setTimeout(r, 900 * t)); }
+          }
+          set({ up: { label, pct: Math.round((i + 1) / init.chunks * 100) } });
+        }
+        await api('/api/admin/media/done', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ path: init.path }) });
+        return init.path;
+      } catch (err) {
+        api('/api/admin/media?path=' + encodeURIComponent(init.path), { method: 'DELETE' }).catch(() => { });
+        throw err;
+      } finally { set({ up: null }); }
+    }
+    const fmtDur = sec => { sec = Math.max(1, Math.round(+sec || 0)); return Math.floor(sec / 60) + ':' + String(sec % 60).padStart(2, '0'); };
+    /* video davomiyligi va muqova kadri (1-soniya yoki uchdan biri) — brauzerning o'zida */
+    function probeVideo(file) {
+      return new Promise((resolve, reject) => {
+        const url = URL.createObjectURL(file), vd = document.createElement('video');
+        let done = false;
+        const fin = (ok, val) => { if (done) return; done = true; vd.removeAttribute('src'); vd.load(); URL.revokeObjectURL(url); ok ? resolve(val) : reject(val); };
+        vd.muted = true; vd.playsInline = true; vd.preload = 'auto';
+        vd.onerror = () => fin(false, new Error('Bu videoni brauzer ocha olmadi — MP4 (H.264) formatida yuklang'));
+        /* ba'zi WebM fayllarda davomiylik "Infinity" — oxiriga sakrab haqiqiy davomiylik olinadi */
+        let dur = 0, phase = 'meta';
+        const toPoster = () => { phase = 'poster'; vd.currentTime = Math.min(1, (dur || 2) / 3); };
+        vd.onloadedmetadata = () => { if (isFinite(vd.duration) && vd.duration > 0) { dur = vd.duration; toPoster(); } else { phase = 'probe'; vd.currentTime = 1e7; } };
+        vd.ondurationchange = () => { if (phase === 'probe' && isFinite(vd.duration) && vd.duration > 0) { dur = vd.duration; toPoster(); } };
+        vd.onseeked = () => {
+          if (phase === 'probe') { if (isFinite(vd.duration) && vd.duration > 0) { dur = vd.duration; toPoster(); } return; }
+          let poster = '';
+          try {
+            const k = Math.min(1, 720 / Math.max(vd.videoWidth, vd.videoHeight, 1));
+            const c = document.createElement('canvas'); c.width = Math.round(vd.videoWidth * k); c.height = Math.round(vd.videoHeight * k);
+            c.getContext('2d').drawImage(vd, 0, 0, c.width, c.height);
+            poster = c.toDataURL('image/jpeg', 0.82);
+          } catch (e) { }
+          fin(true, { duration: dur || (isFinite(vd.duration) ? vd.duration : 0), poster, w: vd.videoWidth, h: vd.videoHeight });
+        };
+        setTimeout(() => fin(false, new Error('Video ochilmadi — boshqa fayl tanlang')), 20000);
+        vd.src = url;
+      });
+    }
+    /* rasm → kichraytirilgan JPEG dataURL (banner uchun 1600px gacha) */
+    function imageData(file, max = 1600) {
+      return new Promise((resolve, reject) => {
+        if (!file || !/^image\//.test(file.type)) { reject(new Error('Rasm faylini tanlang')); return; }
+        const url = URL.createObjectURL(file), img = new Image();
+        img.onload = () => {
+          const k = Math.min(1, max / Math.max(img.width, img.height));
+          const c = document.createElement('canvas'); c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
+          c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+          URL.revokeObjectURL(url); resolve(c.toDataURL('image/jpeg', 0.86));
+        };
+        img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('Rasm ochilmadi')); };
+        img.src = url;
+      });
+    }
+    const fmtMb = b => (b / 1048576).toFixed(b >= 10485760 ? 0 : 1) + ' MB';
+
     /* sozlamani serverga yozadi; xato bo'lsa ekrandagi holat qaytariladi */
     async function saveSetting(key, patch, local, undo) {
       set(local);
@@ -329,7 +399,8 @@
             badge: match.badge || '',
             qty: match.qty || 0,
             promo: match.promo || '',
-            images: Array.isArray(match.images) ? match.images : []
+            images: Array.isArray(match.images) ? match.images : [],
+            video: match.video || ''
           };
         } else {
           newPf = {
@@ -360,6 +431,7 @@
           creditService: !(settings && settings.modules && settings.modules.credit === false),
           expertService: !(settings && settings.modules && settings.modules.expert === false),
           labelOn: { ...S.labelOn, ...((settings && settings.labels) || {}) },
+          creditTerms: { ...S.creditTerms, ...((settings && settings.credit && settings.credit.terms) || {}) },
           storyList: stories || [],
           callbacks: callbacks || [],
           bannersList: Array.isArray(banners) ? banners : [],
@@ -488,7 +560,8 @@
                 qty: p.qty || 0,
                 promo: p.promo || '',
                 is_popular: !!p.is_popular,
-                images: Array.isArray(p.images) ? p.images : []
+                images: Array.isArray(p.images) ? p.images : [],
+                video: p.video || ''
               }
             });
           },
@@ -680,6 +753,11 @@
 
       const bannerRows = Array.isArray(s.bannersList) ? s.bannersList.map(b => ({
         id: b.id,
+        edit: () => {
+          const a = String(b.action || 'tab:catalog');
+          set({ bannerModal: { id: b.id, tag: b.tag || '', title: b.title || '', sub: b.sub || '', cta: b.cta || '', act: a.startsWith('product:') ? 'product' : a, sku: a.startsWith('product:') ? a.slice(8) : '', image: b.image || '', imageData: '', video: b.video || '', videoFile: null, videoName: '', active: b.active !== 0 && b.active !== false } });
+        },
+        video: b.video || '',
         tag: b.tag || 'AKSIYA',
         title: b.title || '',
         sub: b.sub || '',
@@ -922,6 +1000,26 @@
         pfIsPopular: !!pf.is_popular, pfCalc,
         togglePfPopular: () => set(p => ({ prodForm: { ...p.prodForm, is_popular: !p.prodForm.is_popular } })),
         prodImages: Array.isArray(pf.images) ? pf.images : [],
+        prodVideo: pf.video || '',
+        uploadProdVideo: async (e) => {
+          const file = e.target.files && e.target.files[0]; e.target.value = '';
+          if (!file) return;
+          if (!pf.sku || pf.isNew) { flash('Avval mahsulotni saqlang, keyin video yuklang'); return; }
+          try {
+            await probeVideo(file);
+            const path = await uploadVideo('products', file, pf.name + ' · video');
+            const upd = await api('/api/admin/products/' + encodeURIComponent(pf.sku), { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ video: path }) });
+            set(p => ({ prodForm: { ...p.prodForm, video: upd.video }, stockProducts: p.stockProducts.map(x => x.sku === pf.sku ? { ...x, video: upd.video } : x) }));
+            flash('Video yuklandi — mahsulot sahifasida ko‘rinadi');
+          } catch (err) { flash(err.message); }
+        },
+        deleteProdVideo: async () => {
+          try {
+            await api('/api/admin/products/' + encodeURIComponent(pf.sku), { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ video: '' }) });
+            set(p => ({ prodForm: { ...p.prodForm, video: '' }, stockProducts: p.stockProducts.map(x => x.sku === pf.sku ? { ...x, video: '' } : x) }));
+            flash('Video o‘chirildi');
+          } catch (err) { flash(err.message); }
+        },
         deleteProdImage: async (idx) => {
           if (pf.isNew) {
             const nextImgs = [...(pf.images || [])];
@@ -1005,24 +1103,8 @@
         ],
         orders, callbacks: callbackRows, stock, formFields,
         schedule: scheduleRows, clients: clientRows, banners: bannerRows,
-        addBanner: async () => {
-          const title = prompt('Banner sarlavhasi:') || 'Yangi aksiya';
-          const sub = prompt('Quyi matn:') || 'Chegirma va qulay shartlar';
-          const cta = prompt('Tugma matni:') || 'Ko\'rish';
-          const action = prompt('Harakat (masalan: tab:catalog yoki product:IPC-2410):') || 'tab:catalog';
-          const tag = prompt('Yorliq (masalan: AKSIYA · -10%):') || 'AKSIYA';
-          try {
-            const created = await api('/api/admin/banners', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ tag, title, sub, cta, action, image: '/assets/banners/banner-kit.svg', sort: (Array.isArray(S.bannersList) ? S.bannersList.length : 0) })
-            });
-            set(p => ({ bannersList: [...(Array.isArray(p.bannersList) ? p.bannersList : []), created] }));
-            flash('Yangi banner qo\'shildi');
-          } catch (err) { flash(err.message); }
-        },
-        videoOn: s.video, videoMeta: '1:24 · 46 MB · asosiy video',
-        addVideo: () => set({ video: true }), delVideo: () => set({ video: false }),
+        addBanner: () => set({ bannerModal: { id: null, tag: 'AKSIYA', title: '', sub: '', cta: 'Ko‘rish', act: 'tab:catalog', sku: '', image: '', imageData: '', video: '', videoFile: null, videoName: '', active: true } }),
+
 
         provRows: ALLPROV.map(p => {
           const on = s.provOn[p.name]; return {
@@ -1044,9 +1126,16 @@
         })),
         rateRows, rateOpacity: s.creditService ? '1' : '.4',
         rateFootnote: s.creditService ? "Foizni o'zgartirsangiz mijoz ilovasidagi hisob-kitob darhol yangilanadi" : "Servis o'chirilgan — muddatli to'lov mijozga ko'rinmaydi",
-        creditSettings: [{ label: 'Servis komissiyasi', note: 'Har bir shartnomadan', value: '2.5 %' }, { label: 'Minimal summa', note: 'Muddatli to\'lov ochiladi', value: fmt(1000000) }, { label: 'Kechiktirish jarimasi', note: 'Kunlik', value: '0.2 %' }, { label: 'Hujjatlar', note: 'Ariza uchun majburiy', value: 'Pasport + ish joyi' }],
+        creditSettings: [['commission', 'Servis komissiyasi', 'Har bir shartnomadan · %', 'decimal'], ['minSum', 'Minimal summa', 'Shundan kam buyurtmaga nasiya yo‘q · so‘m', 'numeric'], ['penalty', 'Kechiktirish jarimasi', 'Kunlik · % (mijozga ko‘rsatiladi)', 'decimal'], ['docs', 'Hujjatlar', 'Ariza uchun majburiy (mijozga ko‘rsatiladi)', 'text']].map(([k, label, note, mode]) => ({ k, label, note, mode, value: (s.termsDraft || s.creditTerms)[k] })),
+        termsDirty: !!s.termsDraft,
+        termsSave: () => {
+          const d = S.termsDraft; if (!d) return;
+          const next = { commission: Math.max(0, Math.min(50, parseFloat(String(d.commission).replace(',', '.')) || 0)), minSum: Math.max(0, parseInt(String(d.minSum).replace(/[^0-9]/g, ''), 10) || 0), penalty: Math.max(0, Math.min(10, parseFloat(String(d.penalty).replace(',', '.')) || 0)), docs: String(d.docs || '').trim().slice(0, 120) || S.creditTerms.docs };
+          saveSetting('credit', { terms: next }, { creditTerms: next, termsDraft: null }, { creditTerms: S.creditTerms });
+          flash('Shartlar saqlandi — mijoz ilovasi va buyurtma tekshiruvi yangilandi');
+        },
         creditApps: creditOrders.slice(0, 12).map(o => ({
-          name: esc((o.client_name || 'Mijoz') + ' · ' + o.id), sum: fmt(+o.total || 0), term: esc(o.credit.provider + ' · ' + o.credit.term + ' oy' + (o.credit.monthly ? ' · ' + fmt(o.credit.monthly) + '/oy' : '')),
+          name: esc((o.client_name || 'Mijoz') + ' · ' + o.id), sum: fmt(+o.total || 0) + ' · komissiya ' + fmt(Math.round((+o.total || 0) * (+s.creditTerms.commission || 0) / 100)), term: esc(o.credit.provider + ' · ' + o.credit.term + ' oy' + (o.credit.monthly ? ' · ' + fmt(o.credit.monthly) + '/oy' : '')),
           state: esc(String(o.status || 'Yangi').toUpperCase()), fg: o.status === 'Bekor' ? RED : o.status === 'Yopildi' ? A : AMB, bg: o.status === 'Bekor' ? 'rgba(255,77,61,.12)' : o.status === 'Yopildi' ? 'rgba(255,79,18,.12)' : 'rgba(255,176,32,.12)'
         })),
 
@@ -1116,10 +1205,21 @@
             });
           },
           up: () => moveStory(i, -1), down: () => moveStory(i, 1),
-          edit: () => set({ cId: st.id, cTitle: st.title, cCams: String(parseInt(st.meta) || ''), cDate: (st.meta.split('· ')[1] || ''), cText: st.text, cTags: st.tags, cLive: st.live !== false, cFile: st.file })
+          edit: () => set({ cId: st.id, cTitle: st.title, cCams: String(parseInt(st.meta) || ''), cDate: (st.meta.split('· ')[1] || ''), cText: st.text, cTags: st.tags, cLive: st.live !== false, cFile: st.file, cDur: st.dur || '', cPoster: st.poster || '', cBlob: null, cPosterData: '', cFileName: '' })
         })),
         composerTitle: s.cId ? 'Story tahrirlash' : 'Yangi story',
-        composerFile: s.cFile || 'video tanlanmagan',
+        composerFile: s.cBlob ? (s.cFileName + ' · ' + s.cDur + ' · ' + fmtMb(s.cBlob.size)) : (s.cFile ? 'yuklangan video · ' + (s.cDur || '') : 'video tanlanmagan'),
+        composerPoster: s.cPosterData || s.cPoster || '',
+        onStoryFile: async (e) => {
+          const file = e.target.files && e.target.files[0]; e.target.value = '';
+          if (!file) return;
+          if (file.size > VIDEO_MAX) { flash('Video 60 MB dan oshmasligi kerak'); return; }
+          try {
+            const info = await probeVideo(file);
+            set({ cBlob: file, cFileName: file.name, cDur: fmtDur(info.duration), cPosterData: info.poster });
+            flash('Video tanlandi · ' + fmtDur(info.duration));
+          } catch (err) { flash(err.message); }
+        },
         composerPreviewTitle: s.cTitle || 'Obyekt nomi',
         composerPreviewMeta: (s.cCams ? s.cCams + ' kamera' : '— kamera') + ' · ' + (s.cDate || 'sana'),
         cTitle: s.cTitle, cCams: s.cCams, cDate: s.cDate, cText: s.cText,
@@ -1131,30 +1231,28 @@
         }),
         cLiveTrack: s.cLive ? A : 'var(--line4)', cLiveKnob: s.cLive ? 'flex-end' : 'flex-start', cLiveKnobBg: s.cLive ? '#ffffff' : 'var(--dim)',
         toggleCLive: () => set({ cLive: !s.cLive }),
-        pickVideo: () => {
-          const n = (S.cTitle || 'story').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'story';
-          S.cFile = n + '.mp4'; flash('Video tanlandi · ' + n + '.mp4');
-        },
+
         editing: !!s.cId, saveLabel: s.cId ? 'Saqlash' : 'Lentaga qo\'shish',
-        newStory: () => set({ cId: null, cTitle: '', cCams: '', cDate: '', cText: '', cTags: [], cLive: true, cFile: '' }),
+        newStory: () => set({ cId: null, cTitle: '', cCams: '', cDate: '', cText: '', cTags: [], cLive: true, cFile: '', cBlob: null, cPosterData: '', cPoster: '', cDur: '', cFileName: '' }),
         saveStory: async () => {
+          if (S.up) return;
           if (!S.cTitle.trim()) { flash('Obyekt nomini kiriting'); return; }
-          if (!S.cFile) { flash('Avval video tanlang'); return; }
+          if (!S.cFile && !S.cBlob) { flash('Avval video tanlang'); return; }
           const meta = (S.cCams || '—') + ' kamera · ' + (S.cDate || 'bugun');
           const label = S.cTitle.replace(/["'·]/g, '').split(' ').slice(0, 2).join(' ').trim();
-          if (S.cId) {
-            try {
-              const updated = await api('/api/admin/stories/' + S.cId, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ title: S.cTitle, meta, label, text: S.cText, tags: S.cTags, live: S.cLive ? 1 : 0, file: S.cFile }) });
-              set(p => ({ storyList: p.storyList.map(x => x.id === S.cId ? updated : x), cId: null, cTitle: '', cCams: '', cDate: '', cText: '', cTags: [], cLive: true, cFile: '' }));
-              flash('Story yangilandi');
-            } catch (err) { flash(err.message); }
-            return;
-          }
-          const st = { id: 's' + Date.now(), label, title: S.cTitle, meta, dur: '0:' + (28 + Math.floor(Math.random() * 30)), views: 0, live: S.cLive ? 1 : 0, file: S.cFile, tags: S.cTags, text: S.cText };
+          const clear = { cId: null, cTitle: '', cCams: '', cDate: '', cText: '', cTags: [], cLive: true, cFile: '', cBlob: null, cPosterData: '', cPoster: '', cDur: '', cFileName: '' };
           try {
-            const created = await api('/api/admin/stories', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(st) });
-            set(p => ({ storyList: [created, ...p.storyList], cId: null, cTitle: '', cCams: '', cDate: '', cText: '', cTags: [], cLive: true, cFile: '' }));
-            flash(st.live ? "Story nashr qilindi — mijoz ilovasida ko'rinadi" : 'Story qoralama sifatida saqlandi');
+            const file = S.cBlob ? await uploadVideo('stories', S.cBlob, S.cTitle + ' · video') : S.cFile;
+            const body = { title: S.cTitle, meta, label, text: S.cText, tags: S.cTags, live: S.cLive ? 1 : 0, file, dur: S.cDur || '0:30', ...(S.cPosterData ? { posterData: S.cPosterData } : {}) };
+            if (S.cId) {
+              const updated = await api('/api/admin/stories/' + S.cId, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+              set(p => ({ storyList: p.storyList.map(x => x.id === S.cId ? { ...x, ...updated } : x), ...clear }));
+              flash('Story yangilandi');
+            } else {
+              const created = await api('/api/admin/stories', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: 's' + Date.now(), views: 0, sort: -1, ...body }) });
+              set(p => ({ storyList: [created, ...p.storyList], ...clear }));
+              flash(body.live ? "Story nashr qilindi — mijoz ilovasida ko'rinadi" : 'Story qoralama sifatida saqlandi');
+            }
           } catch (err) { flash(err.message); }
         },
 
@@ -1280,6 +1378,73 @@
     <button onclick="${h(v.logout)}" class="ad-icon" style="width:36px;height:36px" aria-label="Chiqish" title="Chiqish">${aic('out', 17, 2)}</button>
   </div>
 </nav>`;
+    }
+
+    /* Banner: sarlavha, harakat, rasm (kichraytiriladi) va ixtiyoriy video — mijoz ilovasi bosh sahifasi */
+    const BN_ACTS = [['tab:catalog', 'Katalog'], ['tab:kit', 'Komplekt yig‘ish'], ['tab:expert', 'Mutaxassis'], ['product', 'Mahsulot (SKU)']];
+    function bmSet(o) { set({ bannerModal: { ...S.bannerModal, ...o } }); }
+    async function bmSave() {
+      const m = S.bannerModal;
+      if (S.up) return;
+      if (!m.tag.trim() || !m.title.trim()) { flash('Yorliq va sarlavhani yozing'); return; }
+      if (m.act === 'product' && !(S.stockProducts || []).some(p => p.sku === m.sku.trim())) { flash('Bunday SKU li mahsulot yo‘q'); return; }
+      if (!m.image && !m.imageData) { flash('Banner rasmini yuklang'); return; }
+      try {
+        const video = m.videoFile ? await uploadVideo('banners', m.videoFile, m.title + ' · banner video') : m.video;
+        const body = { tag: m.tag.trim(), title: m.title.trim(), sub: m.sub.trim(), cta: m.cta.trim(), action: m.act === 'product' ? 'product:' + m.sku.trim() : m.act, image: m.image, video, active: m.active ? 1 : 0, ...(m.imageData ? { imageData: m.imageData } : {}) };
+        if (m.id) {
+          const upd = await api('/api/admin/banners/' + m.id, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+          set(p => ({ bannerModal: null, bannersList: p.bannersList.map(x => x.id === m.id ? upd : x) }));
+          flash('Banner yangilandi');
+        } else {
+          const created = await api('/api/admin/banners', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...body, sort: (S.bannersList || []).length }) });
+          set(p => ({ bannerModal: null, bannersList: [...(p.bannersList || []), created] }));
+          flash('Banner qo‘shildi — mijoz ilovasida ko‘rinadi');
+        }
+      } catch (err) { flash(err.message); }
+    }
+    function mBannerModal() {
+      const m = S.bannerModal;
+      const lbl = t => `<div style="font:600 9.5px var(--fm);color:var(--dim2);letter-spacing:.05em;margin-top:11px">${t}</div>`;
+      const inp = (k, ph, max) => `<div style="margin-top:5px;border:1px solid var(--line3);border-radius:13px;padding:9px 10px;background:var(--tile)"><input data-k="bm_${k}" value="${esc(m[k])}" maxlength="${max}" placeholder="${esc(ph)}" oninput="${h(e => { S.bannerModal[k] = e.target.value; })}" style="width:100%;border:none;outline:none;background:transparent;color:var(--fg);font:400 12.5px var(--fb)"></div>`;
+      const img = m.imageData || m.image;
+      return `
+<div role="dialog" aria-modal="true" aria-label="Banner" style="position:fixed;inset:0;z-index:70;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;padding:14px">
+  <div style="width:100%;max-width:480px;max-height:calc(100vh - 28px);overflow:auto;background:var(--bar);border:1px solid var(--line);border-radius:22px;padding:18px;box-shadow:0 24px 60px rgba(0,0,0,.5)">
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
+      <div style="font:600 15px var(--fb)">${m.id ? 'Bannerni tahrirlash' : 'Yangi banner'}</div>
+      <button type="button" aria-label="Yopish" onclick="${h(() => set({ bannerModal: null }))}" style="width:30px;height:30px;border-radius:14px;border:1px solid var(--line3);color:var(--dim);font:600 12px var(--fm)">✕</button>
+    </div>
+    <label style="display:block;margin-top:12px;position:relative;height:150px;border-radius:16px;overflow:hidden;border:1px dashed var(--line4);background:var(--tile);cursor:pointer">
+      <input type="file" accept="image/*" style="display:none" onchange="${h(async e => { const f = e.target.files && e.target.files[0]; e.target.value = ''; if (!f) return; try { bmSet({ imageData: await imageData(f) }); } catch (err) { flash(err.message); } })}">
+      ${img ? `<img src="${esc(img)}" alt="" style="width:100%;height:100%;object-fit:cover">` : `<div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;color:var(--dim3);font:500 11px var(--fm)"><span style="font:600 18px var(--fm)">▭</span>BANNER RASMI · JPG / PNG</div>`}
+      ${img ? `<span style="position:absolute;right:8px;bottom:8px;padding:5px 8px;border-radius:8px;background:rgba(0,0,0,.65);color:#fff;font:600 10px var(--fm)">Almashtirish</span>` : ''}
+    </label>
+    ${lbl('YORLIQ')}${inp('tag', 'AKSIYA · -10%', 40)}
+    ${lbl('SARLAVHA')}${inp('title', 'Komplekt "Uy 4" — 3 915 000 so‘m', 90)}
+    ${lbl('QUYI MATN')}${inp('sub', '4 × 4MP kamera · NVR · o‘rnatish', 140)}
+    ${lbl('TUGMA MATNI')}${inp('cta', 'Ko‘rish', 30)}
+    ${lbl('TUGMA BOSILGANDA')}
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px">${BN_ACTS.map(([k, n]) => `<div onclick="${h(() => bmSet({ act: k }))}" style="cursor:pointer;padding:7px 10px;border-radius:10px;font:600 11px var(--fb);border:1px solid ${m.act === k ? 'transparent' : 'var(--line3)'};background:${m.act === k ? 'var(--acc)' : 'transparent'};color:${m.act === k ? '#fff' : 'var(--fg2)'}">${n}</div>`).join('')}</div>
+    ${m.act === 'product' ? inp('sku', 'Mahsulot SKU, masalan DH-IPC-HFW1431S1', 60) : ''}
+    ${lbl('VIDEO (IXTIYORIY · RASM O‘RNIDA AYLANADI)')}
+    <div style="display:flex;gap:8px;align-items:center;margin-top:6px">
+      <label style="flex:1;cursor:pointer;padding:9px 10px;border-radius:13px;border:1px dashed rgba(255,79,18,.4);color:var(--acc);font:600 11px var(--fm);text-align:center;background:rgba(255,79,18,.05)">
+        <input type="file" accept="video/mp4,video/webm,.mp4,.webm" style="display:none" onchange="${h(async e => { const f = e.target.files && e.target.files[0]; e.target.value = ''; if (!f) return; if (f.size > VIDEO_MAX) { flash('Video 60 MB dan oshmasligi kerak'); return; } try { await probeVideo(f); bmSet({ videoFile: f, videoName: f.name + ' · ' + fmtMb(f.size) }); } catch (err) { flash(err.message); } })}">
+        ${m.videoName ? esc(m.videoName) : (m.video ? '▶ Video bor · almashtirish' : '▶ Video tanlash')}
+      </label>
+      ${m.video || m.videoFile ? `<div onclick="${h(() => bmSet({ video: '', videoFile: null, videoName: '' }))}" style="cursor:pointer;padding:9px 10px;border-radius:13px;border:1px solid rgba(255,77,61,.35);color:#ff4d3d;font:600 11px var(--fm)">✕</div>` : ''}
+    </div>
+    <div onclick="${h(() => bmSet({ active: !m.active }))}" style="cursor:pointer;display:flex;justify-content:space-between;align-items:center;margin-top:12px;padding:10px 12px;border:1px solid var(--line3);border-radius:13px">
+      <span style="font:600 12px var(--fb)">Ilovada ko‘rsatish</span>
+      <span style="width:38px;height:22px;border-radius:18px;background:${m.active ? 'var(--acc)' : 'var(--line4)'};padding:2px;display:flex;justify-content:${m.active ? 'flex-end' : 'flex-start'}"><span style="width:18px;height:18px;border-radius:50%;background:#fff"></span></span>
+    </div>
+    <div style="display:flex;gap:9px;margin-top:16px">
+      <div onclick="${h(() => set({ bannerModal: null }))}" style="flex:1;text-align:center;padding:12px;border-radius:15px;border:1px solid var(--line3);color:var(--fg2);font:600 12px var(--fb);cursor:pointer">Bekor</div>
+      <div onclick="${h(bmSave)}" style="flex:2;text-align:center;padding:12px;border-radius:15px;background:var(--acc);color:#fff;font:600 12px var(--fb);cursor:pointer">${m.id ? 'Saqlash' : 'Bannerni qo‘shish'}</div>
+    </div>
+  </div>
+</div>`;
     }
 
     function mCallbacks(v) {
@@ -1425,12 +1590,17 @@
           <div style="font:500 10px var(--fm)">RASM YUKLASH</div>
           <div style="font:400 9px var(--fm);opacity:.8">JPG / PNG</div>
         </label>
-        <div onclick="${h(v.addVideo)}" style="height:104px;border:1px dashed rgba(255,79,18,.35);border-radius:15px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;color:var(--acc);cursor:pointer;background:rgba(255,79,18,.05)">
+        <label style="height:104px;border:1px dashed rgba(255,79,18,.35);border-radius:15px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;color:var(--acc);cursor:pointer;background:rgba(255,79,18,.05)">
+          <input type="file" accept="video/mp4,video/webm,video/quicktime,.mp4,.mov,.webm" onchange="${h(v.uploadProdVideo)}" style="display:none" />
           <div style="font:600 15px var(--fm)">▶</div>
-          <div style="font:500 10px var(--fm)">VIDEO YUKLASH</div>
-          <div style="font:400 9px var(--fm);opacity:.8">MP4 · 100 MB gacha</div>
-        </div>
+          <div style="font:500 10px var(--fm)">${v.prodVideo ? 'VIDEONI ALMASHTIRISH' : 'VIDEO YUKLASH'}</div>
+          <div style="font:400 9px var(--fm);opacity:.8">MP4 · 60 MB gacha</div>
+        </label>
       </div>
+      ${v.prodVideo ? `<div style="position:relative;border-radius:14px;overflow:hidden;border:1px solid var(--line3);background:#000">
+        <video src="${esc(v.prodVideo)}" controls playsinline preload="metadata" style="display:block;width:100%;max-height:220px"></video>
+        <div onclick="${h(v.deleteProdVideo)}" style="position:absolute;top:6px;right:6px;padding:5px 8px;border-radius:8px;background:rgba(0,0,0,.72);color:#ff8378;font:600 10px var(--fm);cursor:pointer">✕ O'chirish</div>
+      </div>` : ''}
       <div style="display:flex;gap:8px;margin-top:4px">
         <div onclick="${h(v.newProduct)}" style="flex:none;padding:12px 14px;border-radius:15px;border:1px solid var(--line3);color:var(--dim);font:600 11.5px var(--fb);cursor:pointer">+ Yangi</div>
         <div onclick="${h(v.saveProduct)}" style="flex:1;text-align:center;background:var(--acc);color:#ffffff;border-radius:15px;padding:12px;font:600 12.5px var(--fb);cursor:pointer">Saqlash va nashr qilish</div>
@@ -1520,12 +1690,13 @@
       <div style="display:flex;flex-direction:column;gap:10px;margin-top:13px">
         ${v.creditSettings.map(c => `
           <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
-            <div>
+            <div style="min-width:0">
               <div style="font:500 12px var(--fb);color:var(--fg2)">${c.label}</div>
               <div style="font:400 9.5px var(--fm);color:var(--dim2);margin-top:3px">${c.note}</div>
             </div>
-            <div style="font:600 12px var(--fm);color:var(--fg);white-space:nowrap">${c.value}</div>
+            <input data-k="term_${c.k}" value="${esc(c.value)}" inputmode="${c.mode === 'text' ? 'text' : c.mode}" oninput="${h(e => { const was = !!S.termsDraft; S.termsDraft = { ...(S.termsDraft || S.creditTerms), [c.k]: e.target.value }; if (!was) render(); })}" style="flex:none;width:${c.mode === 'text' ? '150px' : '96px'};text-align:right;border:1px solid var(--line3);border-radius:10px;padding:7px 9px;background:var(--tile);color:var(--fg);font:600 12px var(--fm);outline:none">
           </div>`).join('')}
+        <div onclick="${h(v.termsSave)}" style="text-align:center;padding:10px;border-radius:13px;background:${v.termsDirty ? 'var(--acc)' : 'var(--fill)'};color:${v.termsDirty ? '#fff' : 'var(--dim2)'};font:600 11.5px var(--fb);cursor:pointer">Shartlarni saqlash</div>
       </div>
     </div>
     <div style="border:1px solid var(--line);border-radius:20px;padding:16px;background:var(--card);box-shadow:var(--shadow);border-color:transparent">
@@ -1578,9 +1749,10 @@
       <div style="display:flex;flex-direction:column;gap:9px;margin-top:13px">
         ${v.banners.map(b => `
           <div style="display:flex;align-items:center;gap:12px;border:1px solid ${b.border};border-radius:17px;padding:11px 13px;background:var(--tile)">
-            <div style="flex:1;min-width:0">
+            ${b.image ? `<img src="${esc(b.image)}" alt="" onclick="${h(b.edit)}" style="flex:none;width:52px;height:36px;border-radius:8px;object-fit:cover;cursor:pointer;background:var(--fill)">` : ''}
+            <div style="flex:1;min-width:0;cursor:pointer" onclick="${h(b.edit)}" title="Tahrirlash">
               <div style="display:flex;align-items:center;gap:6px">
-                <span style="font:700 8.5px var(--fm);color:var(--acc);background:rgba(255,79,18,.12);padding:2px 5px;border-radius:4px">${esc(b.tag)}</span>
+                <span style="font:700 8.5px var(--fm);color:var(--acc);background:rgba(255,79,18,.12);padding:2px 5px;border-radius:4px">${esc(b.tag)}</span>${b.video ? '<span style="font:700 8.5px var(--fm);color:var(--dim2)">▶ VIDEO</span>' : ''}
                 <span style="font:600 12px var(--fb);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(b.title)}</span>
               </div>
               <div style="font:400 9.5px var(--fm);color:var(--dim2);margin-top:3px">${esc(b.sub)}</div>
@@ -2135,16 +2307,20 @@
       <div style="flex:none;width:132px">
         <div style="position:relative;width:132px;height:234px;border-radius:18px;overflow:hidden;border:1px solid var(--line3);background:repeating-linear-gradient(135deg,var(--hatchA) 0 10px,var(--hatchB) 10px 20px);display:flex;align-items:center;justify-content:center">
           <div style="position:absolute;top:8px;left:8px;right:8px;height:2.5px;border-radius:2px;background:rgba(255,255,255,.28)"></div>
-          <div style="text-align:center">
-            <div style="width:38px;height:38px;margin:0 auto;border-radius:50%;border:1.5px solid var(--acc);display:flex;align-items:center;justify-content:center;font:600 14px var(--fm);color:var(--acc)">▶</div>
-            <div style="font:500 8.5px var(--fm);color:var(--dim3);margin-top:9px">${v.composerFile}</div>
+          ${v.composerPoster ? `<img src="${esc(v.composerPoster)}" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">` : ''}
+          <div style="position:relative;text-align:center">
+            <div style="width:38px;height:38px;margin:0 auto;border-radius:50%;border:1.5px solid var(--acc);display:flex;align-items:center;justify-content:center;font:600 14px var(--fm);color:var(--acc);background:rgba(0,0,0,.35)">▶</div>
+            <div style="font:500 8.5px var(--fm);color:${v.composerPoster ? '#fff' : 'var(--dim3)'};margin-top:9px;padding:0 6px;text-shadow:0 1px 3px rgba(0,0,0,.6)">${esc(v.composerFile)}</div>
           </div>
           <div style="position:absolute;left:9px;right:9px;bottom:10px">
             <div style="font:600 9.5px/1.25 var(--fb);color:#f4f8f7">${esc(v.composerPreviewTitle)}</div>
             <div style="font:400 8px var(--fm);color:rgba(238,242,241,.65);margin-top:4px">${esc(v.composerPreviewMeta)}</div>
           </div>
         </div>
-        <div onclick="${h(v.pickVideo)}" style="margin-top:9px;text-align:center;padding:10px;border-radius:14px;border:1px dashed rgba(255,79,18,.4);color:var(--acc);font:600 10px var(--fm);cursor:pointer;background:rgba(255,79,18,.05)">VIDEO TANLASH</div>
+        <label style="display:block;margin-top:9px;text-align:center;padding:10px;border-radius:14px;border:1px dashed rgba(255,79,18,.4);color:var(--acc);font:600 10px var(--fm);cursor:pointer;background:rgba(255,79,18,.05)">
+          <input type="file" accept="video/mp4,video/webm,video/quicktime,.mp4,.mov,.webm" onchange="${h(v.onStoryFile)}" style="display:none">VIDEO TANLASH
+          <div style="font:400 8.5px var(--fm);color:var(--dim2);margin-top:3px">MP4 · 60 MB gacha</div>
+        </label>
       </div>
       <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:9px">
         <div>
@@ -2311,6 +2487,11 @@
     </div>
   </div>
   ${v.noteOn ? mNote(v) : ''}
+  ${S.bannerModal ? mBannerModal() : ''}
+  ${S.up ? `<div style="position:fixed;left:50%;bottom:20px;transform:translateX(-50%);z-index:90;width:min(420px,calc(100% - 24px));padding:12px 14px;border-radius:16px;background:var(--btn);color:var(--btn-ink);box-shadow:var(--shadow-lg)">
+    <div style="display:flex;justify-content:space-between;font:600 12px var(--fb)"><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Yuklanmoqda · ${esc(S.up.label)}</span><span>${S.up.pct}%</span></div>
+    <div style="height:5px;border-radius:3px;background:rgba(255,255,255,.2);margin-top:8px;overflow:hidden"><div style="height:100%;width:${S.up.pct}%;background:var(--acc);transition:width .2s ease"></div></div>
+  </div>` : ''}
   ${v.confirmOn ? mConfirm(v) : ''}
   ${toast}
 </div>`;

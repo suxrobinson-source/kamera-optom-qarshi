@@ -14,14 +14,24 @@ const parseOrder = (row) => ({
   credit: parseCredit(row.credit),
 });
 const clip = (v, n) => String(v || '').replace(/[\u0000-\u001f\u007f]/g, ' ').trim().slice(0, n);
-/* Nasiya tanlovi: { provider, term, monthly } — faqat ma'lum provayder va muddat */
-const cleanCredit = (c) => {
+/* Nasiya tanlovi admin sozlamalari bo'yicha tekshiriladi: yoqilgan provayder va muddat, minimal summa.
+   Oylik to'lov mijozdan olinmaydi — server foiz bo'yicha qayta hisoblaydi. */
+export const CREDIT_TERMS = { commission: 2.5, minSum: 1000000, penalty: 0.2, docs: 'Pasport + ish joyi ma’lumoti' };
+const PROVIDERS = ['Uzum Nasiya', 'Alif Nasiya', 'Hamkor Nasiya'];
+const fmtSum = n => Math.round(n).toLocaleString('ru-RU').replace(/\s/g, ' ') + ' so‘m';
+function cleanCredit(c, total, cs) {
   if (!c || typeof c !== 'object') return '';
   const term = parseInt(c.term, 10);
   const provider = clip(c.provider, 40);
-  if (!provider || ![3, 6, 12, 24].includes(term)) return '';
-  return JSON.stringify({ provider, term, monthly: Math.max(0, Math.round(+c.monthly || 0)) });
-};
+  const st = cs || {};
+  const terms = { ...CREDIT_TERMS, ...(st.terms || {}) };
+  if (!PROVIDERS.includes(provider) || (st.provOn && st.provOn[provider] === false)) throw new HttpError(400, `${provider || 'Nasiya'} hozir ishlamayapti — boshqa servisni tanlang`);
+  if (![3, 6, 12, 24].includes(term) || (st.rateOn && st.rateOn[term] === false)) throw new HttpError(400, 'Bu muddatga muddatli to‘lov hozir yo‘q');
+  if (total < +terms.minSum) throw new HttpError(400, `Muddatli to‘lov ${fmtSum(+terms.minSum)} dan boshlab`);
+  const rate = +((st.rates || {})[term] || 0);
+  const monthly = Math.round(total * (1 + rate / 100) / term / 1000) * 1000;
+  return JSON.stringify({ provider, term, rate, monthly, down: +((st.down || {})[term] || 0) });
+}
 
 class HttpError extends Error { constructor(status, message) { super(message); this.status = status; } }
 
@@ -68,6 +78,7 @@ ordersRouter.post('/orders', async (req, res) => {
       const reg = b.region ? await db.get('SELECT * FROM regions WHERE name = ?', String(b.region)) : null;
       const shipPrice = shippingFee(goodsSum, pricing);
       const total = goodsSum + installPrice + cloudPrice + shipPrice;
+      const creditJson = b.credit ? cleanCredit(b.credit, total, await getSetting('credit')) : '';
 
       const id = `#KO-${await nextSeq('orderSeq', 4822)}`;
       await db.run(`INSERT INTO orders
@@ -79,7 +90,7 @@ ordersRouter.post('/orders', async (req, res) => {
         String(b.recipient?.name || ''), normPhone(b.recipient?.phone) || '',
         JSON.stringify(items), goodsSum,
         b.install ? 1 : 0, installPrice, b.cloud ? 1 : 0, cloudPrice, shipPrice, total, isUsta ? 1 : 0,
-        clip(b.title, 160), String(b.device || '').replace(/[^0-9]/g, '').slice(0, 6), cleanCredit(b.credit),
+        clip(b.title, 160), String(b.device || '').replace(/[^0-9]/g, '').slice(0, 6), creditJson,
       );
       for (const it of items) await db.run('UPDATE products SET qty = qty - ? WHERE sku = ?', it.qty, it.sku);
       await db.run('INSERT INTO order_events (order_id, status) VALUES (?, ?)', id, 'Yangi');

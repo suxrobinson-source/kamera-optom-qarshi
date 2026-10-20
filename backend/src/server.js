@@ -7,6 +7,7 @@ import { fileURLToPath } from 'node:url';
 import { ensureSchema, ensureAdmin } from './seed.js';
 import { dialect } from './db.js';
 import { serveUpload, wrap } from './uploads.js';
+import { serveMedia } from './media.js';
 import { publicRouter } from './routes/public.js';
 import { ordersRouter } from './routes/orders.js';
 import { adminRouter } from './routes/admin.js';
@@ -36,7 +37,7 @@ app.use(compression());
 app.use(express.json({ limit: '10mb' }));
 
 // Rasmlar: repodagi statik fayllar diskdan (1 kun kesh, ETag bilan), admin/mijoz yuklaganlari bazadan
-app.use('/assets', express.static(path.join(__dirname, '..', 'assets'), { maxAge: '1d' }), wrap(serveUpload));
+app.use('/assets', express.static(path.join(__dirname, '..', 'assets'), { maxAge: '1d' }), wrap(serveUpload), wrap(serveMedia));
 
 // Faqat frontend fayllari beriladi (baza, .env, ichki hujjatlar va kod tashqariga chiqmaydi)
 const ROOT = path.join(__dirname, '..', '..');

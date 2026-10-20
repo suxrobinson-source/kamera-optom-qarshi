@@ -487,9 +487,11 @@
       overflow: hidden
     }
 
+    /* faqat tikka aylanadi: bosh sahifadagi aylanuvchi linza halqalari chetdan chiqib, sahifani yonga surib/sakratib yubormasin */
     #scroller {
       flex: 1;
-      overflow: auto;
+      overflow-x: hidden;
+      overflow-y: auto;
       overscroll-behavior: contain
     }
 
@@ -4045,7 +4047,9 @@
       width: 112px;
       height: 112px;
       pointer-events: none;
-      transform: translateY(calc(var(--sy, 0) * .22px))
+      transform: translateY(calc(var(--sy, 0) * .22px));
+      /* aylanayotgan halqalarning burchaklari sahifa kengligini o'zgartirmasin (REC belgisi pastda — tikkasiga qirqilmaydi) */
+      overflow-x: clip
     }
 
     .intro .eye { animation: eyeIn 1.15s cubic-bezier(.2, .9, .2, 1) .15s backwards }

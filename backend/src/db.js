@@ -113,6 +113,9 @@ CREATE TABLE IF NOT EXISTS orders (
   note            TEXT DEFAULT '',
   install_at      TEXT DEFAULT NULL,
   usta            INTEGER DEFAULT 0,
+  title           TEXT DEFAULT '',
+  device          TEXT DEFAULT '',
+  credit          TEXT DEFAULT '',
   created_at      TEXT DEFAULT ${NOW_SQL}
 );
 
@@ -223,12 +226,12 @@ CREATE INDEX IF NOT EXISTS idx_ustas_status  ON ustas(status);
 CREATE INDEX IF NOT EXISTS idx_story_comments_story ON story_comments(story_id, hidden);
 `;
 
-/* SQLite: eski bazalarda keyin qo'shilgan ustunlar */
-const SQLITE_COLUMNS = {
+/* Eski bazalarda keyin qo'shilgan ustunlar (SQLite va Postgres — CREATE TABLE IF NOT EXISTS mavjud jadvalga ustun qo'shmaydi) */
+const EXTRA_COLUMNS = {
   products: [['desc', `"desc" TEXT DEFAULT ''`], ['images', 'images TEXT'], ['is_popular', 'is_popular INTEGER DEFAULT 0'],
     ['price_usd', 'price_usd REAL DEFAULT NULL'], ['margin', 'margin REAL DEFAULT NULL'],
     ['margin_usta', 'margin_usta REAL DEFAULT NULL'], ['price_usta', 'price_usta INTEGER DEFAULT NULL']],
-  orders: [['usta', 'usta INTEGER DEFAULT 0']],
+  orders: [['usta', 'usta INTEGER DEFAULT 0'], ['title', "title TEXT DEFAULT ''"], ['device', "device TEXT DEFAULT ''"], ['credit', "credit TEXT DEFAULT ''"]],
 };
 
 /* `?` → `$n` (satr va identifikator ichidagilarga tegmaydi) */
@@ -251,7 +254,7 @@ async function makeSqlite() {
   const conn = new DatabaseSync(path.join(DATA_DIR, 'kamera.db'));
   conn.exec('PRAGMA journal_mode = WAL; PRAGMA foreign_keys = ON;');
   // Eski bazada jadvallar oldinroq yaratilgan bo'lishi mumkin — avval yetishmayotgan ustunlarni qo'shamiz
-  for (const [table, cols] of Object.entries(SQLITE_COLUMNS)) {
+  for (const [table, cols] of Object.entries(EXTRA_COLUMNS)) {
     const have = conn.prepare(`PRAGMA table_info(${table})`).all().map(c => c.name);
     if (!have.length) continue;
     for (const [name, ddl] of cols) if (!have.includes(name)) conn.exec(`ALTER TABLE ${table} ADD COLUMN ${ddl}`);
@@ -295,6 +298,9 @@ async function makePg() {
   const cx = () => txStore.getStore()?.client || pool;
   const q = (sql, p = []) => cx().query(toPg(sql), p);
   await pool.query(SCHEMA);
+  for (const [table, cols] of Object.entries(EXTRA_COLUMNS)) {
+    for (const [, ddl] of cols) await pool.query(`ALTER TABLE ${table} ADD COLUMN IF NOT EXISTS ${ddl}`);
+  }
   return {
     async get(sql, p) { return (await q(sql, p)).rows[0]; },
     async all(sql, p) { return (await q(sql, p)).rows; },

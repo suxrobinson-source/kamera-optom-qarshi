@@ -4652,9 +4652,11 @@
         DATA.regions = regions || [];
         DATA.categories = categories || [];
         DATA.config = config || {};
+        /* admin o'chirgan belgi (HIT / CHEGIRMA / YANGI) mijozga ko'rsatilmaydi */
+        const labels = (config && config.labels) || {};
         const dbPromo = {};
-        DATA.products.forEach(p => { if (p.promo) dbPromo[p.sku] = p.promo; });
-        if (Object.keys(dbPromo).length) S.promo = dbPromo;
+        DATA.products.forEach(p => { if (p.promo && labels[p.promo] !== false) dbPromo[p.sku] = p.promo; });
+        S.promo = dbPromo;
         DATA.ready = true;
         DATA.error = null;
 
@@ -4667,6 +4669,8 @@
         if (config && config.credit && config.credit.down) {
           S.down = config.credit.down;
         }
+        if (config && config.credit && config.credit.rateOn) S.rateOn = { ...S.rateOn, ...config.credit.rateOn };
+        if (config && config.credit && config.credit.provOn) S.provOn = { ...S.provOn, ...config.credit.provOn };
         await syncMyOrders();
         await syncUsta();
       } catch (e) {
@@ -4757,8 +4761,10 @@
       region: _loadStr('ko_region', 'Qarshi shahri'), regionOpen: false, bannerIdx: 0, rq: '', gpsState: 'idle',
       orderStatus: {}, notes: {}, myOrders: _loadStorage('ko_my_orders', []), openOrd: null, profPage: '', lang: _loadStr('ko2_lang', 'uz'),
       pushOn: true, promoPushOn: false, spinDeg: 0, spinning: false,
-      addrList: _loadStorage('ko_addr_list', [{ id: 'a1', label: 'Uy', text: "Qarshi sh., Mustaqillik ko‘chasi 12, 4-xonadon", note: 'Kirish eshigi kodi 1204' }]),
-      addrSel: _loadStr('ko_addr_sel', 'a1'), addrForm: false, naLabel: 'Uy', naText: '', naNote: '',
+      /* namunaviy manzil endi yo'q — eski qurilmalarda saqlangan demo manzil ham olib tashlanadi */
+      addrList: _loadStorage('ko_addr_list', []).filter(a => a && a.text && a.text !== "Qarshi sh., Mustaqillik ko‘chasi 12, 4-xonadon"),
+      addrSel: _loadStr('ko_addr_sel', ''), addrForm: false, naLabel: 'Uy', naText: '', naNote: '',
+      myName: _loadStr('ko_my_name', ''), nameEdit: false, nameDraft: '',
       rcpSelf: true, rcpName: '', rcpPhone: '',
       smartTour: false, tourStep: 0,
       usta: null, uf: null
@@ -4833,6 +4839,7 @@
       try {
         localStorage.setItem('ko_bag', JSON.stringify(S.bag || {}));
         if (S.myPhone) localStorage.setItem('ko_my_phone', S.myPhone);
+        localStorage.setItem('ko_my_name', S.myName || '');
         localStorage.setItem('ko_recent', JSON.stringify(S.recent || []));
         localStorage.setItem('ko_seen', JSON.stringify(S.seen || {}));
         localStorage.setItem('ko2_theme', S.theme || 'day');
@@ -5078,7 +5085,7 @@
       };
     }
     function phFmt(v) { return String(v).replace(/[^0-9]/g, '').slice(0, 9).replace(/^(\d{2})(\d{0,3})(\d{0,2})(\d{0,2}).*/, (m, a, b, c, d) => [a, b, c, d].filter(Boolean).join(' ')); }
-    function placeOrder(what, sum, skus, opts = {}) { set({ ph: { what, sum, skus: skus || [], install: opts.install, cloud: opts.cloud, fromBag: !!opts.fromBag }, phVal: S.myPhone || '', phStep: S.myPhone ? 'confirm' : 'enter', bagOpen: false, added: null }); }
+    function placeOrder(what, sum, skus, opts = {}) { set({ ph: { what, sum, skus: skus || [], install: opts.install, cloud: opts.cloud, credit: opts.credit || null, fromBag: !!opts.fromBag }, phVal: S.myPhone || '', phStep: S.myPhone ? 'confirm' : 'enter', bagOpen: false, added: null, addrForm: !(S.addrList || []).length }); }
     function stopSpin() {
       if (_sp) {
         if (typeof _sp.clear === 'function') _sp.clear();
@@ -5141,9 +5148,14 @@
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               phone: (S.phVal || '').replace(/[^0-9]/g, ''),
-              clientName: rcp ? rcp.name : 'Mijoz',
+              clientName: S.myName || (rcp && rcp.self ? rcp.name : '') || 'Mijoz',
+              recipient: rcp && !rcp.self ? { name: rcp.name, phone: rcp.phone } : undefined,
               region: S.region,
               address: addr ? addr.text : S.region,
+              addrNote: addr && addr.note ? addr.note : '',
+              title: o.what || '',
+              device: S.devId || '',
+              credit: o.credit || undefined,
               items: skus.map(([sku, q]) => ({ sku, qty: q })),
               install: o.install !== undefined ? !!o.install : !!(S.bagInstall || S.install),
               cloud: o.cloud !== undefined ? !!o.cloud : !!(S.bagCloud || S.cloud)
@@ -5533,6 +5545,11 @@
       const curTerm = activeTerms.includes(s.creditTerm) ? s.creditTerm : (activeTerms[0] || 12);
       const creditSum = Math.round(total * (1 + (s.rates[curTerm] || 0) / 100));
       const creditOn = s.creditService && MOD('credit'), expertOn = s.expertService && MOD('expert');
+      const kitOrder = (credit) => placeOrder(S.cams + ' kamera komplekti', fmt(total), [
+        [camSel.sku, S.cams],
+        ...kitExtraItems.map(x => [x.p.sku, x.q]),
+        ...(hddActive && hddSel && hddSel.sku ? [[hddSel.sku, 1]] : [])
+      ], { credit: credit || (S.creditUse && creditOn ? { provider: provSel.name, term: curTerm, monthly: monthlyFor(curTerm, total) } : null) });
 
       const parseAction = (act) => {
         if (!act) return () => { };
@@ -5752,16 +5769,20 @@
           };
         }),
         rcpSelfOn: s.rcpSelf, rcpOtherOn: !s.rcpSelf,
+        myName: s.myName, setMyName: e => { S.myName = e.target.value; },
+        myInitials: (String(s.myName || '').trim().split(/ +/).map(w => w.charAt(0)).join('').slice(0, 2) || 'M').toUpperCase(),
         rcpName: s.rcpName, setRcpName: e => { S.rcpName = e.target.value; },
         rcpPhone: s.rcpPhone, setRcpPhone: e => set({ rcpPhone: phFmt(e.target.value) }),
         confirmDeliver: () => {
           const ad = S.addrList.find(x => x.id === S.addrSel);
           if (!ad) { flash('Yetkazish manzilini tanlang'); return; }
+          const me = String(S.myName || '').trim();
+          if (me.length < 2) { flash('Ismingizni yozing'); return; }
           if (!S.rcpSelf) {
             if (S.rcpName.trim().length < 3) { flash('Qabul qiluvchining ismini yozing'); return; }
             if (S.rcpPhone.replace(/[^0-9]/g, '').length !== 9) { flash('Qabul qiluvchi raqamini to‘liq kiriting'); return; }
           }
-          finishOrder(ad, S.rcpSelf ? { name: 'Aziz Bekmurodov', phone: '+998 ' + S.phVal } : { name: S.rcpName.trim(), phone: '+998 ' + S.rcpPhone });
+          finishOrder(ad, S.rcpSelf ? { self: true, name: me, phone: '+998 ' + S.phVal } : { name: S.rcpName.trim(), phone: '+998 ' + S.rcpPhone });
         },
         okOn: !!s.ok, okLines: s.ok ? s.ok.lines : [],
         okClose: () => set({ ok: null, tab: 'home' }), okOrders: () => set({ ok: null, tab: 'profile' }),
@@ -5874,13 +5895,10 @@
             flash('Xotira turini qayta tanlang');
             return;
           }
-          placeOrder(S.cams + ' kamera komplekti', fmt(total), [
-            [camSel.sku, S.cams],
-            ...kitExtraItems.map(x => [x.p.sku, x.q]),
-            ...(hddActive && hddSel && hddSel.sku ? [[hddSel.sku, 1]] : [])
-          ]);
+          kitOrder();
         },
-        kitCreditNote: s.creditUse && creditOn, kitCreditText: provSel.name + ' · ' + curTerm + ' oy · ' + fmt(monthlyFor(curTerm, total)) + '/oy',
+        kitCreditNote: s.creditUse && creditOn,
+        /* nasiya tanlangan bo'lsa — provayder, muddat va oylik to'lov buyurtma bilan adminga boradi */ kitCreditText: provSel.name + ' · ' + curTerm + ' oy · ' + fmt(monthlyFor(curTerm, total)) + '/oy',
         presets: PRESETS.map(p => {
           const on = s.preset === p.name; return {
             on, name: p.name, note: p.note, mark: p.mark,
@@ -5978,7 +5996,7 @@
         monthly: fmt(monthlyFor(curTerm, total)) + '/oy',
         creditTotal: fmt(creditSum),
         rateLabel: provSel.name + ' · ustama ' + (s.rates[curTerm] || 0) + ' % · ' + (s.down[curTerm] ? s.down[curTerm] + ' % boshlang‘ich' : 'boshlang‘ich to‘lovsiz'),
-        applyCredit: () => flash(provSel.name + ' arizasi yuborildi · ' + curTerm + ' oy'),
+        applyCredit: () => { if (hddActive && hddSel && !hddSel.sku) { flash('Xotira turini qayta tanlang'); return; } kitOrder({ provider: provSel.name, term: curTerm, monthly: monthlyFor(curTerm, total) }); },
         myPhoneLabel: s.myPhone ? '+998 ' + s.myPhone : 'Raqam kiritilmagan',
         profMenuOn: !s.profPage, profOrdersOn: s.profPage === 'orders', profNotifOn: s.profPage === 'notif', profAddrOn: s.profPage === 'addr',
         profPaymentOn: s.profPage === 'payment', profWarrantyOn: s.profPage === 'warranty', profAboutOn: s.profPage === 'about',
@@ -7631,8 +7649,10 @@
 <div class="pg" style="gap:20px">
   ${v.profMenuOn ? `
   <div class="pf">
-    <div class="ava">AB</div>
-    <div style="min-width:0"><h1 class="h3">Aziz Bekmurodov</h1><div class="opt-s" style="margin-top:4px">${esc(v.myPhoneLabel)}</div></div>
+    <div class="ava nt">${esc(v.myInitials)}</div>
+    <div style="min-width:0;flex:1">${S.nameEdit ? `
+      <div style="display:flex;gap:8px;align-items:center"><label class="field" style="flex:1;min-width:0;height:44px"><input data-k="nameDraft" value="${esc(S.nameDraft)}" oninput="${h(e => { S.nameDraft = e.target.value; })}" placeholder="Ism va familiya" autocomplete="name"></label><button class="btn btn-p sm" onclick="${h(() => { const n = String(S.nameDraft || '').trim(); if (n.length < 2) { flash('Ismingizni yozing'); return; } set({ myName: n, nameEdit: false }); flash('Ism saqlandi'); })}">Saqlash</button></div>`
+      : `<button style="text-align:left" onclick="${h(() => set({ nameEdit: true, nameDraft: S.myName || '' }))}"><h1 class="h3">${v.myName ? `<span class="nt">${esc(v.myName)}</span>` : 'Ismingizni kiriting'}</h1></button>`}<div class="opt-s" style="margin-top:4px">${esc(v.myPhoneLabel)}</div></div>
   </div>
   <div class="stats">
     ${v.profStats.map(st => `<div><b style="color:${st.fg === 'var(--fg)' ? 'var(--ink)' : st.fg}">${esc(st.v)}</b><span>${esc(st.k)}</span></div>`).join('')}
@@ -8460,12 +8480,14 @@ ${mProfHead(v, 'Yordam va biz haqida', "Qarshi shahar bosh do‘koni")}
       <div class="lbl">Yetkazish manzili</div>
       ${addrRows(v, false)}
       ${v.addrFormOff ? `<button class="btn btn-o sm w" onclick="${h(v.openAddrForm)}">${ic('plus', 17, 2.2)} Yangi manzil qo‘shish</button>` : mAddrForm(v, true)}
+      <div class="lbl" style="margin-top:10px">Ismingiz</div>
+      <label class="field">${ic('user', 19)}<input data-k="myName" value="${esc(v.myName)}" oninput="${h(v.setMyName)}" placeholder="Ism va familiya" autocomplete="name"></label>
       <div class="lbl" style="margin-top:10px">Qabul qiluvchi</div>
       <div class="seg">${v.rcpTabs.map(rt => `<button class="${rt.on ? 'on' : ''}" onclick="${h(rt.go)}">${esc(rt.name)}</button>`).join('')}</div>
       ${v.rcpSelfOn ? `
       <div class="opt" style="box-shadow:none;border:1px solid var(--line)">
-        <span class="ava" style="width:40px;height:40px;font-size:13px">AB</span>
-        <span class="opt-b"><span class="opt-t" style="display:block">Aziz Bekmurodov</span><span class="opt-s" style="display:block">${esc(v.phBig)}</span></span>
+        <span class="ava nt" style="width:40px;height:40px;font-size:13px">${esc(v.myInitials)}</span>
+        <span class="opt-b"><span class="opt-t nt" style="display:block">${esc(v.myName || 'Ismingiz')}</span><span class="opt-s" style="display:block">${esc(v.phBig)}</span></span>
       </div>` : `
       <label class="field">${ic('user', 19)}<input data-k="rcpName" value="${esc(v.rcpName)}" oninput="${h(v.setRcpName)}" placeholder="Qabul qiluvchining ismi"></label>
       <label class="field"><span class="pre">+998</span><input data-k="rcpPhone" value="${esc(v.rcpPhone)}" oninput="${h(v.setRcpPhone)}" inputmode="numeric" placeholder="90 123 45 67"></label>`}
@@ -9761,6 +9783,8 @@ ${mProfHead(v, 'Yordam va biz haqida', "Qarshi shahar bosh do‘koni")}
     }, 5000);
     /* call-markaz komplektini kutish: ilova ochiq bo‘lsa har 20 soniyada, qaytib kirilganda darhol */
     setInterval(() => { if (!document.hidden) deviceSync(); }, 20000);
+    /* buyurtma holati va menejer izohlari admin o'zgartirgach ilovada ham yangilansin */
+    setInterval(() => { if (!document.hidden && S.myPhone) syncMyOrders().then(() => render()).catch(() => { }); }, 60000);
     if (document.addEventListener) document.addEventListener('visibilitychange', () => { if (!document.hidden) deviceSync(); });
     render();
     bootstrap();

@@ -40,7 +40,8 @@ adminRouter.post('/login', async (req, res) => {
 
 adminRouter.use(requireAdmin);
 
-const parseOrder = (row) => ({ ...row, items: JSON.parse(row.items), install: !!row.install, cloud: !!row.cloud });
+const parseCredit = (v) => { try { const c = v ? JSON.parse(v) : null; return c && c.provider ? c : null; } catch (e) { return null; } };
+const parseOrder = (row) => ({ ...row, items: JSON.parse(row.items), install: !!row.install, cloud: !!row.cloud, usta: !!row.usta, credit: parseCredit(row.credit) });
 
 // GET /api/admin/orders?status=Yangi&q=...
 adminRouter.get('/orders', async (req, res) => {
@@ -48,7 +49,7 @@ adminRouter.get('/orders', async (req, res) => {
   if (req.query.status) rows = rows.filter(o => o.status === req.query.status);
   if (req.query.q) {
     const q = String(req.query.q).toLowerCase();
-    rows = rows.filter(o => `${o.id} ${o.client_name} ${o.phone} ${o.region}`.toLowerCase().includes(q));
+    rows = rows.filter(o => `${o.id} ${o.client_name} ${o.phone} ${o.region} ${o.title} ${o.device}`.toLowerCase().includes(q));
   }
   res.json(rows);
 });
@@ -423,11 +424,11 @@ adminRouter.get('/kpis', async (_req, res) => {
 
 // Sozlamalar (kredit, narxlar, modullar)
 adminRouter.get('/settings', async (_req, res) => {
-  res.json({ pricing: await getSetting('pricing'), credit: await getSetting('credit'), modules: await getSetting('modules') });
+  res.json({ pricing: await getSetting('pricing'), credit: await getSetting('credit'), modules: await getSetting('modules'), labels: await getSetting('labels') });
 });
 adminRouter.patch('/settings/:key', async (req, res) => {
   const key = req.params.key;
-  if (!['pricing', 'credit', 'modules'].includes(key)) return res.status(400).json({ error: 'Faqat pricing, credit, modules o\'zgartiriladi' });
+  if (!['pricing', 'credit', 'modules', 'labels'].includes(key)) return res.status(400).json({ error: 'Faqat pricing, credit, modules, labels o\'zgartiriladi' });
   const current = (await getSetting(key)) || {};
   await setSetting(key, { ...current, ...(req.body || {}) });
   res.json(await getSetting(key));

@@ -6,11 +6,22 @@ export const ordersRouter = asyncRouter();
 
 const normPhone = (v) => String(v || '').replace(/[^0-9]/g, '').slice(-9);
 
+const parseCredit = (v) => { try { const c = v ? JSON.parse(v) : null; return c && c.provider ? c : null; } catch (e) { return null; } };
 const parseOrder = (row) => ({
   ...row,
   items: JSON.parse(row.items),
   install: !!row.install, cloud: !!row.cloud, usta: !!row.usta,
+  credit: parseCredit(row.credit),
 });
+const clip = (v, n) => String(v || '').replace(/[\u0000-\u001f\u007f]/g, ' ').trim().slice(0, n);
+/* Nasiya tanlovi: { provider, term, monthly } — faqat ma'lum provayder va muddat */
+const cleanCredit = (c) => {
+  if (!c || typeof c !== 'object') return '';
+  const term = parseInt(c.term, 10);
+  const provider = clip(c.provider, 40);
+  if (!provider || ![3, 6, 12, 24].includes(term)) return '';
+  return JSON.stringify({ provider, term, monthly: Math.max(0, Math.round(+c.monthly || 0)) });
+};
 
 class HttpError extends Error { constructor(status, message) { super(message); this.status = status; } }
 
@@ -61,13 +72,14 @@ ordersRouter.post('/orders', async (req, res) => {
       const id = `#KO-${await nextSeq('orderSeq', 4822)}`;
       await db.run(`INSERT INTO orders
         (id, client_name, phone, region, address, addr_note, recipient_name, recipient_phone,
-         items, goods_sum, install, install_price, cloud, cloud_price, ship_price, total, usta, status)
-        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?, 'Yangi')`,
+         items, goods_sum, install, install_price, cloud, cloud_price, ship_price, total, usta, title, device, credit, status)
+        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?, 'Yangi')`,
         id, String(b.clientName || ''), phone, reg ? reg.name : String(b.region || ''),
         String(b.address || ''), String(b.addrNote || ''),
         String(b.recipient?.name || ''), normPhone(b.recipient?.phone) || '',
         JSON.stringify(items), goodsSum,
         b.install ? 1 : 0, installPrice, b.cloud ? 1 : 0, cloudPrice, shipPrice, total, isUsta ? 1 : 0,
+        clip(b.title, 160), String(b.device || '').replace(/[^0-9]/g, '').slice(0, 6), cleanCredit(b.credit),
       );
       for (const it of items) await db.run('UPDATE products SET qty = qty - ? WHERE sku = ?', it.qty, it.sku);
       await db.run('INSERT INTO order_events (order_id, status) VALUES (?, ?)', id, 'Yangi');

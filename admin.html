@@ -126,6 +126,29 @@
       .lg { grid-template-columns: 1fr }
       .lg-art { display: none }
     }
+
+    /* ── Telefon: jadvallar kartochkaga, ikki ustun bittaga, KPI ixcham ── */
+    @media (max-width: 640px) {
+      .ad-top { gap: 10px; padding: 12px 14px }
+      .ad-title { font-size: 18px }
+      .ad-sub { font-size: 11.5px; margin-top: 3px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden }
+      .ad-actions { gap: 6px }
+      .ad-actions .ad-btn.p { width: 42px; padding: 0; justify-content: center; font-size: 0 }
+      #scroller { padding: 12px 12px 28px !important }
+      .ad-kpis { gap: 8px }
+      .ad-kpi { padding: 12px 13px; border-radius: 18px }
+      .ad-kpi .ico { display: none }
+      .ad-kpi .kl { margin-top: 0; font-size: 10px }
+      .ad-kpi .kv { font-size: 21px; margin-top: 4px }
+      .ad-kpi .kd { font-size: 11px; margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
+      .mg { grid-template-columns: 1fr !important }
+      .mt { min-width: 0 !important }
+      .mt-h { display: none !important }
+      .mt-r { grid-template-columns: 1fr 1fr !important; gap: 6px 12px !important; padding: 12px 14px !important }
+      .mt-r > .mt-w { grid-column: 1 / -1 }
+      .mt-r > * { min-width: 0; overflow-wrap: anywhere }
+      .ad-toast { left: 12px; right: 12px; bottom: 12px }
+    }
   </style>
 </head>
 
@@ -247,7 +270,19 @@
     }
     function flash(t) { S.toast = t; clearTimeout(_t); _t = setTimeout(() => { S.toast = null; render(); }, 2200); render(); }
     function promoStyle(k) { return ({ HIT: { fg: '#2a1a00', bg: '#ffb020', border: '#ffb020' }, CHEGIRMA: { fg: '#ffffff', bg: '#ff4d3d', border: '#ff4d3d' }, YANGI: { fg: '#ffffff', bg: '#ff4f12', border: '#ff4f12' } })[k] || { fg: 'var(--dim2)', bg: 'var(--fill)', border: 'var(--line3)' }; }
-    function moveStory(i, d) { const l = [...S.storyList], j = i + d; if (j < 0 || j >= l.length) return;[l[i], l[j]] = [l[j], l[i]]; set({ storyList: l }); }
+    /* sozlamani serverga yozadi; xato bo'lsa ekrandagi holat qaytariladi */
+    async function saveSetting(key, patch, local, undo) {
+      set(local);
+      try { await api('/api/admin/settings/' + key, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(patch) }); }
+      catch (err) { set(undo); flash(err.message); }
+    }
+    /* videolar tartibi mijoz ilovasidagi lentada ham shunday bo'lsin */
+    async function moveStory(i, d) {
+      const l = [...S.storyList], j = i + d; if (j < 0 || j >= l.length) return;[l[i], l[j]] = [l[j], l[i]];
+      set({ storyList: l });
+      try { await Promise.all(l.map((st, k) => +st.sort === k ? null : api('/api/admin/stories/' + st.id, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ sort: k }) }))); set({ storyList: S.storyList.map((st, k) => ({ ...st, sort: k })) }); }
+      catch (err) { flash(err.message); }
+    }
     function exportCSV(rows) {
       const csv = ['ID;MIJOZ;TELEFON;MAHSULOT;SUMMA;O\'RNATISH;STATUS', ...rows.map(o => [o.id, o.client, o.phone, o.item, o.sum, o.install, o.status].join(';'))].join('\n');
       const a = document.createElement('a');
@@ -320,6 +355,11 @@
           mod: (settings && settings.modules) || S.mod,
           rates: (settings && settings.credit && settings.credit.rates) || S.rates,
           down: (settings && settings.credit && settings.credit.down) || S.down,
+          rateOn: { ...S.rateOn, ...((settings && settings.credit && settings.credit.rateOn) || {}) },
+          provOn: { ...S.provOn, ...((settings && settings.credit && settings.credit.provOn) || {}) },
+          creditService: !(settings && settings.modules && settings.modules.credit === false),
+          expertService: !(settings && settings.modules && settings.modules.expert === false),
+          labelOn: { ...S.labelOn, ...((settings && settings.labels) || {}) },
           storyList: stories || [],
           callbacks: callbacks || [],
           bannersList: Array.isArray(banners) ? banners : [],
@@ -357,18 +397,30 @@
         const rawPh = String(o.phone || '').replace(/[^0-9]/g, '');
         const phoneStr = rawPh.length === 9 ? ('+998 ' + rawPh.replace(/(\d{2})(\d{3})(\d{2})(\d{2})/, '$1 $2 $3 $4')) : (o.phone || '—');
         const installStr = o.install ? (o.install_at || (o.created_at ? o.created_at.slice(5, 10) + ' · 10:00' : 'Rejalashtirilgan')) : 'Kerak emas';
+        /* mijoz kiritgan matnlar ekranlanadi; komplekt nomi/kodi, qurilma ID, nasiya, qabul qiluvchi va manzil — operator uchun */
+        const rcpPh = String(o.recipient_phone || '').replace(/[^0-9]/g, '');
+        const extra = [
+          o.title ? '▦ ' + o.title : '',
+          o.device ? 'ID ' + o.device : '',
+          o.credit && o.credit.provider ? 'Nasiya: ' + o.credit.provider + ' · ' + o.credit.term + ' oy' + (o.credit.monthly ? ' · ' + fmt(o.credit.monthly) + '/oy' : '') : '',
+          o.recipient_name ? 'Qabul qiluvchi: ' + o.recipient_name + (rcpPh.length === 9 ? ' · +998 ' + rcpPh : '') : '',
+          [o.region, o.address, o.addr_note].filter(Boolean).join(' · '),
+          o.usta ? 'USTA narxida' : ''
+        ].filter(Boolean);
         return {
-          id: o.id,
-          client: o.client_name || 'Mijoz',
+          id: esc(o.id),
+          client: esc(o.client_name || 'Mijoz'),
           phone: phoneStr,
+          telHref: rawPh.length === 9 ? 'tel:+998' + rawPh : '',
+          extra: extra.map(esc),
           rawPhone: o.phone,
-          item: itemStr,
+          item: esc(itemStr),
           sum: fmt(o.total || o.goods_sum || 0),
           install: installStr,
           status: st,
           ...(ST[st] || ST.Yangi),
           noteOn: !!nt,
-          note: nt ? nt.text : '',
+          note: nt ? esc(nt.text) : '',
           next: async () => {
             const ns = FLOW[(FLOW.indexOf(st) + 1) % 4];
             const doChangeStatus = async () => {
@@ -713,12 +765,23 @@
               set({ rates: nextRates });
             } catch (err) { flash(err.message); }
           },
-          toggle: () => set(p => ({ rateOn: { ...p.rateOn, [m]: !p.rateOn[m] } }))
+          toggle: () => { const next = { ...s.rateOn, [m]: !on }; saveSetting('credit', { rateOn: next }, { rateOn: next }, { rateOn: s.rateOn }); },
+          downPlus: () => { const next = { ...s.down, [m]: Math.min(90, (+s.down[m] || 0) + 5) }; saveSetting('credit', { down: next }, { down: next }, { down: s.down }); },
+          downMinus: () => { const next = { ...s.down, [m]: Math.max(0, (+s.down[m] || 0) - 5) }; saveSetting('credit', { down: next }, { down: next }, { down: s.down }); }
         };
       });
 
-      const barVals = [38, 44, 41, 52, 49, 61, 58];
-      const bars = barVals.map((v, i) => ({ value: v, label: ['Fev', 'Mar', 'Apr', 'May', 'Iyn', 'Iyl', 'Avg'][i], h: Math.round(v / 61 * 100) + '%', fill: i === 6 ? A : 'rgba(255,79,18,.28)' }));
+      const liveOrders = (Array.isArray(s.orders) ? s.orders : []).filter(o => o.status !== 'Bekor');
+      const MON = ['Yan', 'Fev', 'Mar', 'Apr', 'May', 'Iyn', 'Iyl', 'Avg', 'Sen', 'Okt', 'Noy', 'Dek'];
+      const nowD = new Date();
+      const months = [6, 5, 4, 3, 2, 1, 0].map(k => { const d = new Date(nowD.getFullYear(), nowD.getMonth() - k, 1); return { key: d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0'), label: MON[d.getMonth()] }; });
+      const monthSum = m => liveOrders.filter(o => String(o.created_at || '').slice(0, 7) === m.key).reduce((n, o) => n + (+o.total || 0), 0);
+      const sums = months.map(monthSum), maxSum = Math.max(1, ...sums);
+      const bars = months.map((m, i) => ({ value: (sums[i] / 1e6).toFixed(sums[i] >= 1e7 ? 0 : 1).replace(/\.0$/, ''), label: m.label, h: Math.max(2, Math.round(sums[i] / maxSum * 100)) + '%', fill: i === 6 ? A : 'rgba(255,79,18,.28)' }));
+      const soldMap = {};
+      liveOrders.forEach(o => (Array.isArray(o.items) ? o.items : []).forEach(it => { const k = it.sku || it.name; soldMap[k] = soldMap[k] || { name: it.name || k, qty: 0 }; soldMap[k].qty += +it.qty || 0; }));
+      const topSold = Object.values(soldMap).sort((a, b) => b.qty - a.qty).slice(0, 5);
+      const creditOrders = (Array.isArray(s.orders) ? s.orders : []).filter(o => o.credit && o.credit.provider);
 
       const kd = s.kpiData || {};
       const todayRev = kd.todayRevenue || 0;
@@ -967,12 +1030,12 @@
             state: on ? 'ULANGAN' : "O'CHIRILGAN", fg: on ? A : 'var(--dim2)', chipBg: on ? 'rgba(255,79,18,.12)' : 'var(--fill)',
             border: on ? 'rgba(255,79,18,.3)' : 'var(--line)', trackBg: on ? A : 'var(--line4)',
             knob: on ? 'flex-end' : 'flex-start', knobBg: on ? '#ffffff' : 'var(--dim)',
-            toggle: () => set(pr => ({ provOn: { ...pr.provOn, [p.name]: !pr.provOn[p.name] } }))
+            toggle: () => { const next = { ...s.provOn, [p.name]: !on }; saveSetting('credit', { provOn: next }, { provOn: next }, { provOn: s.provOn }); }
           };
         }),
         services: [
-          { name: "Muddatli to'lov servisi", note: 'Mijoz ilovasida muddatli to\'lov kartasi va foizlar', on: s.creditService, toggle: () => set({ creditService: !s.creditService }) },
-          { name: 'Mutaxassis yordami', note: 'Bepul hisoblash · bosh sahifa banneri va navigatsiya tugmasi', on: s.expertService, toggle: () => set({ expertService: !s.expertService }) }
+          { name: "Muddatli to'lov servisi", note: 'Mijoz ilovasida muddatli to\'lov kartasi va foizlar', on: s.creditService, toggle: () => saveSetting('modules', { credit: !s.creditService }, { creditService: !s.creditService, mod: { ...s.mod, credit: !s.creditService } }, { creditService: s.creditService, mod: s.mod }) },
+          { name: 'Mutaxassis yordami', note: 'Bepul hisoblash · bosh sahifa banneri va navigatsiya tugmasi', on: s.expertService, toggle: () => saveSetting('modules', { expert: !s.expertService }, { expertService: !s.expertService, mod: { ...s.mod, expert: !s.expertService } }, { expertService: s.expertService, mod: s.mod }) }
         ].map(sv => ({
           ...sv, state: sv.on ? 'YONIQ' : "O'CHIRILGAN", fg: sv.on ? A : 'var(--dim2)',
           chipBg: sv.on ? 'rgba(255,79,18,.12)' : 'var(--fill)', border: sv.on ? 'rgba(255,79,18,.3)' : 'var(--line)',
@@ -982,9 +1045,10 @@
         rateRows, rateOpacity: s.creditService ? '1' : '.4',
         rateFootnote: s.creditService ? "Foizni o'zgartirsangiz mijoz ilovasidagi hisob-kitob darhol yangilanadi" : "Servis o'chirilgan — muddatli to'lov mijozga ko'rinmaydi",
         creditSettings: [{ label: 'Servis komissiyasi', note: 'Har bir shartnomadan', value: '2.5 %' }, { label: 'Minimal summa', note: 'Muddatli to\'lov ochiladi', value: fmt(1000000) }, { label: 'Kechiktirish jarimasi', note: 'Kunlik', value: '0.2 %' }, { label: 'Hujjatlar', note: 'Ariza uchun majburiy', value: 'Pasport + ish joyi' }],
-        creditApps: [{ name: 'Aziz Bekmurodov', sum: fmt(4350000), term: '12 oy', state: 'TEKSHIRUVDA', fg: AMB, bg: 'rgba(255,176,32,.12)' },
-        { name: '"Anor Market" MChJ', sum: fmt(8970000), term: '24 oy', state: 'TASDIQLANDI', fg: A, bg: 'rgba(255,79,18,.12)' },
-        { name: 'Jasur Rahimov', sum: fmt(1240000), term: '6 oy', state: 'RAD ETILDI', fg: RED, bg: 'rgba(255,77,61,.12)' }],
+        creditApps: creditOrders.slice(0, 12).map(o => ({
+          name: esc((o.client_name || 'Mijoz') + ' · ' + o.id), sum: fmt(+o.total || 0), term: esc(o.credit.provider + ' · ' + o.credit.term + ' oy' + (o.credit.monthly ? ' · ' + fmt(o.credit.monthly) + '/oy' : '')),
+          state: esc(String(o.status || 'Yangi').toUpperCase()), fg: o.status === 'Bekor' ? RED : o.status === 'Yopildi' ? A : AMB, bg: o.status === 'Bekor' ? 'rgba(255,77,61,.12)' : o.status === 'Yopildi' ? 'rgba(255,79,18,.12)' : 'rgba(255,176,32,.12)'
+        })),
 
         labelSwitches: ['HIT', 'CHEGIRMA', 'YANGI'].map(n => {
           const on = s.labelOn[n] !== false, st = promoStyle(n);
@@ -994,7 +1058,7 @@
             chipFg: on ? st.fg : 'var(--dim2)', chipBg: on ? st.bg : 'var(--fill)', chipBorder: on ? st.border : 'var(--line3)',
             border: on ? 'rgba(255,79,18,.28)' : 'var(--line)',
             trackBg: on ? A : 'var(--line4)', knob: on ? 'flex-end' : 'flex-start', knobBg: on ? '#ffffff' : 'var(--dim)',
-            toggle: () => set(p => ({ labelOn: { ...p.labelOn, [n]: !on } }))
+            toggle: () => { const next = { ...s.labelOn, [n]: !on }; saveSetting('labels', { [n]: !on }, { labelOn: next }, { labelOn: s.labelOn }); }
           };
         }),
         moduleSwitches: [
@@ -1095,12 +1159,9 @@
         },
 
         bars,
-        topList: (Array.isArray(s.stockProducts) && s.stockProducts.length)
-          ? s.stockProducts.slice(0, 4).map((p, idx, arr) => {
-            const maxQ = Math.max(...arr.map(x => x.qty || 1), 1);
-            return { name: p.name, qty: (p.qty || 0) + ' dona', w: Math.round(((p.qty || 0) / maxQ) * 85 + 15) + '%' };
-          })
-          : [],
+        topList: topSold.length
+          ? topSold.map(t => ({ name: esc(t.name), qty: t.qty + ' dona sotildi', w: Math.round(t.qty / topSold[0].qty * 85 + 15) + '%' }))
+          : [{ name: 'Hozircha sotuv yo‘q', qty: '', w: '0%' }],
 
         noteOn: !!s.noteDraft,
         noteHead: s.noteDraft ? s.noteDraft.id + ' · status "' + s.noteDraft.status + '" ga o\'tdi' : '',
@@ -1224,14 +1285,14 @@
     function mCallbacks(v) {
       return `
 <div style="margin-top:20px;border:1px solid var(--line);border-radius:20px;overflow:auto">
-  <div style="min-width:960px">
-  <div style="display:grid;grid-template-columns:${GC_CB};gap:12px;padding:12px 16px;background:var(--thead);font:600 10px var(--fm);color:var(--dim2);letter-spacing:.05em">
+  <div class="mt" style="min-width:960px">
+  <div class="mt-h" style="display:grid;grid-template-columns:${GC_CB};gap:12px;padding:12px 16px;background:var(--thead);font:600 10px var(--fm);color:var(--dim2);letter-spacing:.05em">
     <span>ID</span><span>SANA</span><span>MIJOZ</span><span>TELEFON</span><span>MAVZU</span><span>ALOQA</span><span>QULAY VAQT</span><span>IZOH</span><span>STATUS</span>
   </div>
   ${v.callbacks.length === 0 ? `
     <div style="padding:36px 16px;text-align:center;color:var(--dim3);font:400 13px var(--fb)">Hozircha arizalar yo'q</div>
   ` : v.callbacks.map(c => `
-    <div style="display:grid;grid-template-columns:${GC_CB};gap:12px;padding:14px 16px;border-top:1px solid var(--fill);align-items:center;font:400 12px var(--fb)">
+    <div class="mt-r" style="display:grid;grid-template-columns:${GC_CB};gap:12px;padding:14px 16px;border-top:1px solid var(--fill);align-items:center;font:400 12px var(--fb)">
       <span style="font:500 11px var(--fm);color:var(--dim)">#${c.id}</span>
       <span style="font:400 10.5px var(--fm);color:var(--dim2)">${c.date}</span>
       <div style="font-weight:600">${esc(c.name)}</div>
@@ -1264,19 +1325,20 @@
     function mOrders(v) {
       return `
 <div style="margin-top:20px;border:1px solid var(--line);border-radius:20px;overflow:auto">
-  <div style="min-width:900px">
-  <div style="display:grid;grid-template-columns:${GC};gap:12px;padding:12px 16px;background:var(--thead);font:600 10px var(--fm);color:var(--dim2);letter-spacing:.05em">
+  <div class="mt" style="min-width:900px">
+  <div class="mt-h" style="display:grid;grid-template-columns:${GC};gap:12px;padding:12px 16px;background:var(--thead);font:600 10px var(--fm);color:var(--dim2);letter-spacing:.05em">
     <span>ID</span><span>MIJOZ</span><span>MAHSULOT</span><span>SUMMA</span><span>O'RNATISH</span><span>STATUS</span>
   </div>
   ${v.orders.map(o => `
-    <div style="display:grid;grid-template-columns:${GC};gap:12px;padding:14px 16px;border-top:1px solid var(--fill);align-items:center;font:400 12px var(--fb)">
+    <div class="mt-r" style="display:grid;grid-template-columns:${GC};gap:12px;padding:14px 16px;border-top:1px solid var(--fill);align-items:center;font:400 12px var(--fb)">
       <span style="font:500 11px var(--fm);color:var(--dim)">${o.id}</span>
       <div>
         <div style="font-weight:600">${o.client}</div>
-        <div style="font:400 10.5px var(--fm);color:var(--dim2);margin-top:3px">${o.phone}</div>
+        ${o.telHref ? `<a href="${o.telHref}" style="display:inline-block;font:500 10.5px var(--fm);color:var(--acc);text-decoration:none;margin-top:3px">${o.phone}</a>` : `<div style="font:400 10.5px var(--fm);color:var(--dim2);margin-top:3px">${o.phone}</div>`}
       </div>
-      <div style="min-width:0">
+      <div class="mt-w" style="min-width:0">
         <div style="color:var(--fg2)">${o.item}</div>
+        ${o.extra.length ? `<div style="font:400 10.5px/1.45 var(--fm);color:var(--dim2);margin-top:4px">${o.extra.join('<br>')}</div>` : ''}
         ${o.noteOn ? `<div style="font:400 10px/1.35 var(--fm);color:var(--acc);margin-top:4px">✉ ${o.note}</div>` : ''}
       </div>
       <span style="font:500 11.5px var(--fm)">${o.sum}</span>
@@ -1290,15 +1352,15 @@
 
     function mProducts(v) {
       return `
-<div style="margin-top:20px;display:grid;grid-template-columns:1.55fr 1fr;gap:16px;align-items:start">
+<div class="mg" style="margin-top:20px;display:grid;grid-template-columns:1.55fr 1fr;gap:16px;align-items:start">
   <div style="border:1px solid var(--line);border-radius:20px;overflow:auto">
-    <div style="min-width:520px">
-    <div style="display:grid;grid-template-columns:${GS};gap:8px;padding:12px 16px;background:var(--thead);font:600 10px var(--fm);color:var(--dim2);letter-spacing:.05em">
+    <div class="mt" style="min-width:520px">
+    <div class="mt-h" style="display:grid;grid-template-columns:${GS};gap:8px;padding:12px 16px;background:var(--thead);font:600 10px var(--fm);color:var(--dim2);letter-spacing:.05em">
       <span>MAHSULOT</span><span>NARX</span><span>QOLDIQ</span><span>YORLIQ</span><span>OMMABOP</span>
     </div>
     ${v.stock.map(s => `
-      <div style="display:grid;grid-template-columns:${GS};gap:8px;padding:13px 16px;border-top:1px solid var(--fill);align-items:center;font:400 12px var(--fb)">
-        <div onclick="${h(s.select)}" style="cursor:pointer">
+      <div class="mt-r" style="display:grid;grid-template-columns:${GS};gap:8px;padding:13px 16px;border-top:1px solid var(--fill);align-items:center;font:400 12px var(--fb)">
+        <div class="mt-w" onclick="${h(s.select)}" style="cursor:pointer">
           <div style="font-weight:600">${s.name}</div>
           <div style="font:400 10.5px var(--fm);color:var(--dim2);margin-top:3px">${s.sku}</div>
         </div>
@@ -1381,12 +1443,12 @@
 
     function mCredit(v) {
       return `
-<div style="margin-top:20px;display:grid;grid-template-columns:1.5fr 1fr;gap:16px;align-items:start">
+<div class="mg" style="margin-top:20px;display:grid;grid-template-columns:1.5fr 1fr;gap:16px;align-items:start">
   <div style="display:flex;flex-direction:column;gap:12px;min-width:0">
     <div style="border:1px solid var(--line);border-radius:20px;padding:16px;background:var(--card);box-shadow:var(--shadow);border-color:transparent">
       <div style="font:600 13px var(--fb)">Nasiya servislari</div>
       <div style="font:400 10.5px var(--fm);color:var(--dim2);margin-top:4px">O'chirilgan servis mijoz ilovasida ko'rinmaydi</div>
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:13px">
+      <div class="mg" style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:13px">
         ${v.provRows.map(pv => `
           <div style="border:1px solid ${pv.border};border-radius:17px;padding:12px 13px;display:flex;flex-direction:column;justify-content:space-between;min-height:92px;background:var(--tile)">
             <div>
@@ -1423,21 +1485,25 @@
       </div>
     </div>
     <div style="border:1px solid var(--line);border-radius:20px;overflow:auto;opacity:${v.rateOpacity}">
-      <div style="min-width:620px">
-      <div style="display:grid;grid-template-columns:${GR};gap:12px;padding:12px 16px;background:var(--thead);font:600 10px var(--fm);color:var(--dim2);letter-spacing:.05em">
+      <div class="mt" style="min-width:620px">
+      <div class="mt-h" style="display:grid;grid-template-columns:${GR};gap:12px;padding:12px 16px;background:var(--thead);font:600 10px var(--fm);color:var(--dim2);letter-spacing:.05em">
         <span>MUDDAT</span><span>USTAMA FOIZ</span><span>4.35 MLN UCHUN</span><span>BOSHLANG'ICH TO'LOV</span><span>HOLAT</span>
       </div>
       ${v.rateRows.map(r => `
-        <div style="display:grid;grid-template-columns:${GR};gap:12px;padding:14px 16px;border-top:1px solid var(--fill);align-items:center;font:400 12px var(--fb)">
+        <div class="mt-r" style="display:grid;grid-template-columns:${GR};gap:12px;padding:14px 16px;border-top:1px solid var(--fill);align-items:center;font:400 12px var(--fb)">
           <span style="font:600 12.5px var(--fm)">${r.months}</span>
-          <div style="display:flex;align-items:center;gap:9px">
+          <div class="mt-w" style="display:flex;align-items:center;gap:9px">
             <div onclick="${h(r.minus)}" style="width:24px;height:24px;border-radius:7px;border:1px solid var(--line4);display:flex;align-items:center;justify-content:center;font:600 12px var(--fm);cursor:pointer">−</div>
             <span style="font:600 12.5px var(--fm);min-width:44px;text-align:center;color:var(--acc)">${r.rate}</span>
             <div onclick="${h(r.plus)}" style="width:24px;height:24px;border-radius:7px;border:1px solid var(--line4);display:flex;align-items:center;justify-content:center;font:600 12px var(--fm);cursor:pointer">+</div>
             <div style="flex:1;height:4px;border-radius:2px;background:var(--line);overflow:hidden;min-width:60px"><div style="height:100%;background:var(--acc);width:${r.w}"></div></div>
           </div>
           <span style="font:500 11.5px var(--fm)">${r.monthly}</span>
-          <span style="font:500 11.5px var(--fm);color:var(--dim3)">${r.down}</span>
+          <div style="display:flex;align-items:center;gap:6px">
+            <div onclick="${h(r.downMinus)}" style="width:22px;height:22px;border-radius:7px;border:1px solid var(--line4);display:flex;align-items:center;justify-content:center;font:600 12px var(--fm);cursor:pointer">−</div>
+            <span style="font:500 11.5px var(--fm);color:var(--dim3)">${r.down}</span>
+            <div onclick="${h(r.downPlus)}" style="width:22px;height:22px;border-radius:7px;border:1px solid var(--line4);display:flex;align-items:center;justify-content:center;font:600 12px var(--fm);cursor:pointer">+</div>
+          </div>
           <div onclick="${h(r.toggle)}" style="cursor:pointer;justify-self:start;display:flex;align-items:center;gap:8px">
             <div style="width:34px;height:19px;border-radius:15px;background:${r.trackBg};padding:2px;display:flex;justify-content:${r.knob}">
               <div style="width:15px;height:15px;border-radius:50%;background:${r.knobBg}"></div>
@@ -1465,6 +1531,7 @@
     <div style="border:1px solid var(--line);border-radius:20px;padding:16px;background:var(--card);box-shadow:var(--shadow);border-color:transparent">
       <div style="font:600 13px var(--fb)">Muddatli to'lov arizalari</div>
       <div style="display:flex;flex-direction:column;gap:9px;margin-top:12px">
+        ${v.creditApps.length ? '' : `<div style="font:400 11.5px var(--fb);color:var(--dim3);padding:6px 2px">Hozircha nasiya bilan buyurtma yo'q. Mijoz komplektda muddatli to'lovni tanlab buyurtma bersa, shu yerda ko'rinadi.</div>`}
         ${v.creditApps.map(c => `
           <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 11px;border-radius:15px;background:var(--tile);border:1px solid var(--line2)">
             <div>
@@ -1481,7 +1548,7 @@
 
     function mSettings(v) {
       return `${mFx()}
-<div style="margin-top:20px;display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start">
+<div class="mg" style="margin-top:20px;display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start">
   <div>
     <div style="border:1px solid var(--line);border-radius:20px;padding:16px;background:var(--card);box-shadow:var(--shadow);border-color:transparent">
       <div style="font:600 13px var(--fb)">Yorliqlar</div>
@@ -1663,7 +1730,7 @@
         <div style="background:var(--tile);padding:10px 12px"><div style="font:600 9px var(--fm);color:var(--dim2)">${k}</div><div style="font:700 14px var(--fm);margin-top:4px">${val}</div></div>`).join('')}
     </div>
     ${pv.samples.map(x => `
-      <div style="display:grid;grid-template-columns:1fr 80px 110px 150px;gap:10px;padding:9px 12px;border-top:1px solid var(--fill);font:400 11px var(--fm);align-items:center">
+      <div class="mt-r" style="display:grid;grid-template-columns:1fr 80px 110px 150px;gap:10px;padding:9px 12px;border-top:1px solid var(--fill);font:400 11px var(--fm);align-items:center">
         <span style="font-family:var(--fb);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(x.name)}</span>
         <span style="color:var(--dim2)">${fmtUsd(x.cost)}</span>
         <span style="color:var(--dim2);text-decoration:line-through">${M(x.old)}</span>
@@ -1838,9 +1905,9 @@
       const pushRow = p => {
         const [fg, bg] = CC_ST[p.status] || CC_ST['Kutilmoqda'];
         const its = (p.items || []).map(it => `${prodOf(it.sku).name} × ${it.qty}`).join(', ');
-        return `<div style="display:grid;grid-template-columns:70px 1fr 120px 110px 96px;gap:12px;padding:12px 16px;border-top:1px solid var(--fill);align-items:center;font:400 12px var(--fb)">
+        return `<div class="mt-r" style="display:grid;grid-template-columns:70px 1fr 120px 110px 96px;gap:12px;padding:12px 16px;border-top:1px solid var(--fill);align-items:center;font:400 12px var(--fb)">
           <span style="font:700 12px var(--fm)">${esc(p.code)}</span>
-          <div style="min-width:0"><div style="font-weight:600">${esc(p.title || 'Komplekt')}</div><div style="font:400 11px var(--fb);color:var(--dim2);margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${esc(its)}">${esc(its)}</div></div>
+          <div class="mt-w" style="min-width:0"><div style="font-weight:600">${esc(p.title || 'Komplekt')}</div><div style="font:400 11px var(--fb);color:var(--dim2);margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${esc(its)}">${esc(its)}</div></div>
           <span style="font:600 11.5px var(--fm)">${fmt(p.total || 0)}</span>
           <span style="font:400 10.5px var(--fm);color:var(--dim2)">${esc(String(p.created_at || '').slice(5, 16))}${p.admin ? ' · ' + esc(p.admin) : ''}</span>
           ${p.status === 'Kutilmoqda'
@@ -1906,8 +1973,8 @@
 </div>
 
 <div style="margin-top:18px;border:1px solid var(--line);border-radius:20px;overflow:auto">
-  <div style="min-width:700px">
-    <div style="display:grid;grid-template-columns:70px 1fr 120px 110px 96px;gap:12px;padding:12px 16px;background:var(--thead);font:600 10px var(--fm);color:var(--dim2);letter-spacing:.05em">
+  <div class="mt" style="min-width:700px">
+    <div class="mt-h" style="display:grid;grid-template-columns:70px 1fr 120px 110px 96px;gap:12px;padding:12px 16px;background:var(--thead);font:600 10px var(--fm);color:var(--dim2);letter-spacing:.05em">
       <span>ID</span><span>KOMPLEKT</span><span>SUMMA</span><span>YUBORILDI</span><span>HOLAT</span>
     </div>
     ${(S.ccPushes || []).length ? S.ccPushes.map(pushRow).join('') : `<div style="padding:28px 16px;text-align:center;color:var(--dim3);font:400 12.5px var(--fb)">Hali komplekt yuborilmagan</div>`}
@@ -1919,16 +1986,16 @@
     function mInstall(v) {
       return `
 <div style="margin-top:20px;border:1px solid var(--line);border-radius:20px;overflow:auto">
-  <div style="min-width:920px">
-    <div style="display:grid;grid-template-columns:100px 1.2fr 130px 1.5fr 80px 120px 100px 110px;gap:12px;padding:12px 16px;background:var(--thead);font:600 10px var(--fm);color:var(--dim2);letter-spacing:.05em">
+  <div class="mt" style="min-width:920px">
+    <div class="mt-h" style="display:grid;grid-template-columns:100px 1.2fr 130px 1.5fr 80px 120px 100px 110px;gap:12px;padding:12px 16px;background:var(--thead);font:600 10px var(--fm);color:var(--dim2);letter-spacing:.05em">
       <span>ID</span><span>MIJOZ</span><span>TELEFON</span><span>MANZIL</span><span>KAMERA</span><span>SUMMA</span><span>SANA</span><span>STATUS</span>
     </div>
     ${v.schedule.map(s => `
-      <div style="display:grid;grid-template-columns:100px 1.2fr 130px 1.5fr 80px 120px 100px 110px;gap:12px;padding:14px 16px;border-top:1px solid var(--fill);align-items:center;font:400 12px var(--fb)">
+      <div class="mt-r" style="display:grid;grid-template-columns:100px 1.2fr 130px 1.5fr 80px 120px 100px 110px;gap:12px;padding:14px 16px;border-top:1px solid var(--fill);align-items:center;font:400 12px var(--fb)">
         <span style="font:500 11px var(--fm);color:var(--dim)">${s.id}</span>
         <div style="font-weight:600">${esc(s.client)}</div>
         <div><a href="${s.telHref}" style="color:var(--acc);text-decoration:none;font:600 11.5px var(--fm)">${s.phone}</a></div>
-        <span style="color:var(--fg2);font-size:11.5px">${esc(s.addr)}</span>
+        <span class="mt-w" style="color:var(--fg2);font-size:11.5px">${esc(s.addr)}</span>
         <span style="font:600 11.5px var(--fm);color:var(--dim3)">${s.cams} ta</span>
         <span style="font:600 11.5px var(--fm)">${s.sum}</span>
         <span style="font:500 10.5px var(--fm);color:var(--dim2)">${s.installAt}</span>
@@ -1941,12 +2008,12 @@
     function mClients(v) {
       return `
 <div style="margin-top:20px;border:1px solid var(--line);border-radius:20px;overflow:auto">
-  <div style="min-width:880px">
-    <div style="display:grid;grid-template-columns:1.3fr 140px 100px 130px 1.4fr 110px;gap:12px;padding:12px 16px;background:var(--thead);font:600 10px var(--fm);color:var(--dim2);letter-spacing:.05em">
+  <div class="mt" style="min-width:880px">
+    <div class="mt-h" style="display:grid;grid-template-columns:1.3fr 140px 100px 130px 1.4fr 110px;gap:12px;padding:12px 16px;background:var(--thead);font:600 10px var(--fm);color:var(--dim2);letter-spacing:.05em">
       <span>MIJOZ</span><span>TELEFON</span><span>XARIDLAR</span><span>JAMI SUMMA</span><span>HUDUD / MANZIL</span><span>SO'NGGI SANA</span>
     </div>
     ${v.clients.map(c => `
-      <div style="display:grid;grid-template-columns:1.3fr 140px 100px 130px 1.4fr 110px;gap:12px;padding:14px 16px;border-top:1px solid var(--fill);align-items:center;font:400 12px var(--fb)">
+      <div class="mt-r" style="display:grid;grid-template-columns:1.3fr 140px 100px 130px 1.4fr 110px;gap:12px;padding:14px 16px;border-top:1px solid var(--fill);align-items:center;font:400 12px var(--fb)">
         <div style="font-weight:600">${esc(c.name)}</div>
         <div><a href="${c.telHref}" style="color:var(--acc);text-decoration:none;font:600 11.5px var(--fm)">${c.phone}</a></div>
         <span style="font:600 11.5px var(--fm);color:var(--dim3)">${c.orderCount} ta</span>
@@ -2010,7 +2077,7 @@
 
     function mStories(v) {
       return `
-<div style="margin-top:20px;display:grid;grid-template-columns:1.35fr 1fr;gap:16px;align-items:start">
+<div class="mg" style="margin-top:20px;display:grid;grid-template-columns:1.35fr 1fr;gap:16px;align-items:start">
   <div style="display:flex;flex-direction:column;gap:14px;min-width:0">
     <div style="border:1px solid var(--line);border-radius:20px;padding:16px;background:var(--card);box-shadow:var(--shadow);border-color:transparent">
       <div style="display:flex;align-items:baseline;justify-content:space-between;gap:12px">
@@ -2035,12 +2102,12 @@
       </div>
     </div>
     <div style="border:1px solid var(--line);border-radius:20px;overflow:auto">
-      <div style="min-width:620px">
-      <div style="display:grid;grid-template-columns:${GT};gap:12px;padding:12px 16px;background:var(--thead);font:600 10px var(--fm);color:var(--dim2);letter-spacing:.05em">
+      <div class="mt" style="min-width:620px">
+      <div class="mt-h" style="display:grid;grid-template-columns:${GT};gap:12px;padding:12px 16px;background:var(--thead);font:600 10px var(--fm);color:var(--dim2);letter-spacing:.05em">
         <span>TARTIB</span><span>VIDEO</span><span>OBYEKT</span><span>KO'RISH</span><span>HOLAT</span><span>AMAL</span>
       </div>
       ${v.storyRows.map(st => `
-        <div style="display:grid;grid-template-columns:${GT};gap:12px;padding:12px 16px;border-top:1px solid var(--fill);align-items:center;font:400 12px var(--fb)">
+        <div class="mt-r" style="display:grid;grid-template-columns:${GT};gap:12px;padding:12px 16px;border-top:1px solid var(--fill);align-items:center;font:400 12px var(--fb)">
           <div style="display:flex;align-items:center;gap:5px">
             <div onclick="${h(st.up)}" style="width:22px;height:22px;border-radius:6px;border:1px solid var(--line4);display:flex;align-items:center;justify-content:center;font:600 10px var(--fm);cursor:pointer;color:var(--fg2)">↑</div>
             <div onclick="${h(st.down)}" style="width:22px;height:22px;border-radius:6px;border:1px solid var(--line4);display:flex;align-items:center;justify-content:center;font:600 10px var(--fm);cursor:pointer;color:var(--fg2)">↓</div>
@@ -2133,7 +2200,7 @@
 
     function mStats(v) {
       return `
-<div style="margin-top:20px;display:grid;grid-template-columns:1.5fr 1fr;gap:16px;align-items:start">
+<div class="mg" style="margin-top:20px;display:grid;grid-template-columns:1.5fr 1fr;gap:16px;align-items:start">
   <div style="border:1px solid var(--line);border-radius:20px;padding:18px;background:var(--card);box-shadow:var(--shadow);border-color:transparent">
     <div style="font:600 13px var(--fb)">Oylik savdo · mln so'm</div>
     <div style="display:flex;align-items:flex-end;gap:14px;height:210px;margin-top:20px">

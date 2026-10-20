@@ -191,6 +191,7 @@ publicRouter.get('/config', async (_req, res) => {
     pricing,
     credit: await getSetting('credit'),
     modules: await getSetting('modules'),
+    labels: (await getSetting('labels')) || {},
     statusFlow: await getSetting('statusFlow'),
   });
 });

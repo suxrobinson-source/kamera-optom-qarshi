@@ -116,7 +116,9 @@ function kbSwitches(k) {
   const same = all.filter(p => kbBrand(p) === k.brand || (k.brand === 'HiLook' && /^NS-/.test(p.sku)));
   return [...same, ...all.filter(p => !same.includes(p))];
 }
-const kbCables = () => kbAll().filter(p => /^KAB-KABEL-KSVP/.test(p.sku) && kbInStock(p)).sort((a, b) => a.price - b.price);
+/* Kabel faqat 2 xil: tashqi (ko'cha) va ichki — narxi backend/src/set-cable-prices.js da qat'iy belgilangan */
+const KB_CABLES = ['KAB-KABEL-KSVPP-4-2-0-52-CHERNYY-YUTP', 'KAB-KABEL-KSVPV-4-2-0-52-SERYY-YUTP'];
+const kbCables = () => KB_CABLES.map(s => kbAll().find(p => p.sku === s)).filter(p => p && kbInStock(p));
 const kbPowers = () => kbAll().filter(p => /^ACC-(IBP-12V|BBP-)/.test(p.sku) && kbInStock(p)).sort((a, b) => a.price - b.price);
 const kbHdds = () => kbAll().filter(p => p.cat === 'Xotira' && /\bHDD\b/.test(p.name || '') && kbInStock(p)).sort((a, b) => a.price - b.price);
 const kbUsesSd = k => k.tech === 'wifi' && !(k.rec && k.rec !== 'none');

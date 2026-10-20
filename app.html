@@ -5425,7 +5425,7 @@
       const fCount = activeChips.length;
       const day = s.theme === 'day';
 
-      const pricing = (DATA.config && DATA.config.pricing) || { cablePerMeter: 9000, installPerCamera: 250000, cloudPerCameraMonth: 35000 };
+      const pricing = (DATA.config && DATA.config.pricing) || { cablePerMeter: 1950, installPerCamera: 250000, cloudPerCameraMonth: 35000 };
       /* Yetkazish: mahsulotlar summasi SHIP_FREE dan oshsa bepul, aks holda SHIP_FEE (barcha hududlar uchun) */
       const SHIP_FREE = pricing.freeShipFrom >= 0 && pricing.freeShipFrom != null ? +pricing.freeShipFrom : 1000000;
       const SHIP_FEE = pricing.shipFee >= 0 && pricing.shipFee != null ? +pricing.shipFee : 30000;
@@ -5886,7 +5886,7 @@
           };
         }),
         cams: s.cams, cable: s.cable,
-        cableLabel: s.cableUse ? (+s.cable || 0) + ' m UTP · ~' + fmt(9000) + '/m' : 'Kabel kerak emas',
+        cableLabel: s.cableUse ? (+s.cable || 0) + ' m UTP · ~' + fmt(pricing.cablePerMeter || 1950) + '/m' : 'Kabel kerak emas',
         cableOn: s.cableUse && MOD('cable'), toggleCable: () => set({ cableUse: !s.cableUse, kitExtra: rjSet(s.kitExtra, !s.cableUse ? rjBest(s.cams) : null) }),
         rjOn: rjPacks().length > 0, rjNeed: s.cams * 2,
         rjPacks: rjPacks().map(p => { const on = !!s.kitExtra[p.sku]; return { n: p.sku.slice(5), price: fmt(p.price).replace(" so‘m", ''), best: p.sku === rjBest(s.cams), ...chip(on), go: () => set({ kitExtra: rjSet(s.kitExtra, on ? null : p.sku) }) }; }),
@@ -6775,7 +6775,7 @@
       }
       const pricing = (DATA.config && DATA.config.pricing) || {};
       const cableM = wired ? cams * place.m : 0;
-      const cablePrice = cableM * (pricing.cablePerMeter || 9000);
+      const cablePrice = cableM * (pricing.cablePerMeter || 1950);
       const install = w.install && cams ? cams * (pricing.installPerCamera || 250000) : 0;
       const goods = lines.reduce((n, l) => n + l.sum, 0);
       const total = goods + install;

@@ -120,7 +120,7 @@ export async function runSeed({ force = false } = {}) {
 }
 
 const DEFAULT_PRICING = {
-  cablePerMeter: 9000,
+  cablePerMeter: 1950,
   installPerCamera: 250000,
   cloudPerCameraMonth: 35000,
   freeShipFrom: 1000000,

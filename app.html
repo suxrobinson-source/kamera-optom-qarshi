@@ -7043,7 +7043,7 @@
     const kbMod = m => !(S.mod && S.mod[m] === false);
 
     function kbState() {
-      if (!S.kb) S.kb = { view: 'ready', step: 'brand', brand: null, tech: null, place: 'out', cams: {}, rec: null, sw: null, cable: null, cableM: '', rj: null, power: null, store: null, storeQ: 1, install: false };
+      if (!S.kb) S.kb = { view: 'guide', step: 'brand', brand: null, tech: null, place: 'out', cams: {}, rec: null, sw: null, cable: null, cableM: '', rj: null, power: null, store: null, storeQ: 1, install: false };
       return S.kb;
     }
     function kbSet(patch) { set({ kb: kbFix({ ...kbState(), ...patch }) }); }
@@ -7105,10 +7105,151 @@
         ${right ? `<span class="opt-r">${right}</span>` : ''}
       </button>`;
 
+    /* ═══ Komplekt yordamchisi: 1) nechta kamera → 2) qayerga → 3) brendlar tavsiyasi ═══
+       Tavsiyalar kits.js dagi kbKit bilan bazadagi haqiqiy (omborda bor) mahsulotlardan tuziladi.
+       Tanlangan komplekt "O'zim yig'aman"ning Xulosa bosqichiga yuklanadi — u yerda o'zgartirib, buyurtma beriladi. */
+    const KG_NS = [1, 2, 3, 4, 6, 8, 12, 16];
+    const KG_MAX = 32;
+    const KG_STEPS = ['Kamera soni', 'Joyi', 'Tavsiyalar'];
+    let _kgLast = null, _kgCache = null;
+    function kgState() { if (!S.kg) S.kg = { step: 0, n: 4, place: null, out: 2 }; return S.kg; }
+    function kgSet(patch) { set({ kg: { ...kgState(), ...patch } }); }
+    /* [ko'chaga, xonaga] */
+    function kgSplit(g) {
+      const n = Math.max(1, +g.n || 1);
+      if (g.place === 'out' || n === 1 && g.place === 'mix') return [n, 0];
+      if (g.place === 'in') return [0, n];
+      const o = Math.min(n - 1, Math.max(1, +g.out || Math.ceil(n / 2)));
+      return [o, n - o];
+    }
+    /* Kam kamerada simsiz qulay; ko'p kamerada simli (IP, keyin analog) ishonchliroq; 8 tadan ko'p Wi-Fi kamera bitta routerda beqaror — taklif qilinmaydi */
+    const kgTechOrder = n => n <= 4 ? ['wifi', 'ip', 'analog'] : n <= 8 ? ['ip', 'analog', 'wifi'] : ['ip', 'analog'];
+    function kgRecs(nOut, nIn) {
+      const key = nOut + '|' + nIn;
+      if (_kgCache && _kgCache.key === key && _kgCache.src === DATA.products) return _kgCache.list;
+      const order = kgTechOrder(nOut + nIn);
+      const list = KB_BRANDS.map(b => {
+        const kits = order.map(t => kbKit(b, t, nOut, nIn)).filter(Boolean);
+        return kits.length ? { brand: b, kits, best: kits[0], mp: kbMaxMp(kits[0].k) } : null;
+      }).filter(Boolean).sort((a, b) => a.best.goods - b.best.goods);
+      _kgCache = { key, src: DATA.products, list };
+      return list;
+    }
+
+    function mKitGuide(seg) {
+      const g = kgState();
+      const n = Math.max(1, Math.min(KG_MAX, +g.n || 1));
+      const [nOut, nIn] = kgSplit(g);
+      const fresh = _kgLast !== g.step; _kgLast = g.step;
+      const setN = x => { const m = Math.max(1, Math.min(KG_MAX, x)); kgSet({ n: m, out: Math.ceil(m / 2) }); };
+      const ask = (t, s) => `<div class="wz-bot"><span class="wz-ava">${ic('spark', 20, 2)}</span><div class="wz-msg"><b>${esc(t)}</b><span>${esc(s)}</span></div></div>`;
+      const ctr = (q, minus, plus, label) => `<div class="ctr"><button onclick="${h(minus)}" aria-label="Kamaytirish">${ic('minus', 18, 2.2)}</button><b style="min-width:30px;text-align:center">${q}</b><button class="plus" onclick="${h(plus)}" aria-label="${esc(label || 'Ko‘paytirish')}">${ic('plus', 18, 2.2)}</button></div>`;
+      const back = g.step > 0 ? `<button class="btn btn-g" onclick="${h(() => kgSet({ step: g.step - 1 }))}" aria-label="Orqaga">${ic('chevL', 20, 2.2)}</button>` : '';
+      let body = '', foot = '';
+
+      if (g.step === 0) {
+        body = `${ask('Nechta kamera kerak?', 'Taxminiy son ham bo‘ladi — keyin istalgan payt o‘zgartirasiz.')}
+        <div class="hdds" style="grid-template-columns:repeat(4,1fr);margin-top:0">${KG_NS.map(x => `<button class="hdd ${n === x ? 'on' : ''}" onclick="${h(() => kgSet({ n: x, out: Math.ceil(x / 2), step: 1 }))}"><b>${x}</b><small>kamera</small></button>`).join('')}</div>
+        <div class="card" style="display:flex;align-items:center;justify-content:space-between;gap:12px">
+          <div style="min-width:0"><div class="opt-t">Boshqa son</div><div class="opt-s">1 dan ${KG_MAX} gacha</div></div>
+          ${ctr(n, () => setN(n - 1), () => setN(n + 1))}
+        </div>`;
+        foot = `<button class="btn btn-p f" onclick="${h(() => kgSet({ step: 1 }))}">Davom etish · ${n} kamera ${ic('arrowR', 18, 2.2)}</button>`;
+      } else if (g.step === 1) {
+        const opts = [
+          { v: 'out', n: 'Ko‘chaga (tashqi)', s: 'Hovli, darvoza, fasad, avtoturargoh — yomg‘ir va changga chidamli', ic: 'cam' },
+          { v: 'in', n: 'Xona ichiga', s: 'Xona, zal, kassa, ofis — ixcham, ko‘pchiligida ovoz bor', ic: 'dome' },
+          { v: 'mix', n: 'Ikkalasiga ham', s: 'Bir qismi ko‘chada, bir qismi xona ichida', ic: 'layers' }
+        ].filter(o => o.v !== 'mix' || n > 1);
+        const mix = g.place === 'mix' && n > 1;
+        body = `${ask('Kameralar qayerga o‘rnatiladi?', n + ' ta kamera uchun joyni tanlang — ko‘cha kameralari suv va changdan himoyalangan bo‘ladi.')}
+        <div class="wz-opts">${opts.map((o, i) => {
+          const on = g.place === o.v;
+          return `
+          <button class="opt ${on ? 'on' : ''}" style="--i:${i}" onclick="${h(() => o.v === 'mix' ? kgSet({ place: 'mix', out: g.place === 'mix' ? g.out : Math.ceil(n / 2) }) : kgSet({ place: o.v, step: 2 }))}">
+            <span class="ico ${on ? 'acc' : ''}">${ic(o.ic, 20)}</span>
+            <span class="opt-b"><span class="opt-t" style="display:block">${esc(o.n)}</span><span class="opt-s" style="display:block">${esc(o.s)}</span></span>
+            ${o.v === 'mix' ? `<span class="rad ${on ? 'on' : ''}"></span>` : ic('chevR', 18, 2)}
+          </button>`;
+        }).join('')}</div>
+        ${mix ? `
+        <div class="card" style="display:flex;flex-direction:column;gap:12px">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
+            <div style="min-width:0"><div class="opt-t">Ko‘chaga</div><div class="opt-s">tashqi kamera</div></div>
+            ${ctr(nOut, () => kgSet({ out: Math.max(1, nOut - 1) }), () => kgSet({ out: Math.min(n - 1, nOut + 1) }))}
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
+            <div style="min-width:0"><div class="opt-t">Xona ichiga</div><div class="opt-s">ichki kamera</div></div>
+            ${ctr(nIn, () => kgSet({ out: Math.min(n - 1, nOut + 1) }), () => kgSet({ out: Math.max(1, nOut - 1) }))}
+          </div>
+        </div>` : ''}`;
+        if (g.place) foot = `<button class="btn btn-p f" onclick="${h(() => kgSet({ step: 2 }))}">Brendlarni ko‘rish ${ic('arrowR', 18, 2.2)}</button>`;
+      } else {
+        const recs = kgRecs(nOut, nIn);
+        const what = nOut && nIn ? nOut + ' ta ko‘chaga + ' + nIn + ' ta xonaga' : nOut ? nOut + ' ta ko‘cha kamerasi' : nIn + ' ta xona kamerasi';
+        /* Belgilar aniq komplektga qo'yiladi: eng arzoni va eng yuqori MP (teng bo'lsa — arzonrog'i) */
+        const all = recs.reduce((a, r) => a.concat(r.kits), []);
+        const mpOf = x => kbMaxMp(x.k);
+        const cheap = all.length > 1 ? all.reduce((m, x) => (x.goods < m.goods ? x : m), all[0]) : null;
+        const sharp = all.length > 1 ? all.reduce((m, x) => (mpOf(x) > mpOf(m) || (mpOf(x) === mpOf(m) && x.goods < m.goods) ? x : m), all[0]) : null;
+        const prefTech = kgTechOrder(nOut + nIn)[0];
+        const pick = x => set({ kb: { ...JSON.parse(JSON.stringify(x.k)), view: 'build', step: 'sum', from: 'guide' } });
+        const toExpert = () => set({ tab: 'expert', expStep: 2, cb: 'idle', topic: 'Yangi kamera kerak', cbNote: 'Komplekt kerak: ' + what });
+        const kitBtn = (x, j) => {
+          const cams = kbCamList(x.k).map(c => c.q + ' × ' + c.p.name).join(' + ');
+          const parts = kbLines(x.k).filter(l => l.role !== 'Kamera').map(l => l.role).join(' · ');
+          return `
+          <button class="kb-kit" onclick="${h(() => pick(x))}">
+            <div class="kb-img">${prodMedia(x.cover, 40, 40)}</div>
+            <div class="kb-b">
+              <span class="tag ink">${esc(KB_SUBN[x.tech] || '')}</span>${j === 0 && x.tech === prefTech ? ' <span class="tag soft">tavsiya</span>' : ''}${x === cheap ? ' <span class="tag soft">Eng arzon</span>' : ''}${x === sharp && x !== cheap ? ' <span class="tag soft">Eng aniq tasvir</span>' : ''}
+              <div class="kb-n nt" style="margin-top:6px">${esc(cams)}</div>
+              <div class="kb-s">${esc(kbMaxMp(x.k) + ' MP' + (parts ? ' · ' + parts : ''))}</div>
+              <div class="kb-p">${pr(fmt(x.goods))}</div>
+            </div>
+            <span class="kb-go">${ic('chevR', 18, 2.2)}</span>
+          </button>`;
+        };
+        body = `${ask('Sizga mos brendlar', 'Har bir brendda bir-biriga mos to‘liq komplekt tuzdim — narxlar o‘rnatishsiz.')}
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="tag" style="cursor:pointer" onclick="${h(() => kgSet({ step: 0 }))}">${ic('edit', 12, 2.2)} <span>${n} kamera</span></button>
+          <button class="tag" style="cursor:pointer" onclick="${h(() => kgSet({ step: 1 }))}">${ic('edit', 12, 2.2)} <span>${esc(nOut && nIn ? nOut + ' ko‘chaga + ' + nIn + ' xonaga' : nOut ? 'Ko‘chaga' : 'Xona ichiga')}</span></button>
+        </div>
+        ${recs.length ? recs.map((r, i) => `
+        <section class="sec" style="gap:10px;--i:${i}">
+          <div class="sec-h"><h2 class="sec-t">${esc(r.brand)}</h2><span class="sec-n">${r.kits.length} variant</span></div>
+          ${r.kits.map(kitBtn).join('')}
+        </section>`).join('') : `
+        <div class="card tint">
+          <div class="opt-t">${n} ta kamera uchun tayyor komplekt topilmadi</div>
+          <div class="opt-s">Omborda bunday songa mos registrator yoki kamera yetarli emas. Mutaxassis siz uchun qo‘lda tanlab beradi.</div>
+          <button class="btn btn-p sm" style="margin-top:12px" onclick="${h(toExpert)}">${ic('headset', 16, 2)} Mutaxassisga yuborish</button>
+        </div>`}
+        <div class="opt-s">Komplektni tanlang — keyingi sahifada tarkibini o‘zgartirib, buyurtma berasiz.</div>
+        <button class="btn btn-o w" onclick="${h(() => kbSet({ view: 'build', step: 'brand' }))}">${ic('layers', 18, 2)} O‘zim bosqichma-bosqich yig‘aman</button>`;
+      }
+
+      return `
+<div class="pg" style="gap:18px">
+  <div class="ttl"><h1 class="h2">Komplekt</h1><span class="sec-n">${g.step + 1} / ${KG_STEPS.length} · ${esc(KG_STEPS[g.step])}</span></div>
+  ${seg}
+  <div class="steps kb-steps">
+    ${KG_STEPS.map((nm, i) => `
+    <button class="step ${i === g.step ? 'on' : ''} ${i < g.step ? 'past' : ''}" ${i < g.step || (i === 2 && g.place) ? `onclick="${h(() => kgSet({ step: i }))}"` : 'disabled'}>
+      <span class="step-bar"></span>
+      <span class="step-l">${i < g.step ? ic('check', 12, 2.6) : `<i>${i + 1}</i>`}${i === g.step ? esc(nm) : ''}</span>
+    </button>`).join('')}
+  </div>
+  <div class="wz ${fresh ? 'wz-in' : ''}">${body}</div>
+  ${g.step < 2 && (back || foot) ? `<div class="btn-row kb-nextbar">${back}${foot}</div>` : g.step === 2 ? `<div class="btn-row">${back}</div>` : ''}
+</div>`;
+    }
+
     function mKit(v) {
       const k = kbState();
       const tot = kbTotals(k);
-      const seg = `<div class="seg"><button class="${k.view === 'ready' ? 'on' : ''}" onclick="${h(() => kbSet({ view: 'ready' }))}">Tayyor komplektlar</button><button class="${k.view === 'build' ? 'on' : ''}" onclick="${h(() => kbSet({ view: 'build' }))}">Bosqichma-bosqich</button></div>`;
+      const seg = `<div class="seg">${[['guide', 'Yordamchi'], ['ready', 'Tayyor'], ['build', 'O‘zim yig‘aman']].map(([id, nm]) => `<button class="${k.view === id ? 'on' : ''}" onclick="${h(() => kbSet({ view: id }))}">${nm}</button>`).join('')}</div>`;
+      if (k.view === 'guide') return mKitGuide(seg);
       if (k.view === 'ready') {
         const G = kbReady();
         const g = G.find(x => x.id === k.rcat) || null;
@@ -7355,7 +7496,8 @@
     ${idx > 0 ? `<button class="btn btn-g" onclick="${h(() => go(KB_STEPS[idx - 1][0]))}" aria-label="Orqaga">${ic('chevL', 20, 2.2)}</button>` : ''}
     <button class="btn ${canNext ? 'btn-p' : 'btn-off'} f" onclick="${h(() => { if (!canNext) { flash(hint); return; } go(nextKey); })}">Davom etish ${ic('arrowR', 18, 2.2)}</button>
   </div>` : `
-  <button class="btn btn-o w" onclick="${h(() => go('cams'))}">${ic('chevL', 18, 2)} Kameralarni o‘zgartirish</button>`}
+  ${k.from === 'guide' ? `<button class="btn btn-o w" onclick="${h(() => kbSet({ view: 'guide' }))}">${ic('chevL', 18, 2)} Boshqa brend tavsiyalari</button>` : ''}
+  <button class="btn ${k.from === 'guide' ? 'btn-g' : 'btn-o'} w" onclick="${h(() => go('cams'))}">${ic('edit', 18, 2)} Kameralarni o‘zgartirish</button>`}
 </div>`;
     }
 
@@ -8695,6 +8837,28 @@ ${mProfHead(v, 'Yordam va biz haqida', "Qarshi shahar bosh do‘koni")}
 
     /* Русский: o‘zbekcha (lotin) matn → ruscha. {n} — raqam o‘rni. */
     const I18N_RU = {"Izohlar":"Комментарии",
+      "Yordamchi":"Помощник","Tayyor":"Готовые","Joyi":"Место","Tavsiyalar":"Рекомендации","kamera":"камер",
+      "Nechta kamera kerak?":"Сколько нужно камер?",
+      "Taxminiy son ham bo‘ladi — keyin istalgan payt o‘zgartirasiz.":"Можно примерно — потом в любой момент измените.",
+      "Boshqa son":"Другое количество","{n} dan {n} gacha":"от {n} до {n}",
+      "Kameralar qayerga o‘rnatiladi?":"Где будут установлены камеры?",
+      "{n} ta kamera uchun joyni tanlang — ko‘cha kameralari suv va changdan himoyalangan bo‘ladi.":"Выберите место для {n} камер — уличные камеры защищены от воды и пыли.",
+      "Ko‘chaga (tashqi)":"На улицу (наружные)",
+      "Hovli, darvoza, fasad, avtoturargoh — yomg‘ir va changga chidamli":"Двор, ворота, фасад, парковка — защищены от дождя и пыли",
+      "Xona ichiga":"В помещение",
+      "Xona, zal, kassa, ofis — ixcham, ko‘pchiligida ovoz bor":"Комната, зал, касса, офис — компактные, у многих есть звук",
+      "Ikkalasiga ham":"И на улицу, и в помещение",
+      "Bir qismi ko‘chada, bir qismi xona ichida":"Часть на улице, часть в помещении",
+      "Ko‘chaga":"На улицу","tashqi kamera":"наружная камера","ichki kamera":"внутренняя камера",
+      "Brendlarni ko‘rish":"Показать бренды",
+      "Sizga mos brendlar":"Подходящие вам бренды",
+      "Har bir brendda bir-biriga mos to‘liq komplekt tuzdim — narxlar o‘rnatishsiz.":"Для каждого бренда собрал полный совместимый комплект — цены без установки.",
+      "{n} ko‘chaga + {n} xonaga":"{n} на улицу + {n} в помещение",
+      "Eng arzon":"Самый доступный","{n} variant":"вариантов: {n}","Eng aniq tasvir":"Самое чёткое изображение",
+      "{n} ta kamera uchun tayyor komplekt topilmadi":"Для {n} камер готовый комплект не найден",
+      "Omborda bunday songa mos registrator yoki kamera yetarli emas. Mutaxassis siz uchun qo‘lda tanlab beradi.":"На складе не хватает подходящих регистраторов или камер на такое количество. Специалист подберёт вручную.",
+      "Komplektni tanlang — keyingi sahifada tarkibini o‘zgartirib, buyurtma berasiz.":"Выберите комплект — на следующей странице можно изменить состав и оформить заказ.",
+      "Boshqa brend tavsiyalari":"Другие бренды",
       "Qurilma ID":"ID устройства","Kod":"Код","Call-markazga shu kodni ayting":"Назовите этот код колл-центру","Qurilma ID — call-markazga ayting":"ID устройства — назовите его колл-центру",
       "ID nusxalandi — uni call-markaz operatoriga ayting":"ID скопирован — назовите его оператору колл-центра",
       "Call-markaz komplekti savatga qo‘shildi":"Комплект от колл-центра добавлен в корзину","Sizning ID":"Ваш ID",

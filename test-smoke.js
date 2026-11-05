@@ -281,7 +281,13 @@ async function testAppV2() {
   sb.set({ q: '', view: 'grid', filters: true }); check('filters sheet', 'Saralash');
   sb.set({ filters: false });
   // Komplekt v2.1: tayyor komplektlar + bosqichma-bosqich (brend → tur → kameralar → registrator → ulanish → xotira → xulosa)
-  sb.set({ tab: 'kit' }); check('kit ready (default)', 'Tayyor komplektlar');
+  // Yordamchi (standart): nechta kamera → qayerga → brendlar tavsiyasi
+  sb.set({ tab: 'kit' }); check('kit guide (default): count', 'Nechta kamera kerak?');
+  sb.set({ kg: { step: 1, n: 4, place: null, out: 2 } }); check('kit guide: place', 'Kameralar qayerga');
+  sb.set({ kg: { step: 1, n: 4, place: 'mix', out: 2 } }); check('kit guide: mix split', 'tashqi kamera');
+  ['out', 'in', 'mix'].forEach(pl => { sb.set({ kg: { step: 2, n: 4, place: pl, out: 2 } }); check(`kit guide: brands ${pl}`, 'Sizga mos brendlar'); });
+  sb.set({ kg: { step: 2, n: 32, place: 'out', out: 16 } }); check('kit guide: brands 32', 'Sizga mos brendlar');
+  sb.set({ kg: null, kb: { ...sb.S.kb, view: 'ready' } }); check('kit ready', 'Tayyor komplektlar');
   const kb = (step, extra = {}) => ({ view: 'build', step, brand: 'Dahua', tech: 'ip', place: 'out', cams: {}, rec: null, sw: null, cable: null, cableM: '', rj: null, power: null, store: null, storeQ: 1, install: false, ...extra });
   sb.set({ kb: kb('brand', { brand: null, tech: null }) }); check('kit build: brand', 'Qaysi brend bilan');
   ['tech', 'cams', 'rec', 'net', 'store', 'sum'].forEach(st => { sb.set({ kb: kb(st) }); check(`kit build: ${st}`, 'Komplekt'); });

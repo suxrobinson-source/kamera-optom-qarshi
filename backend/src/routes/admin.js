@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url';
 import { db, getSetting, setSetting, nowStr } from '../db.js';
 import { login, requireAdmin } from '../auth.js';
 import { getCurrency, parseRate, parsePct, computeProduct, planPricing, summarize, applyPricing, fetchCbuRate, ROUNDING_STEPS } from '../currency.js';
+import { refreshRu } from '../i18n-ru.js';
 import { asyncRouter, parseDataUrl, saveUpload, deleteUpload } from '../uploads.js';
 import { CHUNK, mediaStart, mediaChunk, mediaDone, mediaDelete, mediaUsage } from '../media.js';
 
@@ -110,6 +111,7 @@ adminRouter.get('/stock', async (_req, res) => {
       return {
         ...p,
         images: Array.isArray(images) ? images : [],
+        ru: undefined,
         active: !!p.active,
         is_popular: !!p.is_popular,
         low: (p.qty ?? 0) < 10
@@ -121,8 +123,14 @@ const parseImages = (row) => {
   if (!row) return row;
   let images = [];
   if (row.images) { try { images = JSON.parse(row.images); } catch (e) { } }
-  return { ...row, images: Array.isArray(images) ? images : [], is_popular: !!row.is_popular };
+  return { ...row, images: Array.isArray(images) ? images : [], ru: undefined, is_popular: !!row.is_popular };
 };
+
+/* Mijoz ilovasidagi ruscha tarjima (admin panelda ko'rsatilmaydi): o'zbekcha matn o'zgarsa lug'at bo'yicha qayta hisoblanadi */
+async function saveRu(sku) {
+  const row = await db.get('SELECT * FROM products WHERE sku = ?', sku);
+  if (row) await db.run('UPDATE products SET ru = ? WHERE sku = ?', JSON.stringify(refreshRu(row)), sku);
+}
 
 // POST /api/admin/products/:sku/toggle-popular — 1-klikda ommabop holatini almashtirish
 adminRouter.post('/products/:sku/toggle-popular', async (req, res) => {
@@ -177,6 +185,7 @@ adminRouter.patch('/products/:sku', async (req, res) => {
     p.sku,
   );
   if (b.video !== undefined && p.video && p.video !== b.video) await dropAsset(p.video);
+  if (['name', 'spec', 'badge'].some(f => b[f] !== undefined && String(b[f]) !== String(p[f] ?? ''))) await saveRu(p.sku);
   res.json(parseImages(await db.get('SELECT * FROM products WHERE sku = ?', p.sku)));
 });
 
@@ -199,6 +208,7 @@ adminRouter.post('/products', async (req, res) => {
     b.is_popular ? 1 : 0,
     JSON.stringify(b.images || [])
   );
+  await saveRu(sku);
   res.status(201).json(parseImages(await db.get('SELECT * FROM products WHERE sku = ?', sku)));
 });
 

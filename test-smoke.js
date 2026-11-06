@@ -348,6 +348,15 @@ async function testAppV2() {
   expectTr('Obyekt turi', 'kr', 'Объект тури');
   expectTr('IPC-2410 Bullet 4MP', 'kr', 'IPC-2410 Bullet 4MP');
   expectTr('Savatga qo‘shish', 'uz', 'Savatga qo‘shish');
+  // Mahsulot matni: RU rejimida serverdagi p.ru tarjimasi ishlatiladi (nom ham), KR — transliteratsiya
+  {
+    const D = sb.window.DATA, p0 = D.products[0];
+    D.products = D.products.map((p, i) => (i === 0 ? { ...p, ru: { name: 'Комплект «Дом 4»', desc: 'Русское описание комплекта.' } } : p));
+    expectTr(p0.desc, 'ru', 'Русское описание комплекта.');
+    expectTr(p0.name, 'ru', 'Комплект «Дом 4»');
+    expectTr(p0.name, 'kr', p0.name);
+  }
+  check('header language button', 'hd-lang');
   sb.set({ lang: 'ru' });
   if (sb.localStorage.getItem('ko2_lang') !== 'ru') throw new Error('v2 language not persisted to ko2_lang');
   sb.set({ lang: 'uz' });

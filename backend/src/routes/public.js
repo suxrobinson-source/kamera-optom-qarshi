@@ -1,6 +1,7 @@
 import { db, getSetting, nowStr } from '../db.js';
 import { asyncRouter, parseDataUrl, saveUpload } from '../uploads.js';
 import { shippingFee } from '../currency.js';
+import { publicRu } from '../i18n-ru.js';
 
 export const publicRouter = asyncRouter();
 
@@ -20,6 +21,7 @@ const parseProduct = ({ price_usd, margin, margin_usta, price_usta, ...row }) =>
     images: Array.isArray(images) ? images : [],
     tags: row.tags ? JSON.parse(row.tags) : [],
     specs: (Array.isArray(specs) ? specs : []).filter(sp => !PRIVATE_SPEC.test(String(sp && sp.k || ''))),
+    ru: publicRu(row, sp => !PRIVATE_SPEC.test(String(sp && sp.k || ''))),
     poe: !!row.poe, mp: !!row.mp, night: !!row.night, spin: !!row.spin, active: !!row.active,
     is_popular: !!row.is_popular,
   };

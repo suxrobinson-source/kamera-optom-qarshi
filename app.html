@@ -574,6 +574,18 @@
       font-variant-numeric: tabular-nums
     }
 
+    /* Til tugmasi: UZ → ЎЗ → RU */
+    .hd-lang {
+      justify-content: center;
+      min-width: 38px;
+      padding: 0 7px
+    }
+
+    .hd-lang b {
+      font: 700 11.5px/32px var(--fb);
+      letter-spacing: .05em
+    }
+
     .ibtn {
       position: relative;
       flex: none;
@@ -6285,6 +6297,7 @@
     </div>
   </div>
   <div class="hd-end">
+    <button class="hd-id hd-lang nt" onclick="${h(() => { const ord = ['uz', 'kr', 'ru'], nx = ord[(ord.indexOf(S.lang) + 1) % 3] || 'uz'; set({ lang: nx }); flash({ uz: "O‘zbek (lotin)", kr: 'Ўзбек (кирилл)', ru: 'Русский' }[nx]); })}" aria-label="Til / Тил / Язык" title="Til / Тил / Язык"><b>${{ uz: 'UZ', kr: 'ЎЗ', ru: 'RU' }[S.lang] || 'UZ'}</b></button>
     ${v.devId ? `<button class="hd-id" onclick="${h(v.copyDevId)}" aria-label="Qurilma ID" title="Qurilma ID — call-markazga ayting"><span>ID</span><b class="nt">${esc(v.devId)}</b></button>` : ''}
     <button class="ibtn" onclick="${h(v.openCart)}" aria-label="Savat">
       ${ic('bag', 21)}
@@ -9856,6 +9869,25 @@ ${mProfHead(v, 'Yordam va biz haqida', "Qarshi shahar bosh do‘koni")}
     }
 
     let _pnKey = null, _pnSet = new Set();
+    /* Mahsulotlarning ruscha matni: API har bir mahsulotga p.ru beradi (faqat o'zbekchadan farq qiladigan maydonlar).
+       O'zbekcha matn → ruscha xaritasi; ma'lumotning o'zi (filtr, komplekt hisoblari) o'zbekcha qoladi. */
+    let _ruKey = null, _ruMap = new Map();
+    function _ruProd() {
+      const ps = DATA.products || [];
+      if (_ruKey !== ps) {
+        _ruKey = ps; _ruMap = new Map();
+        const put = (a, b) => { if (a && b && a !== b) _ruMap.set(String(a).replace(/\s+/g, ' ').trim(), String(b)); };
+        ps.forEach(p => {
+          const r = p.ru;
+          if (!r) return;
+          put(p.name, r.name); put(p.badge, r.badge); put(p.spec, r.spec); put(p.desc, r.desc);
+          (p.tags || []).forEach((t, i) => put(t, r.tags && r.tags[i]));
+          (p.specs || []).forEach((s, i) => { const q = r.specs && r.specs[i]; if (s && q) { put(s.k, q.k); put(s.v, q.v); } });
+        });
+        _trCache.ru.clear();
+      }
+      return _ruMap;
+    }
     function _prodNames() {
       const ps = DATA.products || [];
       if (_pnKey !== ps) { _pnKey = ps; _pnSet = new Set(ps.flatMap(p => [p.name, p.sku].filter(Boolean))); _trCache.ru.clear(); _trCache.kr.clear(); }
@@ -9877,7 +9909,8 @@ ${mProfHead(v, 'Yordam va biz haqida', "Qarshi shahar bosh do‘koni")}
       const cache = _trCache[lang];
       let t = cache.get(core);
       if (t === undefined) {
-        t = _prodNames().has(core) ? core : (lang === 'ru' ? ruPlural(trRu(core)) : trKr(core));
+        /* RU: mahsulot matni (nom, tavsif, xususiyatlar) — serverdagi tayyor tarjimadan (p.ru) */
+        t = (lang === 'ru' && _ruProd().get(core)) || (_prodNames().has(core) ? core : (lang === 'ru' ? ruPlural(trRu(core)) : trKr(core)));
         cache.set(core, t);
       }
       if (t === core) return s;

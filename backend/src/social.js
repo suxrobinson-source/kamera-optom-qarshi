@@ -23,6 +23,8 @@ const FAL_TIMEOUT = 20 * 60 * 1000;        // 20 daqiqada tayyor bo'lmasa — xa
 const IG_TIMEOUT = 20 * 60 * 1000;
 const IG_VER = process.env.IG_API_VERSION || 'v24.0';
 const IG = `https://graph.instagram.com/${IG_VER}`;
+const FB = `https://graph.facebook.com/${IG_VER}`;        // yangi Meta ilovalari: Facebook (Unified login) tokeni shu yerdan ishlaydi
+const igBase = (ig) => (ig && ig.api === 'fb' ? FB : IG);
 
 const short = (s, n = 400) => String(s || '').replace(/\s+/g, ' ').trim().slice(0, n);
 const mask = (k) => (k ? k.slice(0, 4) + '…' + k.slice(-4) : '');
@@ -206,7 +208,15 @@ async function igCall(method, url, params, token) {
 export async function connectInstagram(token) {
   token = String(token || '').trim();
   if (token.length < 30) throw new Error('Instagram tokeni juda qisqa');
-  const me = await igCall('GET', IG + '/me', { fields: 'user_id,username,account_type' }, token);
+  if (!/^IG/.test(token)) {              // Facebook / Business (system user) tokeni: akkaunt sahifa orqali topiladi
+    const pages = await igCall('GET', FB + '/me/accounts', { fields: 'name,instagram_business_account{id,username}', limit: '50' }, token);
+    const pg = (pages.data || []).find(p => p.instagram_business_account);
+    if (!pg) throw new Error('Token orqali Instagram Business akkaunt topilmadi — akkaunt Facebook sahifaga ulangan va token ruxsatlari (pages_show_list, instagram_basic, instagram_content_publish) berilganini tekshiring');
+    const ia = pg.instagram_business_account;
+    await setSetting('instagram', { token, api: 'fb', userId: String(ia.id), username: ia.username || '', accountType: 'BUSINESS', pageName: pg.name || '', tokenAt: nowStr(), refreshedAt: nowStr(), expiresAt: '' });
+    return socialStatus();
+  }
+  const me =await igCall('GET', IG + '/me', { fields: 'user_id,username,account_type' }, token);
   if (me.account_type && !/BUSINESS|CREATOR|MEDIA_CREATOR/i.test(me.account_type)) {
     throw new Error('Bu shaxsiy akkaunt — Instagram ilovasida Professional (Biznes yoki Kreator) akkauntga o‘tkazing');
   }
@@ -220,8 +230,8 @@ export async function disconnectInstagram() { await setSetting('instagram', {});
 /* Uzoq muddatli token 60 kun yashaydi — har 3 kunda yangilanadi (yangilangan token yana 60 kun) */
 async function refreshToken(force = false) {
   const s = (await getSetting('instagram', {})) || {};
-  if (!s.token) return;
-  const last = Date.parse(String(s.refreshedAt || '').replace(' ', 'T') + 'Z') || 0;
+  if (!s.token || s.api === 'fb') return;     // Facebook (system user) tokeni muddatsiz, yangilanmaydi
+  const last =Date.parse(String(s.refreshedAt || '').replace(' ', 'T') + 'Z') || 0;
   if (!force && Date.now() - last < 3 * 86400000) return;
   try {
     const j = await igCall('GET', 'https://graph.instagram.com/refresh_access_token', { grant_type: 'ig_refresh_token' }, s.token);
@@ -257,12 +267,12 @@ export async function publishAiVideo(id, { type, caption, aiLabel = true }, base
     if (aiLabel) params.is_ai_generated = 'true';
   }
   let c;
-  try { c = await igCall('POST', `${IG}/${ig.userId}/media`, params, ig.token); }
+  try { c = await igCall('POST', `${igBase(ig)}/${ig.userId}/media`, params, ig.token); }
   catch (e) {
     // API versiyasi is_ai_generated ni tanimasa — belgisiz qayta urinish
     if (!params.is_ai_generated || !/is_ai_generated/i.test(e.raw || e.message)) throw e;
     delete params.is_ai_generated;
-    c = await igCall('POST', `${IG}/${ig.userId}/media`, params, ig.token);
+    c = await igCall('POST', `${igBase(ig)}/${ig.userId}/media`, params, ig.token);
   }
   await db.run(`UPDATE ai_videos SET ig_type = ?, ig_status = 'uploading', ig_container = ?, ig_media_id = '', ig_permalink = '', caption = ?, error = '', ig_at = ?, updated_at = ? WHERE id = ?`,
     type, String(c.id), row.caption || '', nowStr(), nowStr(), +id);
@@ -323,7 +333,7 @@ async function stepIg(row) {
   const ig = await igConf();
   if (!ig.token) return fail(row.id, 'Instagram uzildi', 'ig_status');
   let st;
-  try { st = await igCall('GET', `${IG}/${row.ig_container}`, { fields: 'status_code,status' }, ig.token); }
+  try { st = await igCall('GET', `${igBase(ig)}/${row.ig_container}`, { fields: 'status_code,status' }, ig.token); }
   catch (e) { if (e.code === 190 || e.code === 100) return fail(row.id, e.message, 'ig_status'); return; }
   if (st.status_code === 'ERROR' || st.status_code === 'EXPIRED') {
     return fail(row.id, 'Instagram videoni qabul qilmadi: ' + short(st.status || st.status_code, 300), 'ig_status');
@@ -334,11 +344,11 @@ async function stepIg(row) {
   }
   let mediaId = '';
   if (st.status_code === 'FINISHED') {
-    try { mediaId = String((await igCall('POST', `${IG}/${ig.userId}/media_publish`, { creation_id: row.ig_container }, ig.token)).id || ''); }
+    try { mediaId = String((await igCall('POST', `${igBase(ig)}/${ig.userId}/media_publish`, { creation_id: row.ig_container }, ig.token)).id || ''); }
     catch (e) { return fail(row.id, e.message, 'ig_status'); }
   }
   let link = '';
-  if (mediaId) { try { link = (await igCall('GET', `${IG}/${mediaId}`, { fields: 'permalink' }, ig.token)).permalink || ''; } catch (e) { } }
+  if (mediaId) { try { link = (await igCall('GET', `${igBase(ig)}/${mediaId}`, { fields: 'permalink' }, ig.token)).permalink || ''; } catch (e) { } }
   await db.run("UPDATE ai_videos SET ig_status = 'published', ig_media_id = ?, ig_permalink = ?, error = '', updated_at = ? WHERE id = ?", mediaId, link, nowStr(), row.id);
   lastIgCheck.delete(row.id);
 }

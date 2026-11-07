@@ -70,7 +70,7 @@ ordersRouter.post('/orders', async (req, res) => {
         items.push({ sku: p.sku, name: p.name, price: unit, qty });
         goodsSum += unit * qty;
         if (['Tashqi', 'Ichki', 'Aylanuvchi'].includes(p.cat)) cams += qty;
-        if (p.cat === 'Komplekt') cams += qty * 4;
+        if (p.cat === 'Komplekt') cams += qty * (p.sku === 'TXN-LITE' ? 2 : 4);
       }
 
       const installPrice = b.install ? Math.max(1, cams) * pricing.installPerCamera : 0;

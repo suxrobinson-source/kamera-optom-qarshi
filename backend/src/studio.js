@@ -608,7 +608,7 @@ STRUCTURE (keep this rhythm):
 PACING: every scene is ONE punchy sentence of 5–12 words (a second very short sentence is allowed). Use 7–10 scenes for a 30-second video (scale with the target length); a scene lasts 2.5–4.5 seconds. Alternate short and slightly longer lines. Use ?, !, … and commas to steer the voice's intonation. Speak like a neighbour, not like an advertisement: no clichés such as "eng sifatli va arzon" unless backed by a fact.
 
 LANGUAGE: natural, warm, spoken Uzbek in Latin script. Write o‘ and g‘ with the ‘ character (U+2018) and the tutuq with ’ (U+2019), e.g. "ma’lumot", "so‘m", "g‘amxo‘rlik". Avoid Russian or English words when an Uzbek word exists. No emoji, no hashtags in scene text.
-The "text" is read by text-to-speech: write every number, price, year and the phone number in words (e.g. "olti yuz o‘n olti ming so‘m"). Phone in words: "plus to‘qqiz yuz to‘qson sakkiz, yetmish sakkiz, bir yuz yigirma, nol-nol, yigirma".
+The "text" is read by text-to-speech: write every number, price, year and the phone number in words (e.g. "olti yuz o‘n olti ming so‘m"). Phone in words: "plus to‘qqiz yuz to‘qson sakkiz, yetmish yetti, nol nol to‘qqiz, yetmish bir, yetmish bir".
 
 SCENE FIELDS:
 - "kind": "product" when the scene shows a catalog product (then "sku" must be copied exactly from the catalog and "visual" is a short English camera-motion hint, no text, no people), otherwise "avatar" (a mood scene with stock footage; leave sku and visual empty). Use 2–4 product scenes when the topic suits it.

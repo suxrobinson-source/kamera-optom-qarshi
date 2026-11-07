@@ -256,7 +256,7 @@
       currency: null, fx: null, ustas: [], storyCmts: [], cmtFilter: 'all',
       cc: { code: '', dev: null, err: '', busy: false, q: '', items: {}, title: '', note: '' }, ccPushes: [],
       sd: { st: null, list: [], cur: null, topic: '', brief: '', secs: '30', elKey: '', voiceName: 'Kamera Optom — egasi', testText: 'Assalomu alaykum! Kamera Optom Qarshi — xavfsizligingiz bizning g‘amxo‘rligimiz.', testAudio: '', voices: null, busy: '', drafts: {}, newText: '', newKind: 'avatar' },
-      ai: { st: null, list: [], q: '', sku: '', img: '', title: '', price: '', spec: '', line: '+998 78 120 00 20 · Qarshi', bg: 'light', ovOn: true, prompt: '', dur: '5', frame: '', ov: '', busy: false, falKey: '', igToken: '', caps: {}, err: '' },
+      ai: { st: null, list: [], q: '', sku: '', img: '', title: '', price: '', spec: '', line: '+998 77 009 71 71 · Qarshi', bg: 'light', ovOn: true, prompt: '', dur: '5', frame: '', ov: '', busy: false, falKey: '', igToken: '', caps: {}, err: '' },
       loading: false, loaded: false
     };
 
@@ -2268,7 +2268,7 @@
        Brauzer 1080×1920 boshlang'ich kadr (mahsulot rasmi) va shaffof yozuv qatlami (nomi, narxi, telefon) chizadi;
        server kadrni fal.ai ga yuboradi, tayyor klipga qatlamni ffmpeg bilan qo'yadi va Instagram'ga Reels/Story qilib joylaydi. */
     const AI_FONT = "'Onest', 'Segoe UI', system-ui, sans-serif";
-    const AI_PHONE = '+998 78 120 00 20';
+    const AI_PHONE = '+998 77 009 71 71';
     const AI_BG = { light: ['#f7f5f2', '#e0dbd3', 'rgba(255,79,18,.10)'], dark: ['#27231f', '#0b0a09', 'rgba(255,79,18,.30)'], orange: ['#ff7a3d', '#c43706', 'rgba(255,255,255,.20)'] };
     function aiSet(o) { set({ ai: { ...S.ai, ...o } }); }
     let _aiPoll = null, _aiSig = '', _aiSeq = 0, _aiDeb = null;
@@ -2681,7 +2681,7 @@
     }
     const sdApprove = (p, i) => sdDo('approve', async () => { sdPut(await sdJSON(`/api/admin/studio/projects/${p.id}/approve`, 'POST', { index: i })); flash('Tasdiqlandi — sahnalar yasalmoqda'); });
     const sdRescript = p => sdDo('rescript', async () => { sdPut(await sdJSON(`/api/admin/studio/projects/${p.id}/rescript`, 'POST', {})); flash('Yangi variantlar so‘raldi'); });
-    function sdDraft(s) { return S.sd.drafts[s.id] || { text: s.text, kind: s.kind, sku: s.sku, visual: s.visual }; }
+    function sdDraft(s) { return S.sd.drafts[s.id] || { text: s.text, kind: s.kind, sku: s.sku, visual: s.visual, head: s.head || '', q: s.q || '' }; }
     function sdDraftSet(s, o) { S.sd.drafts = { ...S.sd.drafts, [s.id]: { ...sdDraft(s), ...o } }; }
     function sdSaveScene(p, s, retry) {
       const d = sdDraft(s);
@@ -2828,7 +2828,7 @@
             <div style="margin-top:9px">${lbl('INSTAGRAM IZOHI')}<div style="${box}"><textarea data-k="sd_cap" rows="4" onchange="${h(e => sdMeta(p, 'caption', e.target.value))}" style="${inp};resize:vertical;line-height:1.45;font-size:11.5px">${esc(p.caption)}</textarea></div></div>
             <div style="display:flex;justify-content:space-between;align-items:center;margin-top:16px">${lbl('SAHNALAR · ' + done + '/' + p.scenes.length + ' TAYYOR')}<span style="font:400 10.5px var(--fb);color:var(--dim3)">Matnni o‘zgartirib «Saqlash» — faqat shu sahna qayta yasaladi</span></div>
             <div style="display:flex;flex-direction:column;gap:10px;margin-top:8px">${p.scenes.map((s, i) => {
-              const d = sdDraft(s), dirty = d.text !== s.text || d.kind !== s.kind || d.sku !== s.sku || d.visual !== s.visual;
+              const d = sdDraft(s), dirty = d.text !== s.text || d.kind !== s.kind || d.sku !== s.sku || d.visual !== s.visual || (d.head || '') !== (s.head || '') || (d.q || '') !== (s.q || '');
               const prod = d.kind === 'product' && (S.stockProducts || []).find(x => x.sku === d.sku);
               const scol = s.status === 'ready' ? 'var(--ok)' : s.status === 'failed' ? 'var(--red)' : AMB;
               return `<div style="border:1px solid ${dirty ? 'rgba(255,79,18,.45)' : 'var(--line3)'};border-radius:16px;padding:11px 12px">
@@ -2842,6 +2842,9 @@
                   <span onclick="${h(() => sdDelScene(p, s))}" title="O‘chirish" style="cursor:pointer;display:inline-flex;color:var(--red)">${aic('trash', 15, 2)}</span>
                 </div>
                 <div style="${box}"><textarea data-k="sd_t_${s.id}" rows="2" oninput="${h(e => sdDraftSet(s, { text: e.target.value }))}" style="${inp};resize:vertical;line-height:1.5">${esc(d.text)}</textarea></div>
+                <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px">
+                  <div style="${box};flex:1;min-width:150px;margin-top:0"><input data-k="sd_head_${s.id}" value="${esc(d.head || '')}" maxlength="40" placeholder="Ekrandagi katta sarlavha (2–4 so‘z)" oninput="${h(e => sdDraftSet(s, { head: e.target.value }))}" style="${inp}"></div>
+                  <div style="${box};flex:1;min-width:150px;margin-top:0"><input data-k="sd_q_${s.id}" value="${esc(d.q || '')}" maxlength="80" placeholder="Stok-video qidiruvi (inglizcha)" oninput="${h(e => sdDraftSet(s, { q: e.target.value }))}" style="${inp}"></div></div>
                 ${d.kind === 'product' ? `<div style="display:flex;gap:8px;flex-wrap:wrap">
                   <div style="${box};flex:1;min-width:150px"><input data-k="sd_sku_${s.id}" list="sd_skus" value="${esc(d.sku)}" placeholder="Mahsulot SKU" onchange="${h(e => { sdDraftSet(s, { sku: e.target.value.trim() }); render(); })}" style="${inp}"></div>
                   <div style="${box};flex:2;min-width:180px"><input data-k="sd_vis_${s.id}" value="${esc(d.visual)}" placeholder="Kamera harakati (inglizcha, ixtiyoriy)" oninput="${h(e => sdDraftSet(s, { visual: e.target.value }))}" style="${inp}"></div></div>

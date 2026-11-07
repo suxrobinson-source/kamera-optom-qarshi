@@ -9,7 +9,7 @@ import { db } from './db.js';
 export const CHUNK = 1024 * 1024;
 export const MEDIA_MAX = 60 * 1024 * 1024;          // bitta video
 export const MEDIA_TOTAL = 700 * 1024 * 1024;       // barcha videolar (Heroku Postgres essential-0: 1 GB)
-export const MEDIA_FOLDERS = ['stories', 'products', 'banners'];
+export const MEDIA_FOLDERS = ['stories', 'products', 'banners', 'ai', 'studio'];
 export const VIDEO_TYPES = { mp4: 'video/mp4', m4v: 'video/mp4', webm: 'video/webm', mov: 'video/quicktime' };
 
 const toBuf = (v) => (Buffer.isBuffer(v) ? v : Buffer.from(v.buffer, v.byteOffset, v.byteLength));
@@ -59,6 +59,24 @@ export async function mediaDone(path) {
   if (+n !== +m.chunks) throw new Error(`Video to‘liq yuklanmadi (${n} / ${m.chunks})`);
   await db.run('UPDATE media SET done = 1 WHERE path = ?', path);
   return { path };
+}
+
+/* Server o'zi tayyorlagan video (AI natijasi) — xuddi admin yuklagandek bo'laklab bazaga yoziladi */
+export async function mediaPut(folder, buf, ext = 'mp4') {
+  const init = await mediaStart({ folder, name: 'video.' + ext, mime: VIDEO_TYPES[ext], size: buf.length });
+  try {
+    for (let i = 0; i < init.chunks; i++) await mediaChunk(init.path, i, buf.subarray(i * CHUNK, Math.min(buf.length, (i + 1) * CHUNK)));
+    return (await mediaDone(init.path)).path;
+  } catch (e) { await mediaDelete(init.path); throw e; }
+}
+
+/* Butun videoni xotiraga o'qish (studiya sahnalarini qayta yig'ish uchun; 60 MB gacha) */
+export async function mediaGet(path) {
+  const m = await db.get('SELECT chunks FROM media WHERE path = ? AND done = 1', String(path || ''));
+  if (!m) return null;
+  const rows = await db.all('SELECT idx, data FROM media_chunks WHERE path = ? ORDER BY idx', path);
+  if (rows.length !== +m.chunks) return null;
+  return Buffer.concat(rows.map(r => toBuf(r.data)));
 }
 
 export async function mediaDelete(path) {

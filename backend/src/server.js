@@ -11,6 +11,8 @@ import { serveMedia } from './media.js';
 import { publicRouter } from './routes/public.js';
 import { ordersRouter } from './routes/orders.js';
 import { adminRouter } from './routes/admin.js';
+import { startSocialWorker } from './social.js';
+import { startStudioWorker, claimScriptJob, submitScripts, checkWorkerKey } from './studio.js';
 
 process.on('uncaughtException', (err) => {
   console.error('Uncaught Exception:', err);
@@ -67,6 +69,14 @@ app.use('/api', publicRouter);
 app.use('/api', ordersRouter);
 app.use('/api/admin', adminRouter);
 
+// Klon studiya ssenariy ishchisi (egasining kompyuterida, Claude obunasi bilan) — admin tokeni o'rniga alohida kalit
+const workerAuth = wrap(async (req, res, next) => (await checkWorkerKey(req.get('x-worker-key'))) ? next() : res.status(401).json({ error: 'Ishchi kaliti noto‘g‘ri' }));
+app.get('/api/studio-worker/next', workerAuth, wrap(async (_req, res) => res.json({ job: await claimScriptJob() })));
+app.post('/api/studio-worker/:id', workerAuth, wrap(async (req, res) => {
+  try { await submitScripts(req.params.id, req.body || {}); res.json({ ok: true }); }
+  catch (e) { res.status(400).json({ error: e.message }); }
+}));
+
 app.use((req, res) => res.status(404).json({ error: `Yo'l topilmadi: ${req.method} ${req.path}` }));
 app.use((err, _req, res, _next) => {
   if (err.type === 'entity.too.large') return res.status(413).json({ error: 'Fayl juda katta' });
@@ -77,6 +87,8 @@ app.use((err, _req, res, _next) => {
 
 app.listen(PORT, () => {
   console.log(`KAMERA OPTOM QARSHI backend — http://localhost:${PORT} · baza: ${dialect}`);
+  startSocialWorker();
+  startStudioWorker();   // klon studiya sahnalari (studio_projects)   // AI video / Instagram navbati (ai_videos) — qayta ishga tushganda davom etadi
   // Parol faqat tasodifiy yaratilganda ko'rsatiladi (ADMIN_PASSWORD berilgan bo'lsa — loglarga yozilmaydi)
   if (newAdmin) console.log(`Admin yaratildi — login: ${newAdmin.username}` + (process.env.ADMIN_PASSWORD ? ' (parol: ADMIN_PASSWORD)' : `, parol: ${newAdmin.password}`));
 });

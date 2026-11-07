@@ -1,0 +1,11 @@
+Barcha tovushlar CC0 (public domain). Manba: Freesound (Openverse orqali) va opus-sound-layer kutubxonasi.
+
+- hit/fs-559387-cinematic-impact-2: "Cinematic Impact" by Rizzard, CC0, https://freesound.org/people/Rizzard/sounds/559387
+- pop/fs-328118-pop-7-1: "Pop 7" by greenvwbeetle, CC0, https://freesound.org/people/greenvwbeetle/sounds/328118
+- pop/fs-401542-pop-sound-1: "Pop Sound" by ConarB13, CC0, https://freesound.org/people/ConarB13/sounds/401542
+- whoosh/fs-449988-whoosh-med-high-1: "whoosh_med_high" by DJT4NN3R, CC0, https://freesound.org/people/DJT4NN3R/sounds/449988
+- whoosh/fs-60005-sharp-swosh-18-1: "Sharp Swosh 18" by qubodup, CC0, https://freesound.org/people/qubodup/sounds/60005
+
+00-technology_ambience.mp3 | technology ambience | burning-mir | CC0 | https://freesound.org/people/burning-mir/sounds/223442
+02-High_speed_jr_m4a.mp3 | High speed jr..m4a | AllenBass | CC0 | https://freesound.org/people/AllenBass/sounds/476195
+03-Thriller_Documentary_Pack_1.mp3 | Thriller Documentary Pack #1 | dekstromoramid | CC0 | https://freesound.org/people/dekstromoramid/sounds/435370

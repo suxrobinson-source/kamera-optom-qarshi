@@ -240,6 +240,53 @@ CREATE TABLE IF NOT EXISTS media_chunks (
   PRIMARY KEY (path, idx)
 );
 
+-- Klon studiya: mavzu → ssenariy variantlari (lokal Claude ishchisi) → sahnalar (ElevenLabs ovoz + avatar/mahsulot klipi) → yakuniy video
+CREATE TABLE IF NOT EXISTS studio_projects (
+  id          ${ID},
+  topic       TEXT DEFAULT '',
+  brief       TEXT DEFAULT '',
+  seconds     INTEGER DEFAULT 30,
+  status      TEXT DEFAULT 'scripting',
+  variants    TEXT DEFAULT '[]',
+  title       TEXT DEFAULT '',
+  caption     TEXT DEFAULT '',
+  scenes      TEXT DEFAULT '[]',
+  video       TEXT DEFAULT '',
+  ai_video_id INTEGER,
+  error       TEXT DEFAULT '',
+  admin       TEXT DEFAULT '',
+  claimed_at  TEXT,
+  created_at  TEXT DEFAULT ${NOW_SQL},
+  updated_at  TEXT DEFAULT ${NOW_SQL}
+);
+
+-- AI videolar (fal.ai) va ularning Instagram'ga joylanishi — fon ishchisi (social.js) holatni shu yerdan davom ettiradi
+CREATE TABLE IF NOT EXISTS ai_videos (
+  id           ${ID},
+  sku          TEXT DEFAULT '',
+  title        TEXT DEFAULT '',
+  prompt       TEXT DEFAULT '',
+  model        TEXT DEFAULT '',
+  duration     INTEGER DEFAULT 5,
+  status       TEXT DEFAULT 'generating',
+  fal_status   TEXT DEFAULT '',
+  fal_response TEXT DEFAULT '',
+  frame        TEXT DEFAULT '',
+  overlay      TEXT DEFAULT '',
+  video        TEXT DEFAULT '',
+  caption      TEXT DEFAULT '',
+  ig_type      TEXT DEFAULT '',
+  ig_status    TEXT DEFAULT '',
+  ig_container TEXT DEFAULT '',
+  ig_media_id  TEXT DEFAULT '',
+  ig_permalink TEXT DEFAULT '',
+  ig_at        TEXT,
+  error        TEXT DEFAULT '',
+  admin        TEXT DEFAULT '',
+  created_at   TEXT DEFAULT ${NOW_SQL},
+  updated_at   TEXT DEFAULT ${NOW_SQL}
+);
+
 CREATE INDEX IF NOT EXISTS idx_device_pushes_cid ON device_pushes(cid, status);
 CREATE INDEX IF NOT EXISTS idx_orders_phone  ON orders(phone);
 CREATE INDEX IF NOT EXISTS idx_orders_status ON orders(status);

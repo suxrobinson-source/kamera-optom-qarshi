@@ -8,6 +8,8 @@ import { getCurrency, parseRate, parsePct, computeProduct, planPricing, summariz
 import { refreshRu } from '../i18n-ru.js';
 import { asyncRouter, parseDataUrl, saveUpload, deleteUpload } from '../uploads.js';
 import { CHUNK, mediaStart, mediaChunk, mediaDone, mediaDelete, mediaUsage } from '../media.js';
+import { socialStatus, saveFalKey, connectInstagram, disconnectInstagram, listAiVideos, createAiVideo, updateAiVideo, deleteAiVideo, publishAiVideo } from '../social.js';
+import * as studio from '../studio.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -382,6 +384,55 @@ adminRouter.delete('/media', async (req, res) => {
   res.json({ ok: true });
 });
 adminRouter.get('/media/usage', async (_req, res) => res.json(await mediaUsage()));
+
+// ── AI video (fal.ai) → Instagram ──
+const bad = (res, e) => res.status(400).json({ error: e.message });
+adminRouter.get('/ai/status', async (_req, res) => res.json(await socialStatus()));
+adminRouter.put('/ai/fal', async (req, res) => {
+  try { await saveFalKey(req.body || {}); res.json(await socialStatus()); } catch (e) { bad(res, e); }
+});
+adminRouter.put('/ai/instagram', async (req, res) => {
+  try { res.json(await connectInstagram(req.body?.token)); } catch (e) { bad(res, e); }
+});
+adminRouter.delete('/ai/instagram', async (_req, res) => { await disconnectInstagram(); res.json(await socialStatus()); });
+adminRouter.get('/ai/videos', async (_req, res) => res.json(await listAiVideos()));
+// POST /api/admin/ai/videos { frame (dataURL), overlay? (PNG dataURL), prompt, duration: 5|10, sku?, title?, caption? }
+adminRouter.post('/ai/videos', async (req, res) => {
+  try { res.status(201).json(await createAiVideo(req.body || {}, req.admin?.username)); } catch (e) { bad(res, e); }
+});
+adminRouter.patch('/ai/videos/:id', async (req, res) => {
+  const v = await updateAiVideo(req.params.id, req.body || {});
+  v ? res.json(v) : res.status(404).json({ error: 'Video topilmadi' });
+});
+adminRouter.delete('/ai/videos/:id', async (req, res) => {
+  try { await deleteAiVideo(req.params.id); res.json({ ok: true }); } catch (e) { bad(res, e); }
+});
+// POST /api/admin/ai/videos/:id/publish { type: 'REELS' | 'STORIES', caption?, aiLabel? }
+adminRouter.post('/ai/videos/:id/publish', async (req, res) => {
+  try { res.json(await publishAiVideo(req.params.id, req.body || {}, `${req.protocol}://${req.get('host')}`)); } catch (e) { bad(res, e); }
+});
+
+// ── Klon studiya: ovoz kloni (ElevenLabs), yuz surati, mavzu → ssenariy → sahnalar → video ──
+const st = (fn) => async (req, res) => { try { res.json(await fn(req)); } catch (e) { bad(res, e); } };
+adminRouter.get('/studio/status', st(() => studio.studioStatus()));
+adminRouter.put('/studio/eleven', st(req => studio.saveEleven(req.body || {})));
+adminRouter.post('/studio/voice', st(req => studio.cloneVoice(req.body || {})));
+adminRouter.put('/studio/mode', st(req => studio.setMode(req.body || {})));
+adminRouter.get('/studio/voices', st(() => studio.listVoices()));
+adminRouter.put('/studio/voice', st(req => studio.selectVoice(req.body || {})));
+adminRouter.post('/studio/voice/test', st(req => studio.testVoice(req.body?.text)));
+adminRouter.put('/studio/face', st(req => studio.setFace(req.body?.image)));
+adminRouter.get('/studio/projects', st(() => studio.listProjects()));
+adminRouter.post('/studio/projects', st(req => studio.createProject(req.body || {}, req.admin?.username)));
+adminRouter.get('/studio/projects/:id', st(req => studio.getProject(req.params.id)));
+adminRouter.patch('/studio/projects/:id', st(req => studio.updateProjectMeta(req.params.id, req.body || {})));
+adminRouter.delete('/studio/projects/:id', st(async req => { await studio.deleteProject(req.params.id); return { ok: true }; }));
+adminRouter.post('/studio/projects/:id/rescript', st(req => studio.rescript(req.params.id, req.body || {})));
+adminRouter.post('/studio/projects/:id/approve', st(req => studio.approveVariant(req.params.id, req.body || {})));
+adminRouter.post('/studio/projects/:id/scenes', st(req => studio.addScene(req.params.id, req.body || {})));
+adminRouter.patch('/studio/projects/:id/scenes/:sid', st(req => studio.editScene(req.params.id, req.params.sid, req.body || {})));
+adminRouter.delete('/studio/projects/:id/scenes/:sid', st(req => studio.removeScene(req.params.id, req.params.sid)));
+adminRouter.post('/studio/projects/:id/scenes/:sid/move', st(req => studio.moveScene(req.params.id, req.params.sid, req.body?.dir)));
 
 /* Eski fayl almashtirilganda yoki o'chirilganda — bazadagi rasm/video ham o'chadi (repodagi statik fayllarga tegilmaydi) */
 async function dropAsset(p) {

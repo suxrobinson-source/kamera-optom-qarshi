@@ -255,6 +255,8 @@
       callbacks: [],
       currency: null, fx: null, ustas: [], storyCmts: [], cmtFilter: 'all',
       cc: { code: '', dev: null, err: '', busy: false, q: '', items: {}, title: '', note: '' }, ccPushes: [],
+      sd: { st: null, list: [], cur: null, topic: '', brief: '', secs: '30', elKey: '', voiceName: 'Kamera Optom — egasi', testText: 'Assalomu alaykum! Kamera Optom Qarshi — xavfsizligingiz bizning g‘amxo‘rligimiz.', testAudio: '', voices: null, busy: '', drafts: {}, newText: '', newKind: 'avatar' },
+      ai: { st: null, list: [], q: '', sku: '', img: '', title: '', price: '', spec: '', line: '+998 78 120 00 20 · Qarshi', bg: 'light', ovOn: true, prompt: '', dur: '5', frame: '', ov: '', busy: false, falKey: '', igToken: '', caps: {}, err: '' },
       loading: false, loaded: false
     };
 
@@ -672,6 +674,8 @@
         ['products', 'Mahsulotlar', stockCount],
         ['credit', "Muddatli to'lov", creditCount],
         ['stories', 'Ishlarimiz video', storiesCount],
+        ['studio', 'Klon studiya', (Array.isArray(s.sd.list) ? s.sd.list.filter(x => ['scripting', 'producing', 'choose'].includes(x.status)).length : 0) || ''],
+        ['ai', 'AI video · Instagram', (Array.isArray(s.ai.list) ? s.ai.list.filter(x => ['generating', 'processing'].includes(x.status) || x.ig_status === 'uploading').length : 0) || ''],
         ['settings', 'Sozlamalar', ''],
         ['stats', 'Statistika', ''],
         ['install', "O'rnatish jadvali", installCount],
@@ -692,6 +696,12 @@
           } else if (k === 'callcenter') {
             set({ adminTab: 'callcenter', sideOpen: false });
             ccRefresh();
+          } else if (k === 'studio') {
+            set({ adminTab: 'studio', sideOpen: false });
+            sdRefresh();
+          } else if (k === 'ai') {
+            set({ adminTab: 'ai', sideOpen: false });
+            aiRefresh();
           } else {
             set({ adminTab: k, sideOpen: false });
           }
@@ -815,6 +825,8 @@
         stats: ['Statistika', 'Barcha savdo va ko\'rsatkichlar'],
         install: ["O'rnatish jadvali", (Array.isArray(s.schedule) ? s.schedule.length : 0) ? `Jami ${(Array.isArray(s.schedule) ? s.schedule.length : 0)} ta o'rnatish rejalashtirilgan` : 'O\'rnatish xizmati bilan buyurtmalar'],
         clients: ['Mijozlar bazasi', `${clientRows.length} nafar mijoz tarixi`],
+        studio: ['Klon studiya', 'Mavzu bering → ssenariy variantlari → tasdiqlang → sizning yuz va ovozingizda video'],
+        ai: ['AI video · Instagram', 'Mahsulot rasmidan reklama video — bir tugma bilan Reels yoki Story’ga'],
         callcenter: ['Call-markaz · komplekt yuborish', 'Mijoz ilovasi tepasidagi ID ni ayting — yig‘ilgan komplekt uning savatiga tushadi'],
         ustas: ['Usta arizalari', `Tasdiqlangan ustalar ilovada usta narxini ko'radi · marja ${s.currency ? s.currency.margins.usta : 12}%`]
       }[s.adminTab] || ['Boshqaruv', ''];
@@ -1085,7 +1097,7 @@
         exportCsv: () => exportCSV(orders),
         aOrders: s.adminTab === 'orders', aCallbacks: s.adminTab === 'callbacks', aProducts: s.adminTab === 'products', aStats: s.adminTab === 'stats',
         aCredit: s.adminTab === 'credit', aStories: s.adminTab === 'stories', aSettings: s.adminTab === 'settings',
-        aInstall: s.adminTab === 'install', aClients: s.adminTab === 'clients', aUstas: s.adminTab === 'ustas', aCall: s.adminTab === 'callcenter',
+        aInstall: s.adminTab === 'install', aClients: s.adminTab === 'clients', aUstas: s.adminTab === 'ustas', aCall: s.adminTab === 'callcenter', aAi: s.adminTab === 'ai', aSd: s.adminTab === 'studio',
         sideOpen: !!s.sideOpen, toggleSide: () => set(p => ({ sideOpen: !p.sideOpen })), closeSide: () => set({ sideOpen: false }),
         confirmOn: !!s.confirmModal,
         confirmTitle: s.confirmModal ? s.confirmModal.title : '',
@@ -1319,11 +1331,16 @@
       out: '<path d="M14.5 4.5h4a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-4"/><path d="M10 8l-4 4 4 4M6 12h10"/>',
       download: '<path d="M12 4v11M7 10.5l5 5 5-5M5 20h14"/>', ext: '<path d="M7 17 17 7M9 7h8v8"/>',
       check: '<path d="m5 12.5 4.5 4.5L19 7.5"/>', cash: '<rect x="2.5" y="6" width="19" height="12" rx="2.5"/><circle cx="12" cy="12" r="2.5"/>',
-      alert: '<path d="M12 4 2.5 20h19z"/><path d="M12 10v4.5M12 17.5v.01"/>'
+      alert: '<path d="M12 4 2.5 20h19z"/><path d="M12 10v4.5M12 17.5v.01"/>',
+      spark: '<path d="M12 3.5 13.9 9l5.6 1.9-5.6 1.9L12 18.5l-1.9-5.7L4.5 10.9 10.1 9z"/><path d="M19 3.5v3M17.5 5h3"/>',
+      insta: '<rect x="3.5" y="3.5" width="17" height="17" rx="5"/><circle cx="12" cy="12" r="4"/><path d="M17 7v.01"/>',
+      trash: '<path d="M4.5 7h15M9.5 7V4.5h5V7M6.5 7l1 13h9l1-13"/>',
+      mic: '<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/>',
+      up: '<path d="m6 15 6-6 6 6"/>', down: '<path d="m6 9 6 6 6-6"/>'
     };
     const aic = (n, sz = 20, w = 1.8) => `<svg width="${sz}" height="${sz}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${AIC[n] || ''}</svg>`;
-    const ADMIN_KEYS = ['orders', 'callbacks', 'callcenter', 'products', 'credit', 'stories', 'settings', 'stats', 'install', 'clients', 'ustas'];
-    const ADMIN_IC = { orders: 'receipt', callbacks: 'headset', callcenter: 'send', products: 'box', credit: 'clock', stories: 'play', settings: 'gear', stats: 'chart', install: 'tool', clients: 'user', ustas: 'shield' };
+    const ADMIN_KEYS = ['orders', 'callbacks', 'callcenter', 'products', 'credit', 'stories', 'studio', 'ai', 'settings', 'stats', 'install', 'clients', 'ustas'];
+    const ADMIN_IC = { orders: 'receipt', callbacks: 'headset', callcenter: 'send', products: 'box', credit: 'clock', stories: 'play', studio: 'mic', ai: 'spark', settings: 'gear', stats: 'chart', install: 'tool', clients: 'user', ustas: 'shield' };
     const KPI_IC = ['cash', 'receipt', 'tool', 'alert'];
     const LOGO2 = '<svg width="38" height="38" viewBox="0 0 34 34" aria-hidden="true"><rect width="34" height="34" rx="11" fill="var(--acc)"/><circle cx="17" cy="17" r="8.4" fill="none" stroke="#fff" stroke-width="2.6"/><circle cx="17" cy="17" r="3.3" fill="#fff"/><circle cx="25" cy="9" r="1.8" fill="#fff"/></svg>';
     function adTheme() { try { return localStorage.getItem('ko2_admin_theme') || 'day'; } catch (e) { return 'day'; } }
@@ -2247,6 +2264,616 @@
     </div>`;
     }
 
+    /* ═══ AI video → Instagram ═══
+       Brauzer 1080×1920 boshlang'ich kadr (mahsulot rasmi) va shaffof yozuv qatlami (nomi, narxi, telefon) chizadi;
+       server kadrni fal.ai ga yuboradi, tayyor klipga qatlamni ffmpeg bilan qo'yadi va Instagram'ga Reels/Story qilib joylaydi. */
+    const AI_FONT = "'Onest', 'Segoe UI', system-ui, sans-serif";
+    const AI_PHONE = '+998 78 120 00 20';
+    const AI_BG = { light: ['#f7f5f2', '#e0dbd3', 'rgba(255,79,18,.10)'], dark: ['#27231f', '#0b0a09', 'rgba(255,79,18,.30)'], orange: ['#ff7a3d', '#c43706', 'rgba(255,255,255,.20)'] };
+    function aiSet(o) { set({ ai: { ...S.ai, ...o } }); }
+    let _aiPoll = null, _aiSig = '', _aiSeq = 0, _aiDeb = null;
+    const aiPending = x => ['generating', 'processing'].includes(x.status) || x.ig_status === 'uploading';
+    async function aiRefresh(quiet) {
+      clearTimeout(_aiPoll);
+      try {
+        const [st, list] = await Promise.all([quiet && S.ai.st ? S.ai.st : api('/api/admin/ai/status'), api('/api/admin/ai/videos')]);
+        const sig = JSON.stringify(list);
+        if (sig !== _aiSig || st !== S.ai.st) {
+          const old = new Map((S.ai.list || []).map(x => [x.id, x]));
+          if (quiet) for (const x of list) {
+            const o = old.get(x.id); if (!o) continue;
+            if (o.status !== 'ready' && x.status === 'ready') flash('AI video tayyor: ' + (x.title || '#' + x.id));
+            if (o.ig_status !== 'published' && x.ig_status === 'published') flash('Instagram’ga joylandi ✓');
+            if (o.status !== 'failed' && x.status === 'failed' || o.ig_status !== 'failed' && x.ig_status === 'failed') flash(x.error || 'Xato');
+          }
+          _aiSig = sig; aiSet({ st, list });
+        }
+      } catch (e) { if (!quiet) flash(e.message); }
+      if (S.adminTab === 'ai' && S.token && (S.ai.list || []).some(aiPending)) _aiPoll = setTimeout(() => aiRefresh(true), 8000);
+    }
+    function aiImg(src) {
+      return new Promise((resolve, reject) => {
+        const im = new Image();
+        if (!/^data:/.test(src)) im.crossOrigin = 'anonymous';
+        im.onload = () => resolve(im);
+        im.onerror = () => reject(new Error('Rasm ochilmadi'));
+        im.src = src;
+      });
+    }
+    function aiRRect(g, x, y, w, hh, r) {
+      g.beginPath(); g.moveTo(x + r, y); g.arcTo(x + w, y, x + w, y + hh, r); g.arcTo(x + w, y + hh, x, y + hh, r);
+      g.arcTo(x, y + hh, x, y, r); g.arcTo(x, y, x + w, y, r); g.closePath();
+    }
+    function aiWrap(g, text, maxW, maxLines) {
+      const lines = []; let cur = '';
+      for (const w of String(text || '').split(/\s+/).filter(Boolean)) {
+        const t = cur ? cur + ' ' + w : w;
+        if (!cur || g.measureText(t).width <= maxW) cur = t; else { lines.push(cur); cur = w; }
+      }
+      if (cur) lines.push(cur);
+      if (lines.length > maxLines) {
+        lines.length = maxLines;
+        let l = lines[maxLines - 1];
+        while (l.length > 1 && g.measureText(l + '…').width > maxW) l = l.slice(0, -1);
+        lines[maxLines - 1] = l + '…';
+      }
+      return lines;
+    }
+    /* Kadr (JPEG) va qatlam (PNG). Reels/Story xavfsiz hududi: tepada ~220px, pastda ~350px, o'ngda ~140px Instagram tugmalari */
+    async function aiCompose() {
+      const a = S.ai, seq = ++_aiSeq;
+      if (!a.img) { aiSet({ frame: '', ov: '' }); return; }
+      let im;
+      try { im = await aiImg(a.img); } catch (e) { if (seq === _aiSeq) aiSet({ err: 'Rasm ochilmadi — boshqa rasm tanlang', frame: '', ov: '' }); return; }
+      if (seq !== _aiSeq) return;
+      try { if (document.fonts) await document.fonts.ready; } catch (e) { }
+      const W = 1080, H = 1920;
+      const c = document.createElement('canvas'); c.width = W; c.height = H;
+      const g = c.getContext('2d');
+      const [c1, c2, glow] = AI_BG[a.bg] || AI_BG.light;
+      let gr = g.createLinearGradient(0, 0, 0, H); gr.addColorStop(0, c1); gr.addColorStop(1, c2);
+      g.fillStyle = gr; g.fillRect(0, 0, W, H);
+      gr = g.createRadialGradient(W / 2, 700, 40, W / 2, 700, 760); gr.addColorStop(0, glow); gr.addColorStop(1, 'rgba(0,0,0,0)');
+      g.fillStyle = gr; g.fillRect(0, 0, W, H);
+      const k = Math.min(880 / im.width, 860 / im.height), w = im.width * k, ih = im.height * k, x = (W - w) / 2, y = 700 - ih / 2;
+      if (a.bg === 'dark') {
+        aiRRect(g, x - 28, y - 28, w + 56, ih + 56, 44); g.fillStyle = '#ffffff'; g.fill();
+        g.drawImage(im, x, y, w, ih);
+      } else {
+        g.fillStyle = 'rgba(0,0,0,.10)'; g.beginPath(); g.ellipse(W / 2, y + ih + 18, w * 0.38, 26, 0, 0, Math.PI * 2); g.fill();
+        g.globalCompositeOperation = 'multiply'; g.drawImage(im, x, y, w, ih); g.globalCompositeOperation = 'source-over';   // oq fon yo'qoladi
+      }
+      const frame = c.toDataURL('image/jpeg', 0.9);
+
+      const o = document.createElement('canvas'); o.width = W; o.height = H;
+      const q = o.getContext('2d');
+      const brand = 'KAMERA OPTOM · QARSHI';
+      q.font = `700 34px ${AI_FONT}`; q.textBaseline = 'middle';
+      aiRRect(q, 60, 230, q.measureText(brand).width + 96, 80, 40); q.fillStyle = 'rgba(20,19,17,.80)'; q.fill();
+      q.fillStyle = '#ff4f12'; q.beginPath(); q.arc(104, 270, 12, 0, Math.PI * 2); q.fill();
+      q.fillStyle = '#ffffff'; q.fillText(brand, 132, 272);
+      q.textBaseline = 'alphabetic';
+      q.font = `700 56px ${AI_FONT}`;
+      const tl = aiWrap(q, a.title, 780, 2);
+      const priceTxt = +String(a.price).replace(/\s/g, '') > 0 ? M(+String(a.price).replace(/\s/g, '')) + ' so‘m' : '';
+      const ph = 56 + tl.length * 70 + (priceTxt ? 104 : 0) + (a.line ? 60 : 0) + 36;
+      const py = 1560 - ph;
+      aiRRect(q, 60, py, 880, ph, 40); q.fillStyle = 'rgba(20,19,17,.86)'; q.fill();
+      q.fillStyle = '#ff4f12'; aiRRect(q, 60, py + 40, 10, ph - 80, 5); q.fill();
+      let yy = py + 56;
+      q.fillStyle = '#ffffff';
+      tl.forEach(l => { q.fillText(l, 108, yy + 48); yy += 70; });
+      if (priceTxt) { q.font = `800 84px ${AI_FONT}`; q.fillStyle = '#ff4f12'; q.fillText(priceTxt, 106, yy + 86); yy += 104; }
+      if (a.line) { q.font = `500 36px ${AI_FONT}`; q.fillStyle = 'rgba(255,255,255,.80)'; q.fillText(aiWrap(q, a.line, 780, 1)[0] || '', 108, yy + 44); }
+      const ov = o.toDataURL('image/png');
+      if (seq !== _aiSeq) return;
+      aiSet({ frame, ov, err: '' });
+    }
+    function aiRecompose() { clearTimeout(_aiDeb); _aiDeb = setTimeout(aiCompose, 300); }
+    const aiDefPrompt = name => `Premium commercial product video of a CCTV security camera${name ? ' (' + name + ')' : ''}. Slow, smooth cinematic camera push-in with a gentle orbit around the product, soft studio lighting, subtle light sweeps and reflections gliding over the housing, shallow depth of field, clean background. The product stays sharp, unchanged and centered. No text, no people, no added logos.`;
+    function aiDefCaption(a) {
+      const price = +String(a.price).replace(/\s/g, '');
+      return [
+        a.title || 'Kuzatuv kamerasi',
+        a.spec ? '✅ ' + a.spec : '',
+        price > 0 ? '💰 Narxi: ' + M(price) + ' so‘m' : '',
+        '📞 ' + AI_PHONE,
+        '📍 Qarshi · Kamera Optom — o‘rnatish xizmati bilan',
+        '',
+        '#kuzatuvkamerasi #videokuzatuv #kamera #qarshi #kameraoptom #xavfsizlik'
+      ].filter((s, i, arr) => s || (i > 0 && arr[i - 1])).join('\n');
+    }
+    function aiPick(p) {
+      const img = (Array.isArray(p.images) && p.images[0]) || '';
+      if (!img) flash('Bu mahsulotda rasm yo‘q — o‘zingiz rasm yuklang');
+      S.ai = { ...S.ai, sku: p.sku, title: p.name, price: String(p.price || ''), spec: p.spec || '', img, prompt: aiDefPrompt(p.name), q: '', frame: '', ov: '', err: '' };
+      render(); aiCompose();
+    }
+    async function aiFile(e) {
+      const f = e.target.files && e.target.files[0];
+      e.target.value = '';
+      if (!f) return;
+      try {
+        const d = await imageData(f, 1600);
+        S.ai = { ...S.ai, img: d, prompt: S.ai.prompt || aiDefPrompt(S.ai.title), err: '' };
+        render(); aiCompose();
+      } catch (err) { flash(err.message); }
+    }
+    async function aiGenerate() {
+      const a = S.ai;
+      if (a.busy) return;
+      if (!a.st || !a.st.fal.ok) { flash('Avval fal.ai kalitini kiriting (o‘ngdagi «Ulanishlar»)'); return; }
+      if (!a.frame) { flash('Mahsulot tanlang yoki rasm yuklang'); return; }
+      aiSet({ busy: true, err: '' });
+      try {
+        await api('/api/admin/ai/videos', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ frame: a.frame, overlay: a.ovOn ? a.ov : '', prompt: (a.prompt || aiDefPrompt(a.title)).trim(), duration: a.dur, sku: a.sku, title: a.title, caption: aiDefCaption(a) })
+        });
+        aiSet({ busy: false });
+        flash('Video yaratilmoqda — odatda 1–3 daqiqa');
+        aiRefresh();
+      } catch (e) { aiSet({ busy: false, err: e.message }); }
+    }
+    const aiCap = v => (S.ai.caps[v.id] != null ? S.ai.caps[v.id] : v.caption || '');
+    async function aiSaveCap(v) {
+      if (S.ai.caps[v.id] == null || S.ai.caps[v.id] === v.caption) return;
+      try { await api('/api/admin/ai/videos/' + v.id, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ caption: S.ai.caps[v.id] }) }); v.caption = S.ai.caps[v.id]; }
+      catch (e) { flash(e.message); }
+    }
+    function aiPublish(v, type) {
+      const st = S.ai.st;
+      if (!st || !st.ig.connected) { flash('Avval Instagram akkauntini ulang (o‘ngdagi «Ulanishlar»)'); return; }
+      const story = type === 'STORIES';
+      set({
+        confirmModal: {
+          title: story ? 'Story’ga joylash' : 'Reels’ga joylash',
+          text: `Video @${st.ig.username} sahifasiga darhol joylanadi${story ? ' (Story — 24 soat)' : ' (Reels va lenta)'}.${story ? '' : ' Izoh matni ham birga chiqadi.'} Instagram’da «AI yordamida yaratilgan» belgisi qo‘yiladi.`,
+          actionLabel: 'Joylash', cancelLabel: 'Bekor', danger: false,
+          action: async () => {
+            set({ confirmModal: null });
+            try {
+              await api('/api/admin/ai/videos/' + v.id + '/publish', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ type, caption: aiCap(v), aiLabel: true }) });
+              flash('Instagram videoni qabul qildi — 1–3 daqiqada joylanadi');
+              aiRefresh();
+            } catch (e) { flash(e.message); }
+          }
+        }
+      });
+    }
+    function aiDelete(v) {
+      set({
+        confirmModal: {
+          title: 'Videoni o‘chirish', text: 'Video serverdan o‘chiriladi. Instagram’dagi post (agar joylangan bo‘lsa) o‘chmaydi.',
+          actionLabel: 'O‘chirish', cancelLabel: 'Bekor', danger: true,
+          action: async () => {
+            set({ confirmModal: null });
+            try { await api('/api/admin/ai/videos/' + v.id, { method: 'DELETE' }); flash('Video o‘chirildi'); aiRefresh(); } catch (e) { flash(e.message); }
+          }
+        }
+      });
+    }
+    async function aiSaveFal() {
+      const k = String(S.ai.falKey || '').trim();
+      if (!k) { flash('fal.ai kalitini kiriting'); return; }
+      try { aiSet({ st: await api('/api/admin/ai/fal', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ falKey: k }) }), falKey: '' }); flash('fal.ai kaliti saqlandi'); }
+      catch (e) { flash(e.message); }
+    }
+    async function aiConnectIg() {
+      const t = String(S.ai.igToken || '').trim();
+      if (!t) { flash('Instagram tokenini kiriting'); return; }
+      try { const st = await api('/api/admin/ai/instagram', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token: t }) }); aiSet({ st, igToken: '' }); flash('Instagram ulandi: @' + st.ig.username); }
+      catch (e) { flash(e.message); }
+    }
+    function aiDisconnectIg() {
+      set({
+        confirmModal: {
+          title: 'Instagram’ni uzish', text: 'Token serverdan o‘chiriladi. Qayta ulash uchun yangi token kerak bo‘ladi.', actionLabel: 'Uzish', cancelLabel: 'Bekor', danger: true,
+          action: async () => { set({ confirmModal: null }); try { aiSet({ st: await api('/api/admin/ai/instagram', { method: 'DELETE' }) }); flash('Instagram uzildi'); } catch (e) { flash(e.message); } }
+        }
+      });
+    }
+    const AI_ST = {
+      generating: ['AI YARATMOQDA…', AMB, 'rgba(255,176,32,.12)'], processing: ['ISHLOV BERILMOQDA…', AMB, 'rgba(255,176,32,.12)'],
+      ready: ['TAYYOR', 'var(--ok)', 'rgba(18,161,80,.12)'], failed: ['XATO', RED, 'rgba(255,77,61,.1)'],
+      uploading: ['INSTAGRAM’GA YUKLANMOQDA…', AMB, 'rgba(255,176,32,.12)'], published: ['INSTAGRAM’DA ✓', 'var(--ok)', 'rgba(18,161,80,.12)']
+    };
+
+    function mAi() {
+      const a = S.ai, st = a.st;
+      const lbl = t => `<div style="font:600 9.5px var(--fm);color:var(--dim2);letter-spacing:.05em">${t}</div>`;
+      const box = 'margin-top:5px;border:1px solid var(--line3);border-radius:14px;padding:9px 10px;background:var(--tile)';
+      const inp = 'width:100%;border:none;outline:none;background:transparent;color:var(--fg);font:400 12.5px var(--fb)';
+      const chip = (on, label, fn) => `<span onclick="${h(fn)}" style="cursor:pointer;padding:7px 11px;border-radius:10px;font:600 11.5px var(--fb);border:1px solid ${on ? 'transparent' : 'var(--line3)'};background:${on ? 'var(--acc)' : 'transparent'};color:${on ? '#fff' : 'var(--fg2)'}">${label}</span>`;
+      const tag = ([t, fg, bg]) => `<span style="font:600 9.5px var(--fm);color:${fg};background:${bg};padding:5px 8px;border-radius:6px;white-space:nowrap">${t}</span>`;
+      const q = String(a.q || '').trim().toLowerCase();
+      const prods = (Array.isArray(S.stockProducts) ? S.stockProducts : []).filter(p => p.active !== false && Array.isArray(p.images) && p.images.length);
+      const found = q ? prods.filter(p => `${p.name} ${p.sku} ${p.spec || ''} ${p.cat}`.toLowerCase().includes(q)).slice(0, 12) : [];
+      const perSec = st && st.fal.perSec;
+      const cost = perSec ? ' · ≈ $' + (perSec * +a.dur).toFixed(2) : '';
+      const field = (k, label, ph, val, mode) => `<div style="margin-top:9px">${lbl(label)}<div style="${box}"><input data-k="ai_${k}" value="${esc(val)}" ${mode ? `inputmode="${mode}"` : ''} placeholder="${esc(ph)}" oninput="${h(e => { S.ai[k] = e.target.value; aiRecompose(); })}" style="${inp}"></div></div>`;
+
+      const left = `
+  <div style="border:1px solid var(--line);border-radius:20px;padding:16px;background:var(--card)">
+    ${lbl('1 · MAHSULOT (RASMI VIDEOGA ASOS BO‘LADI)')}
+    <div style="display:flex;gap:8px;margin-top:5px">
+      <div style="${box};margin-top:0;flex:1"><input data-k="ai_q" value="${esc(a.q)}" placeholder="Qidirish: Dahua 4MP, Hikvision, EZVIZ…" oninput="${h(e => aiSet({ q: e.target.value }))}" style="${inp}"></div>
+      <label class="ad-btn g" style="cursor:pointer">Rasm yuklash<input type="file" accept="image/*" onchange="${h(aiFile)}" style="display:none"></label>
+    </div>
+    ${found.length ? `<div style="margin-top:6px;display:flex;flex-direction:column;max-height:300px;overflow:auto">${found.map(p => `
+      <div onclick="${h(() => aiPick(p))}" style="cursor:pointer;display:flex;align-items:center;gap:10px;padding:7px 4px;border-top:1px solid var(--fill)">
+        <img src="${esc(p.images[0])}" alt="" loading="lazy" style="width:40px;height:40px;object-fit:contain;border-radius:8px;background:#fff;flex:none">
+        <div style="flex:1;min-width:0"><div style="font:600 12px var(--fb);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(p.name)}</div><div style="font:400 10.5px var(--fm);color:var(--dim2);margin-top:2px">${esc(p.sku)} · ${fmt(p.price || 0)}</div></div>
+      </div>`).join('')}</div>` : (q ? `<div style="padding:10px 4px;font:400 11.5px var(--fb);color:var(--dim3)">Rasmli mahsulot topilmadi</div>` : '')}
+    ${a.img ? `
+    <div style="display:flex;gap:14px;margin-top:14px;flex-wrap:wrap">
+      <div style="position:relative;width:180px;aspect-ratio:9/16;border-radius:16px;overflow:hidden;background:var(--tile);border:1px solid var(--line3);flex:none">
+        ${a.frame ? `<img src="${a.frame}" alt="Kadr" style="position:absolute;inset:0;width:100%;height:100%">${a.ovOn && a.ov ? `<img src="${a.ov}" alt="" style="position:absolute;inset:0;width:100%;height:100%">` : ''}` : `<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font:400 11px var(--fb);color:var(--dim3)">Chizilmoqda…</div>`}
+      </div>
+      <div style="flex:1;min-width:200px">
+        ${lbl('FON')}
+        <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap">${[['light', 'Och'], ['dark', 'Qora'], ['orange', 'To‘q sariq']].map(([k, t]) => chip(a.bg === k, t, () => { S.ai.bg = k; aiCompose(); })).join('')}</div>
+        <div style="margin-top:12px;display:flex;align-items:center;justify-content:space-between;gap:8px">${lbl('YOZUV QATLAMI (NOMI, NARXI, TELEFON)')}${chip(a.ovOn, a.ovOn ? 'Yoniq' : 'O‘chiq', () => aiSet({ ovOn: !a.ovOn }))}</div>
+        ${a.ovOn ? field('title', 'NOMI', 'Mahsulot nomi', a.title) + field('price', 'NARXI (SO‘M)', '450000', a.price, 'numeric') + field('line', 'PASTKI QATOR', AI_PHONE, a.line) : ''}
+      </div>
+    </div>` : `<div style="margin-top:14px;padding:22px 16px;border:1px dashed var(--line4);border-radius:16px;text-align:center;font:400 11.5px/1.6 var(--fb);color:var(--dim3)">Mahsulot nomini yozing va ro‘yxatdan tanlang — yoki o‘zingiz rasm yuklang.<br>Oq fonli rasm eng yaxshi natija beradi.</div>`}
+
+    <div style="margin-top:18px">${lbl('2 · VIDEO TAVSIFI (AI UCHUN, INGLIZCHA YAXSHIROQ ISHLAYDI)')}</div>
+    <div style="${box}"><textarea data-k="ai_prompt" rows="4" oninput="${h(e => { S.ai.prompt = e.target.value; })}" placeholder="${esc(aiDefPrompt(''))}" style="${inp};resize:vertical;line-height:1.5">${esc(a.prompt)}</textarea></div>
+    <div style="display:flex;align-items:center;gap:6px;margin-top:10px;flex-wrap:wrap">${lbl('DAVOMIYLIGI')}<span style="width:6px"></span>${chip(a.dur === '5', '5 soniya', () => aiSet({ dur: '5' }))}${chip(a.dur === '10', '10 soniya', () => aiSet({ dur: '10' }))}</div>
+    ${a.err ? `<div style="margin-top:10px;padding:10px 12px;border-radius:14px;background:rgba(229,55,42,.1);color:var(--red);font:500 12px var(--fb)">${esc(a.err)}</div>` : ''}
+    <button onclick="${h(aiGenerate)}" class="ad-btn p" style="width:100%;justify-content:center;margin-top:14px;${!a.frame || a.busy || !(st && st.fal.ok) ? 'opacity:.5' : ''}">${aic('spark', 16, 2)} ${a.busy ? 'Yuborilmoqda…' : 'AI video yaratish' + cost}</button>
+    <div style="font:400 10.5px/1.5 var(--fb);color:var(--dim3);margin-top:8px;text-align:center">Video 1–3 daqiqada tayyor bo‘ladi — bu sahifadan chiqib ketsangiz ham server davom ettiradi.</div>
+  </div>`;
+
+      const conn = !st ? `<div style="font:400 11.5px var(--fb);color:var(--dim3)">Yuklanmoqda…</div>` : `
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+      <div style="font:600 12.5px var(--fb)">fal.ai <span style="font:400 11px var(--fb);color:var(--dim2)">· AI video</span></div>
+      ${st.fal.ok ? tag(['ULANGAN · ' + st.fal.key, 'var(--ok)', 'rgba(18,161,80,.12)']) : tag(['KALIT YO‘Q', RED, 'rgba(255,77,61,.1)'])}
+    </div>
+    ${st.fal.fromEnv ? '' : `<form onsubmit="${h(e => { e.preventDefault(); aiSaveFal(); })}" style="display:flex;gap:8px;margin-top:6px">
+      <div style="${box};margin-top:0;flex:1"><input data-k="ai_fal" type="password" autocomplete="off" value="${esc(a.falKey)}" placeholder="${st.fal.ok ? 'Yangi kalit bilan almashtirish' : 'fal.ai API kaliti'}" oninput="${h(e => { S.ai.falKey = e.target.value; })}" style="${inp}"></div>
+      <button type="submit" class="ad-btn g">Saqlash</button>
+    </form>`}
+    <div style="font:400 10.5px/1.5 var(--fb);color:var(--dim3);margin-top:5px">fal.ai → Billing’da balans to‘ldiring → Keys → «Add key». ${perSec ? `Narx: ~$${perSec}/soniya (5 s ≈ $${(perSec * 5).toFixed(2)}).` : ''}</div>
+
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:16px;padding-top:14px;border-top:1px solid var(--fill)">
+      <div style="font:600 12.5px var(--fb);display:flex;align-items:center;gap:6px">${aic('insta', 16, 2)} Instagram</div>
+      ${st.ig.connected ? tag(['@' + st.ig.username, 'var(--ok)', 'rgba(18,161,80,.12)']) : tag(['ULANMAGAN', RED, 'rgba(255,77,61,.1)'])}
+    </div>
+    ${st.ig.error ? `<div style="margin-top:8px;padding:9px 11px;border-radius:12px;background:rgba(229,55,42,.1);color:var(--red);font:500 11.5px var(--fb)">${esc(st.ig.error)}</div>` : ''}
+    ${st.ig.connected ? `<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:6px;font:400 11px var(--fb);color:var(--dim2)">
+        <span>${esc(st.ig.accountType || 'Professional')} akkaunt${st.ig.expiresAt ? ' · token ' + esc(st.ig.expiresAt) + ' gacha (o‘zi yangilanadi)' : ' · token o‘zi yangilanib turadi'}</span>
+        <span onclick="${h(aiDisconnectIg)}" style="cursor:pointer;color:var(--red);font-weight:600">Uzish</span></div>`
+          : `<form onsubmit="${h(e => { e.preventDefault(); aiConnectIg(); })}" style="display:flex;gap:8px;margin-top:6px">
+      <div style="${box};margin-top:0;flex:1"><input data-k="ai_ig" type="password" autocomplete="off" value="${esc(a.igToken)}" placeholder="Instagram access token (IGAA…)" oninput="${h(e => { S.ai.igToken = e.target.value; })}" style="${inp}"></div>
+      <button type="submit" class="ad-btn g">Ulash</button>
+    </form>
+    <details style="margin-top:8px;font:400 11px/1.6 var(--fb);color:var(--dim3)">
+      <summary style="cursor:pointer;color:var(--fg2);font-weight:600">Token qanday olinadi?</summary>
+      <ol style="margin:6px 0 0;padding-left:18px">
+        <li>Instagram ilovasida: Sozlamalar → Akkaunt turi → <b>Professional</b> (Biznes yoki Kreator).</li>
+        <li><b>developers.facebook.com</b> → My Apps → Create app → «Instagram» (content publishing) ssenariysi.</li>
+        <li>Instagram → «API setup with Instagram login» → «Add account» — o‘z akkauntingizni qo‘shing va ruxsat bering.</li>
+        <li>«Generate token» bosing, tokenni nusxalab shu yerga qo‘ying. Token 60 kunlik — server uni o‘zi yangilab turadi.</li>
+      </ol>
+      Ilova «Development» rejimida ham ishlaydi: o‘z akkauntingizga joylash uchun App Review shart emas.
+    </details>`}
+    ${st.ffmpeg ? '' : `<div style="margin-top:12px;padding:9px 11px;border-radius:12px;background:rgba(255,176,32,.12);color:var(--warn);font:500 11.5px/1.5 var(--fb)">Serverda ffmpeg topilmadi — yozuv qatlami (nomi, narxi) videoga qo‘shilmaydi, klip o‘zgarishsiz saqlanadi.</div>`}`;
+
+      const item = v => {
+        const ready = v.status === 'ready';
+        const s1 = AI_ST[v.status] || AI_ST.generating;
+        const s2 = v.ig_status ? (v.ig_status === 'failed' ? ['INSTAGRAM XATOSI', RED, 'rgba(255,77,61,.1)'] : AI_ST[v.ig_status]) : null;
+        const upl = v.ig_status === 'uploading';
+        return `<div style="display:flex;gap:12px;padding:12px;border:1px solid var(--line3);border-radius:16px">
+          <div style="width:112px;flex:none;aspect-ratio:9/16;border-radius:12px;overflow:hidden;background:#141311;position:relative">
+            ${ready ? `<video src="${esc(v.video)}" poster="${esc(v.frame)}" controls playsinline muted preload="none" style="width:100%;height:100%;object-fit:cover"></video>`
+            : `<img src="${esc(v.frame)}" alt="" style="width:100%;height:100%;object-fit:cover;opacity:${v.status === 'failed' ? '.35' : '.6'}">${v.status !== 'failed' ? `<div style="position:absolute;inset:auto 0 8px;text-align:center;font:600 10px var(--fm);color:#fff">kuting…</div>` : ''}`}
+          </div>
+          <div style="flex:1;min-width:0">
+            <div style="font:600 12.5px var(--fb);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(v.title || 'AI video #' + v.id)}</div>
+            <div style="font:400 10.5px var(--fm);color:var(--dim2);margin-top:3px">${esc(String(v.created_at || '').slice(5, 16))} · ${v.duration} s${v.cost != null ? ' · $' + v.cost : ''}${v.admin ? ' · ' + esc(v.admin) : ''}</div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:7px">${tag(s1)}${s2 ? tag(s2) : ''}</div>
+            ${v.error ? `<div style="margin-top:7px;padding:8px 10px;border-radius:10px;background:rgba(229,55,42,.1);color:var(--red);font:500 11px/1.45 var(--fb)">${esc(v.error)}</div>` : ''}
+            ${v.ig_permalink ? `<a href="${esc(v.ig_permalink)}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:5px;margin-top:7px;font:600 11.5px var(--fb);color:var(--acc);text-decoration:none">${aic('insta', 14, 2)} Instagram’da ochish ${aic('ext', 12, 2)}</a>` : ''}
+            ${ready ? `
+            <div style="${box}"><textarea data-k="ai_cap_${v.id}" rows="4" maxlength="2200" oninput="${h(e => { S.ai.caps[v.id] = e.target.value; })}" onblur="${h(() => aiSaveCap(v))}" placeholder="Izoh (caption) — Reels ostida chiqadi" style="${inp};resize:vertical;line-height:1.45;font-size:11.5px">${esc(aiCap(v))}</textarea></div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px">
+              <button onclick="${h(() => aiPublish(v, 'REELS'))}" class="ad-btn p" style="${upl ? 'opacity:.5;pointer-events:none' : ''}">${aic('insta', 15, 2)} Reels</button>
+              <button onclick="${h(() => aiPublish(v, 'STORIES'))}" class="ad-btn g" style="${upl ? 'opacity:.5;pointer-events:none' : ''}">Story</button>
+              <a href="${esc(v.video)}" download target="_blank" rel="noopener" class="ad-btn g" style="text-decoration:none">${aic('download', 15, 2)}</a>
+              <button onclick="${h(() => aiDelete(v))}" class="ad-btn g" title="O‘chirish" style="color:var(--red)">${aic('trash', 15, 2)}</button>
+            </div>` : (v.status === 'failed' ? `<div style="margin-top:8px"><button onclick="${h(() => aiDelete(v))}" class="ad-btn g" style="color:var(--red)">${aic('trash', 15, 2)} O‘chirish</button></div>` : '')}
+          </div>
+        </div>`;
+      };
+
+      return `
+<div style="margin-top:20px;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(380px,100%),1fr));gap:16px;align-items:start">
+  ${left}
+  <div style="display:flex;flex-direction:column;gap:16px">
+    <div style="border:1px solid var(--line);border-radius:20px;padding:16px;background:var(--card)">${lbl('ULANISHLAR')}<div style="margin-top:10px">${conn}</div></div>
+    <div style="border:1px solid var(--line);border-radius:20px;padding:16px;background:var(--card)">
+      <div style="display:flex;justify-content:space-between;align-items:center">${lbl('VIDEOLAR · ' + (a.list || []).length)}<span onclick="${h(() => aiRefresh())}" style="cursor:pointer;font:600 11px var(--fb);color:var(--acc)">Yangilash</span></div>
+      <div style="display:flex;flex-direction:column;gap:10px;margin-top:10px">
+        ${(a.list || []).length ? a.list.map(item).join('') : `<div style="padding:18px;border:1px dashed var(--line4);border-radius:14px;text-align:center;font:400 11.5px var(--fb);color:var(--dim3)">Hali video yo‘q — chapda birinchisini yarating</div>`}
+      </div>
+    </div>
+  </div>
+</div>`;
+    }
+
+    /* ═══ Klon studiya: ovoz kloni (ElevenLabs) + yuz surati (avatar) → mavzu → ssenariy variantlari (egasining
+       kompyuteridagi Claude ishchisi) → tasdiq → sahnalar (har biri alohida tahrirlanadi) → yakuniy video → «AI video» ro'yxati ═══ */
+    function sdSet(o) { set({ sd: { ...S.sd, ...o } }); }
+    let _sdPoll = null, _sdSig = '';
+    const SD_BUSY = ['scripting', 'producing'];
+    const sdJSON = (url, method, body) => api(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body || {}) });
+    async function sdRefresh(quiet) {
+      clearTimeout(_sdPoll);
+      try {
+        const [st, list] = await Promise.all([quiet && S.sd.st ? api('/api/admin/studio/status') : api('/api/admin/studio/status'), api('/api/admin/studio/projects')]);
+        const sig = JSON.stringify([st, list]);
+        if (sig !== _sdSig) {
+          const old = new Map((S.sd.list || []).map(x => [x.id, x.status]));
+          if (quiet) for (const p of list) {
+            const o = old.get(p.id);
+            if (o === 'scripting' && p.status === 'choose') flash('Ssenariy variantlari tayyor: ' + p.topic.slice(0, 40));
+            if (o === 'producing' && p.status === 'ready') flash('Video tayyor ✓ ' + (p.title || ''));
+            if (o && o !== 'failed' && p.status === 'failed') flash(p.error || 'Xato');
+          }
+          _sdSig = sig; sdSet({ st, list });
+        }
+      } catch (e) { if (!quiet) flash(e.message); }
+      if (S.adminTab === 'studio' && S.token && (S.sd.list || []).some(p => SD_BUSY.includes(p.status))) _sdPoll = setTimeout(() => sdRefresh(true), 6000);
+    }
+    const sdCur = () => (S.sd.list || []).find(p => p.id === S.sd.cur) || null;
+    function sdPut(p) { sdSet({ list: (S.sd.list || []).some(x => x.id === p.id) ? S.sd.list.map(x => x.id === p.id ? p : x) : [p, ...(S.sd.list || [])] }); }
+    async function sdDo(label, fn) {
+      if (S.sd.busy) return;
+      sdSet({ busy: label });
+      try { await fn(); } catch (e) { flash(e.message); }
+      sdSet({ busy: '' });
+      sdRefresh();
+    }
+    const fileData = f => new Promise((ok, no) => { const r = new FileReader(); r.onload = () => ok(r.result); r.onerror = () => no(new Error('Fayl o‘qilmadi')); r.readAsDataURL(f); });
+    function sdSaveKey() {
+      const k = String(S.sd.elKey || '').trim();
+      if (!k) { flash('ElevenLabs API kalitini kiriting'); return; }
+      sdDo('key', async () => { sdSet({ st: await sdJSON('/api/admin/studio/eleven', 'PUT', { apiKey: k }), elKey: '' }); flash('ElevenLabs ulandi'); });
+    }
+    function sdVoiceFile(e) {
+      const f = e.target.files && e.target.files[0]; e.target.value = '';
+      if (!f) return;
+      if (f.size > 7 * 1024 * 1024) { flash('Ovoz fayli 7 MB dan oshmasin — 1–2 daqiqalik MP3 yetarli'); return; }
+      sdDo('voice', async () => {
+        const audio = await fileData(f);
+        sdSet({ st: await sdJSON('/api/admin/studio/voice', 'POST', { audio, name: S.sd.voiceName }) });
+        flash('Ovozingiz klonlandi ✓ — sinab eshiting');
+      });
+    }
+    function sdLoadVoices() {
+      sdDo('voices', async () => { sdSet({ voices: await api('/api/admin/studio/voices') }); });
+    }
+    function sdPickVoice(id) {
+      sdDo('pick', async () => { sdSet({ st: await sdJSON('/api/admin/studio/voice', 'PUT', { voiceId: id }), testAudio: '' }); flash('Ovoz tanlandi — sinab eshiting'); });
+    }
+    function sdSetMode(m) {
+      sdDo('mode', async () => { sdSet({ st: await sdJSON('/api/admin/studio/mode', 'PUT', { mode: m }) }); });
+    }
+    function sdTest() {
+      sdDo('test', async () => { const r = await sdJSON('/api/admin/studio/voice/test', 'POST', { text: S.sd.testText }); sdSet({ testAudio: r.audio }); });
+    }
+    function sdFaceFile(e) {
+      const f = e.target.files && e.target.files[0]; e.target.value = '';
+      if (!f) return;
+      sdDo('face', async () => { sdSet({ st: await sdJSON('/api/admin/studio/face', 'PUT', { image: await imageData(f, 1600) }) }); flash('Surat saqlandi'); });
+    }
+    function sdCreate() {
+      const t = String(S.sd.topic || '').trim();
+      if (t.length < 5) { flash('Mavzuni yozing'); return; }
+      sdDo('create', async () => {
+        const p = await sdJSON('/api/admin/studio/projects', 'POST', { topic: t, brief: S.sd.brief, seconds: S.sd.secs });
+        sdPut(p); sdSet({ cur: p.id, topic: '', brief: '' });
+        flash(S.sd.st && S.sd.st.worker.online ? 'Ssenariy yozilmoqda — odatda 1 daqiqa' : 'Mavzu navbatga qo‘yildi — kompyuteringizda ssenariy ishchisini yoqing');
+      });
+    }
+    const sdApprove = (p, i) => sdDo('approve', async () => { sdPut(await sdJSON(`/api/admin/studio/projects/${p.id}/approve`, 'POST', { index: i })); flash('Tasdiqlandi — sahnalar yasalmoqda'); });
+    const sdRescript = p => sdDo('rescript', async () => { sdPut(await sdJSON(`/api/admin/studio/projects/${p.id}/rescript`, 'POST', {})); flash('Yangi variantlar so‘raldi'); });
+    function sdDraft(s) { return S.sd.drafts[s.id] || { text: s.text, kind: s.kind, sku: s.sku, visual: s.visual }; }
+    function sdDraftSet(s, o) { S.sd.drafts = { ...S.sd.drafts, [s.id]: { ...sdDraft(s), ...o } }; }
+    function sdSaveScene(p, s, retry) {
+      const d = sdDraft(s);
+      sdDo('scene', async () => {
+        sdPut(await sdJSON(`/api/admin/studio/projects/${p.id}/scenes/${s.id}`, 'PATCH', { ...d, retry: !!retry }));
+        const dr = { ...S.sd.drafts }; delete dr[s.id]; S.sd.drafts = dr;
+        flash(retry ? 'Qayta urinilmoqda' : 'Sahna saqlandi — faqat shu sahna qayta yasaladi');
+      });
+    }
+    const sdMove = (p, s, dir) => sdDo('move', async () => sdPut(await sdJSON(`/api/admin/studio/projects/${p.id}/scenes/${s.id}/move`, 'POST', { dir })));
+    function sdDelScene(p, s) {
+      set({ confirmModal: { title: 'Sahnani o‘chirish', text: 'Sahna videodan olib tashlanadi, video qayta yig‘iladi.', actionLabel: 'O‘chirish', cancelLabel: 'Bekor', danger: true,
+        action: () => { set({ confirmModal: null }); sdDo('del', async () => sdPut(await api(`/api/admin/studio/projects/${p.id}/scenes/${s.id}`, { method: 'DELETE' }))); } } });
+    }
+    function sdAddScene(p) {
+      const text = String(S.sd.newText || '').trim();
+      if (text.length < 2) { flash('Yangi sahna matnini yozing'); return; }
+      sdDo('add', async () => { sdPut(await sdJSON(`/api/admin/studio/projects/${p.id}/scenes`, 'POST', { kind: 'avatar', text })); sdSet({ newText: '' }); flash('Sahna qo‘shildi'); });
+    }
+    function sdDelProject(p) {
+      set({ confirmModal: { title: 'Loyihani o‘chirish', text: 'Ssenariy va sahnalar o‘chiriladi. Tayyor video «AI video · Instagram» bo‘limida qoladi.', actionLabel: 'O‘chirish', cancelLabel: 'Bekor', danger: true,
+        action: () => { set({ confirmModal: null }); sdDo('delp', async () => { await api('/api/admin/studio/projects/' + p.id, { method: 'DELETE' }); sdSet({ cur: null, list: S.sd.list.filter(x => x.id !== p.id) }); }); } } });
+    }
+    const sdMeta = (p, k, val) => sdJSON('/api/admin/studio/projects/' + p.id, 'PATCH', { [k]: val }).then(sdPut).catch(e => flash(e.message));
+    const SD_ST = {
+      scripting: ['SSENARIY YOZILMOQDA…', AMB, 'rgba(255,176,32,.12)'], choose: ['TANLASH KUTILMOQDA', 'var(--acc)', 'rgba(255,79,18,.12)'],
+      producing: ['VIDEO YASALMOQDA…', AMB, 'rgba(255,176,32,.12)'], ready: ['TAYYOR', 'var(--ok)', 'rgba(18,161,80,.12)'], failed: ['XATO', RED, 'rgba(255,77,61,.1)']
+    };
+    const SC_ST = { pending: 'ovoz kutilmoqda', voiced: 'ovoz tayyor · klip navbatda', rendering: 'klip yasalmoqda…', ready: 'tayyor', failed: 'xato' };
+
+    function mStudio() {
+      const a = S.sd, st = a.st;
+      const lbl = t => `<div style="font:600 9.5px var(--fm);color:var(--dim2);letter-spacing:.05em">${t}</div>`;
+      const box = 'margin-top:5px;border:1px solid var(--line3);border-radius:14px;padding:9px 10px;background:var(--tile)';
+      const inp = 'width:100%;border:none;outline:none;background:transparent;color:var(--fg);font:400 12.5px var(--fb)';
+      const card = 'border:1px solid var(--line);border-radius:20px;padding:16px;background:var(--card)';
+      const chip = (on, label, fn) => `<span onclick="${h(fn)}" style="cursor:pointer;padding:7px 11px;border-radius:10px;font:600 11.5px var(--fb);border:1px solid ${on ? 'transparent' : 'var(--line3)'};background:${on ? 'var(--acc)' : 'transparent'};color:${on ? '#fff' : 'var(--fg2)'}">${label}</span>`;
+      const tag = ([t, fg, bg]) => `<span style="font:600 9.5px var(--fm);color:${fg};background:${bg};padding:5px 8px;border-radius:6px;white-space:nowrap">${t}</span>`;
+      const ok = t => tag([t, 'var(--ok)', 'rgba(18,161,80,.12)']), no = t => tag([t, RED, 'rgba(255,77,61,.1)']);
+      const busy = k => a.busy === k;
+      const row = (title, right, body) => `<div style="padding-top:14px;margin-top:14px;border-top:1px solid var(--fill)"><div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><div style="font:600 12.5px var(--fb)">${title}</div>${right}</div>${body}</div>`;
+      const apiBase = (window.KO_API || location.origin).replace(/\/+$/, '');
+
+      const setup = !st ? `<div style="${card}">${lbl('SOZLASH')}<div style="margin-top:10px;font:400 11.5px var(--fb);color:var(--dim3)">Yuklanmoqda…</div></div>` : `
+  <div style="${card}">
+    ${lbl('1 · SOZLASH (BIR MARTA)')}
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:10px">
+      <div style="font:600 12.5px var(--fb)">ElevenLabs <span style="font:400 11px var(--fb);color:var(--dim2)">· ovoz kloni</span></div>
+      ${st.eleven.ok ? ok((st.eleven.tier || 'ulangan').toUpperCase() + (st.eleven.chars ? ' · ' + M(st.eleven.chars.used || 0) + '/' + M(st.eleven.chars.limit || 0) + ' belgi' : '')) : no('KALIT YO‘Q')}
+    </div>
+    ${st.eleven.ok && st.eleven.canClone === false ? `<div style="margin-top:8px;padding:9px 11px;border-radius:12px;background:rgba(229,55,42,.1);color:var(--red);font:500 11.5px/1.5 var(--fb)">Bu tarifda ovoz klonlash yo‘q — elevenlabs.io da Starter yoki undan yuqori tarifga o‘ting.</div>` : ''}
+    ${st.eleven.fromEnv ? '' : `<form onsubmit="${h(e => { e.preventDefault(); sdSaveKey(); })}" style="display:flex;gap:8px;margin-top:6px">
+      <div style="${box};margin-top:0;flex:1"><input data-k="sd_el" type="password" autocomplete="off" value="${esc(a.elKey)}" placeholder="${st.eleven.ok ? 'Yangi kalit bilan almashtirish' : 'ElevenLabs API kaliti (sk_…)'}" oninput="${h(e => { S.sd.elKey = e.target.value; })}" style="${inp}"></div>
+      <button type="submit" class="ad-btn g">${busy('key') ? '…' : 'Saqlash'}</button>
+    </form>
+    <div style="font:400 10.5px/1.5 var(--fb);color:var(--dim3);margin-top:5px">elevenlabs.io → Profile → API Keys → «Create». Ruxsatlar: Text to Speech, Voices (Write), User (Read).</div>`}
+
+    ${row('Ovozingiz', st.eleven.voiceId ? ok('KLONLANGAN') : no('YO‘Q'), `
+      ${st.eleven.voiceId ? `<div style="font:400 11px var(--fb);color:var(--dim2);margin-top:4px">${esc(st.eleven.voiceName || 'Klon')} · model ${esc(st.eleven.model)}</div>
+      <div style="display:flex;gap:8px;margin-top:8px"><div style="${box};margin-top:0;flex:1"><input data-k="sd_test" value="${esc(a.testText)}" oninput="${h(e => { S.sd.testText = e.target.value; })}" style="${inp}"></div>
+        <button onclick="${h(sdTest)}" class="ad-btn g">${busy('test') ? '…' : '▶ Eshitish'}</button></div>
+      ${a.testAudio ? `<audio controls autoplay src="${a.testAudio}" style="width:100%;margin-top:8px;height:36px"></audio>` : ''}` : ''}
+      <div style="margin-top:10px">
+        ${a.voices ? (a.voices.length ? a.voices.map(v => `<button onclick="${h(() => sdPickVoice(v.id))}" class="ad-btn ${v.id === st.eleven.voiceId ? 'p' : 'g'}" style="margin:0 6px 6px 0">${esc(v.name)}${v.lang ? ' · ' + esc(v.lang) : ''}${v.id === st.eleven.voiceId ? ' ✓' : ''}</button>`).join('') : '<div style="font:400 11px var(--fb);color:var(--dim2)">Hisobingizda o‘z ovozlaringiz yo‘q</div>')
+          : `<button onclick="${h(sdLoadVoices)}" class="ad-btn g" ${!st.eleven.ok ? 'disabled style="opacity:.5"' : ''}>${busy('voices') ? '…' : 'ElevenLabs’dagi ovozlarimdan tanlash'}</button>`}
+      </div>
+      <label class="ad-btn ${st.eleven.voiceId ? 'g' : 'p'}" style="cursor:pointer;margin-top:8px;${!st.eleven.ok ? 'opacity:.5;pointer-events:none' : ''}">${aic('mic', 15, 2)} ${busy('voice') ? 'Klonlanmoqda…' : st.eleven.voiceId ? 'Boshqa yozuv bilan qayta klonlash' : 'Ovoz yozuvini yuklash (1–2 daqiqa, MP3)'}<input type="file" accept="audio/*" onchange="${h(sdVoiceFile)}" style="display:none"></label>
+      <div style="font:400 10.5px/1.5 var(--fb);color:var(--dim3);margin-top:5px">Faqat o‘zingizning ovozingizni klonlang. Tinch xonada, tabiiy gapirilgan yozuv eng yaxshi natija beradi.</div>`)}
+
+    ${row('Yuzingiz <span style="font:400 11px var(--fb);color:var(--dim2)">· ixtiyoriy</span>', st.face ? ok('YUKLANGAN') : no('YUKLANMAGAN'), `
+      ${st.face ? '' : `<div style="font:400 10.5px/1.5 var(--fb);color:var(--dim3);margin-top:5px">Surat yuklanmasa, sahnalarda KAMERA OPTOM brend kartasi ko‘rinadi.</div>`}
+      <div style="display:flex;gap:12px;align-items:center;margin-top:8px">
+        ${st.face ? `<img src="${esc(st.face)}" alt="" style="width:64px;height:80px;object-fit:cover;border-radius:12px;flex:none">` : ''}
+        <div><label class="ad-btn g" style="cursor:pointer">${busy('face') ? 'Yuklanmoqda…' : st.face ? 'Suratni almashtirish' : 'Surat yuklash'}<input type="file" accept="image/*" onchange="${h(sdFaceFile)}" style="display:none"></label>
+        <div style="font:400 10.5px/1.5 var(--fb);color:var(--dim3);margin-top:5px">Yorug‘ joyda, kameraga to‘g‘ri qarab, yelkagacha.</div></div>
+      </div>`)}
+
+    ${row('Video usuli', st.mode === 'free' ? ok('BEPUL') : (st.fal.ok ? ok('AI · fal.ai') : no('KALIT YO‘Q')), `
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px">${chip(st.mode === 'free', 'Bepul (ffmpeg)', () => sdSetMode('free'))}${chip(st.mode === 'fal', 'AI avatar (fal.ai, pullik)', () => sdSetMode('fal'))}</div>
+      <div style="font:400 10.5px/1.5 var(--fb);color:var(--dim3);margin-top:6px">${st.mode === 'free'
+        ? 'Surat yoki mahsulot rasmi sekin harakatlanadi, sizning ovozingizda gapiriladi, matn subtitr bo‘lib chiqadi. Hech qanday to‘lov yo‘q.'
+        : 'Yuz gapiradi (HeyGen) va mahsulot klipi AI bilan yasaladi. fal.ai balansidan pul yechiladi. ' + (st.fal.ok ? '' : 'Kalit «AI video · Instagram» → «Ulanishlar»da kiritiladi.')}</div>`)}
+
+    ${row('Ssenariy ishchisi <span style="font:400 11px var(--fb);color:var(--dim2)">· Claude obunangiz</span>', st.worker.online ? ok('● ONLAYN') : no('● O‘CHIQ'), `
+      <div style="font:400 11px/1.5 var(--fb);color:var(--dim3);margin-top:5px">Ssenariylarni kompyuteringizdagi Claude Code yozadi (API kaliti kerak emas). Loyiha papkasida terminal ochib ishga tushiring va oynani yopmang:</div>
+      <div style="${box};font:500 10.5px/1.5 var(--fm);word-break:break-all;user-select:all;cursor:text">node backend/scripts/script-worker.mjs --api ${esc(apiBase)} --key ${esc(st.worker.key)}</div>
+      ${st.worker.seenAt ? `<div style="font:400 10.5px var(--fm);color:var(--dim2);margin-top:5px">oxirgi aloqa: ${esc(st.worker.seenAt)} UTC</div>` : ''}`)}
+    ${st.ffmpeg ? '' : `<div style="margin-top:12px;padding:9px 11px;border-radius:12px;background:rgba(255,176,32,.12);color:var(--warn);font:500 11.5px/1.5 var(--fb)">Serverda ffmpeg yo‘q — sahnalarni videoga yig‘ib bo‘lmaydi.</div>`}
+  </div>`;
+
+      const ready = st && st.eleven.voiceId && (st.mode === 'free' || (st.face && st.fal.ok));
+      const create = `
+  <div style="${card}">
+    ${lbl('2 · YANGI VIDEO')}
+    <div style="${box}"><textarea data-k="sd_topic" rows="3" placeholder="Mavzu: masalan, «Uyga kuzatuv kamerasi nega kerak va qaysi birini tanlash kerak»" oninput="${h(e => { S.sd.topic = e.target.value; })}" style="${inp};resize:vertical;line-height:1.5">${esc(a.topic)}</textarea></div>
+    <div style="${box}"><input data-k="sd_brief" value="${esc(a.brief)}" placeholder="Qo‘shimcha (ixtiyoriy): mahsulot, aksiya, uslub…" oninput="${h(e => { S.sd.brief = e.target.value; })}" style="${inp}"></div>
+    <div style="display:flex;align-items:center;gap:6px;margin-top:10px;flex-wrap:wrap">${lbl('DAVOMIYLIGI')}<span style="width:4px"></span>${['20', '30', '45', '60'].map(x => chip(a.secs === x, x + ' s', () => sdSet({ secs: x }))).join('')}</div>
+    <button onclick="${h(sdCreate)}" class="ad-btn p" style="width:100%;justify-content:center;margin-top:12px;${busy('create') ? 'opacity:.5' : ''}">${aic('spark', 16, 2)} Ssenariy variantlarini yozdirish</button>
+    ${!ready && st ? `<div style="font:400 10.5px/1.5 var(--fb);color:var(--dim3);margin-top:8px;text-align:center">Ssenariyni hozir ham yozdirish mumkin; videoni yasash uchun ovoz, surat va fal.ai kerak.</div>` : ''}
+  </div>`;
+
+      const p = sdCur();
+      const list = `
+  <div style="${card}">
+    <div style="display:flex;justify-content:space-between;align-items:center">${lbl('LOYIHALAR · ' + (a.list || []).length)}<span onclick="${h(() => sdRefresh())}" style="cursor:pointer;font:600 11px var(--fb);color:var(--acc)">Yangilash</span></div>
+    <div style="display:flex;flex-direction:column;gap:8px;margin-top:10px">
+      ${(a.list || []).length ? a.list.map(x => `<div onclick="${h(() => sdSet({ cur: x.id }))}" style="cursor:pointer;padding:11px 12px;border:1px solid var(--line3);border-radius:14px">
+        <div style="display:flex;justify-content:space-between;gap:8px;align-items:flex-start"><div style="font:600 12.5px var(--fb);min-width:0">${esc(x.title || x.topic)}</div>${tag(SD_ST[x.status] || SD_ST.failed)}</div>
+        <div style="font:400 10.5px var(--fm);color:var(--dim2);margin-top:4px">#${x.id} · ${esc(String(x.created_at || '').slice(5, 16))} · ${x.seconds} s${x.scenes.length ? ' · ' + x.scenes.length + ' sahna' : ''}</div>
+      </div>`).join('') : `<div style="padding:18px;border:1px dashed var(--line4);border-radius:14px;text-align:center;font:400 11.5px var(--fb);color:var(--dim3)">Hali loyiha yo‘q — chapda mavzu bering</div>`}
+    </div>
+  </div>`;
+
+      let detail = '';
+      if (p) {
+        const head = `<div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
+          <span onclick="${h(() => sdSet({ cur: null }))}" style="cursor:pointer;font:600 11.5px var(--fb);color:var(--acc)">← Barcha loyihalar</span>
+          <div style="display:flex;gap:6px;align-items:center">${tag(SD_ST[p.status] || SD_ST.failed)}<span onclick="${h(() => sdDelProject(p))}" title="O‘chirish" style="cursor:pointer;color:var(--red);display:inline-flex">${aic('trash', 16, 2)}</span></div></div>
+          <div style="font:700 15px var(--fb);margin-top:10px">${esc(p.title || p.topic)}</div>
+          <div style="font:400 11px/1.5 var(--fb);color:var(--dim2);margin-top:3px">Mavzu: ${esc(p.topic)}${p.brief ? ' · ' + esc(p.brief) : ''}</div>
+          ${p.error ? `<div style="margin-top:8px;padding:9px 11px;border-radius:12px;background:rgba(229,55,42,.1);color:var(--red);font:500 11.5px/1.5 var(--fb)">${esc(p.error)}</div>` : ''}`;
+        let body = '';
+        if (p.status === 'scripting') {
+          body = `<div style="margin-top:14px;padding:18px;border:1px dashed var(--line4);border-radius:14px;text-align:center;font:400 12px/1.6 var(--fb);color:var(--dim3)">Ssenariy variantlari yozilmoqda…<br>${st && st.worker.online ? 'Ishchi onlayn — odatda 1 daqiqa.' : '<b style="color:var(--red)">Ishchi o‘chiq</b> — kompyuteringizda chapdagi buyruqni ishga tushiring.'}</div>`;
+        } else if (p.status === 'choose' || (!p.scenes.length && p.variants.length)) {
+          body = `<div style="display:flex;flex-direction:column;gap:12px;margin-top:14px">${p.variants.map((v, i) => `
+            <div style="border:1px solid var(--line3);border-radius:16px;padding:12px">
+              <div style="display:flex;justify-content:space-between;gap:8px;align-items:flex-start"><div><div style="font:700 13px var(--fb)">${i + 1}. ${esc(v.title)}</div><div style="font:500 10.5px var(--fm);color:var(--acc);margin-top:2px">${esc(v.angle || '')}</div></div>
+                <button onclick="${h(() => sdApprove(p, i))}" class="ad-btn p" style="flex:none;${busy('approve') ? 'opacity:.5' : ''}">${aic('check', 15, 2.2)} Tasdiqlash</button></div>
+              <ol style="margin:10px 0 0;padding-left:20px;font:400 12px/1.55 var(--fb)">${v.scenes.map(s => `<li style="margin-top:4px"><span style="font:600 9.5px var(--fm);color:${s.kind === 'product' ? 'var(--acc)' : 'var(--dim2)'}">${s.kind === 'product' ? 'MAHSULOT · ' + esc(s.sku) : 'AVATAR'}</span><br>${esc(s.text)}</li>`).join('')}</ol>
+              <details style="margin-top:8px;font:400 11px/1.5 var(--fb);color:var(--dim3)"><summary style="cursor:pointer">Instagram izohi</summary><div style="white-space:pre-wrap;margin-top:4px">${esc(v.caption)}</div></details>
+            </div>`).join('')}
+            <button onclick="${h(() => sdRescript(p))}" class="ad-btn g" style="justify-content:center">Boshqa variantlar yozdirish</button></div>`;
+        } else if (!p.scenes.length) {
+          body = `<button onclick="${h(() => sdRescript(p))}" class="ad-btn p" style="margin-top:14px;width:100%;justify-content:center">Ssenariyni qayta yozdirish</button>`;
+        } else {
+          const done = p.scenes.filter(s => s.status === 'ready').length;
+          body = `
+            ${p.video ? `<div style="display:flex;gap:14px;margin-top:14px;flex-wrap:wrap;align-items:flex-start">
+              <video src="${esc(p.video)}" controls playsinline preload="metadata" style="width:180px;aspect-ratio:9/16;border-radius:16px;background:#141311;object-fit:cover"></video>
+              <div style="flex:1;min-width:200px;font:400 11.5px/1.6 var(--fb);color:var(--dim3)">${p.status === 'ready' ? 'Video tayyor. Instagram’ga joylash uchun:' : 'Oldingi tayyor versiya. Yangi o‘zgarishlar yig‘ilmoqda…'}
+                <button onclick="${h(() => { set({ adminTab: 'ai' }); aiRefresh(); })}" class="ad-btn p" style="margin-top:8px">${aic('insta', 15, 2)} «AI video · Instagram» bo‘limiga</button></div></div>` : ''}
+            <div style="margin-top:14px">${lbl('SARLAVHA')}<div style="${box}"><input data-k="sd_title" value="${esc(p.title)}" onchange="${h(e => sdMeta(p, 'title', e.target.value))}" style="${inp}"></div></div>
+            <div style="margin-top:9px">${lbl('INSTAGRAM IZOHI')}<div style="${box}"><textarea data-k="sd_cap" rows="4" onchange="${h(e => sdMeta(p, 'caption', e.target.value))}" style="${inp};resize:vertical;line-height:1.45;font-size:11.5px">${esc(p.caption)}</textarea></div></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-top:16px">${lbl('SAHNALAR · ' + done + '/' + p.scenes.length + ' TAYYOR')}<span style="font:400 10.5px var(--fb);color:var(--dim3)">Matnni o‘zgartirib «Saqlash» — faqat shu sahna qayta yasaladi</span></div>
+            <div style="display:flex;flex-direction:column;gap:10px;margin-top:8px">${p.scenes.map((s, i) => {
+              const d = sdDraft(s), dirty = d.text !== s.text || d.kind !== s.kind || d.sku !== s.sku || d.visual !== s.visual;
+              const prod = d.kind === 'product' && (S.stockProducts || []).find(x => x.sku === d.sku);
+              const scol = s.status === 'ready' ? 'var(--ok)' : s.status === 'failed' ? 'var(--red)' : AMB;
+              return `<div style="border:1px solid ${dirty ? 'rgba(255,79,18,.45)' : 'var(--line3)'};border-radius:16px;padding:11px 12px">
+                <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+                  <b style="font:700 12px var(--fm);min-width:20px">${i + 1}</b>
+                  ${chip(d.kind === 'avatar', 'Avatar', () => { sdDraftSet(s, { kind: 'avatar' }); render(); })}${chip(d.kind === 'product', 'Mahsulot', () => { sdDraftSet(s, { kind: 'product' }); render(); })}
+                  <span style="flex:1"></span>
+                  <span style="font:600 10px var(--fm);color:${scol}">● ${SC_ST[s.status] || s.status}${s.dur ? ' · ' + s.dur.toFixed(1) + ' s' : ''}</span>
+                  <span onclick="${h(() => sdMove(p, s, -1))}" title="Yuqoriga" style="cursor:pointer;display:inline-flex;opacity:${i ? 1 : .3}">${aic('up', 16, 2)}</span>
+                  <span onclick="${h(() => sdMove(p, s, 1))}" title="Pastga" style="cursor:pointer;display:inline-flex;opacity:${i < p.scenes.length - 1 ? 1 : .3}">${aic('down', 16, 2)}</span>
+                  <span onclick="${h(() => sdDelScene(p, s))}" title="O‘chirish" style="cursor:pointer;display:inline-flex;color:var(--red)">${aic('trash', 15, 2)}</span>
+                </div>
+                <div style="${box}"><textarea data-k="sd_t_${s.id}" rows="2" oninput="${h(e => sdDraftSet(s, { text: e.target.value }))}" style="${inp};resize:vertical;line-height:1.5">${esc(d.text)}</textarea></div>
+                ${d.kind === 'product' ? `<div style="display:flex;gap:8px;flex-wrap:wrap">
+                  <div style="${box};flex:1;min-width:150px"><input data-k="sd_sku_${s.id}" list="sd_skus" value="${esc(d.sku)}" placeholder="Mahsulot SKU" onchange="${h(e => { sdDraftSet(s, { sku: e.target.value.trim() }); render(); })}" style="${inp}"></div>
+                  <div style="${box};flex:2;min-width:180px"><input data-k="sd_vis_${s.id}" value="${esc(d.visual)}" placeholder="Kamera harakati (inglizcha, ixtiyoriy)" oninput="${h(e => sdDraftSet(s, { visual: e.target.value }))}" style="${inp}"></div></div>
+                  ${prod ? `<div style="font:400 10.5px var(--fb);color:var(--dim2);margin-top:4px">${esc(prod.name)} · ${fmt(prod.price || 0)}</div>` : d.sku ? `<div style="font:500 10.5px var(--fb);color:var(--red);margin-top:4px">Bunday SKU topilmadi</div>` : ''}` : ''}
+                ${s.error ? `<div style="margin-top:7px;padding:8px 10px;border-radius:10px;background:rgba(229,55,42,.1);color:var(--red);font:500 11px/1.45 var(--fb)">${esc(s.error)}</div>` : ''}
+                <div style="display:flex;gap:8px;align-items:center;margin-top:8px;flex-wrap:wrap">
+                  ${s.audio ? `<audio controls preload="none" src="${esc(s.audio)}" style="height:32px;flex:1;min-width:160px"></audio>` : '<span style="flex:1"></span>'}
+                  ${s.status === 'failed' && !dirty ? `<button onclick="${h(() => sdSaveScene(p, s, true))}" class="ad-btn g">Qayta urinish</button>` : ''}
+                  ${dirty ? `<button onclick="${h(() => { const dr = { ...S.sd.drafts }; delete dr[s.id]; sdSet({ drafts: dr }); })}" class="ad-btn g">Bekor</button><button onclick="${h(() => sdSaveScene(p, s))}" class="ad-btn p">Saqlash va qayta yasash</button>` : ''}
+                </div>
+              </div>`;
+            }).join('')}
+            <div style="border:1px dashed var(--line4);border-radius:16px;padding:11px 12px">
+              ${lbl('YANGI SAHNA (AVATAR) — OXIRIGA QO‘SHILADI')}
+              <div style="${box}"><textarea data-k="sd_new" rows="2" placeholder="Siz aytadigan matn…" oninput="${h(e => { S.sd.newText = e.target.value; })}" style="${inp};resize:vertical;line-height:1.5">${esc(a.newText)}</textarea></div>
+              <button onclick="${h(() => sdAddScene(p))}" class="ad-btn g" style="margin-top:8px">+ Sahna qo‘shish</button>
+            </div></div>
+            <datalist id="sd_skus">${(S.stockProducts || []).filter(x => Array.isArray(x.images) && x.images.length).slice(0, 1500).map(x => `<option value="${esc(x.sku)}">${esc(x.name)}</option>`).join('')}</datalist>
+            <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
+              <button onclick="${h(() => sdRescript(p))}" class="ad-btn g" ${p.status === 'producing' ? 'disabled style="opacity:.5"' : ''}>Boshqa ssenariy variantlari</button>
+            </div>`;
+        }
+        detail = `<div style="${card}">${head}${body}</div>`;
+      }
+
+      return `
+<div style="margin-top:20px;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(380px,100%),1fr));gap:16px;align-items:start">
+  <div style="display:flex;flex-direction:column;gap:16px">${setup}${create}</div>
+  <div style="display:flex;flex-direction:column;gap:16px">${p ? detail : list}</div>
+</div>`;
+    }
+
     function mStories(v) {
       return `
 <div class="mg" style="margin-top:20px;display:grid;grid-template-columns:1.35fr 1fr;gap:16px;align-items:start">
@@ -2484,6 +3111,8 @@
       ${v.aClients ? mClients(v) : ''}
       ${v.aUstas ? mUstas() : ''}
       ${v.aCall ? mCallCenter() : ''}
+      ${v.aAi ? mAi() : ''}
+      ${v.aSd ? mStudio() : ''}
     </div>
   </div>
   ${v.noteOn ? mNote(v) : ''}
@@ -2507,6 +3136,8 @@
         try {
           await bootstrap();
           if (S.adminTab === 'callcenter') ccKitsLoad();
+          if (S.adminTab === 'ai') aiRefresh();
+          if (S.adminTab === 'studio') sdRefresh();
         } catch (e) {
           logout();
           return;

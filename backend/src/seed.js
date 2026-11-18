@@ -3,6 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { db, setSetting } from './db.js';
+import { refreshRu } from './i18n-ru.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -187,6 +188,18 @@ export async function ensureSchema() {
   if (!(await has('modules'))) await setSetting('modules', DEFAULT_MODULES);
   if (!(await has('statusFlow'))) await setSetting('statusFlow', DEFAULT_FLOW);
   if (!(await has('orderSeq'))) await setSetting('orderSeq', 1001);
+}
+
+/* Ruscha tarjimasi (products.ru) bo'sh mahsulotlarni lug'at bo'yicha to'ldiradi — server har ishga tushganda.
+   Importdan keyin apply-ru.js ni qo'lda ishga tushirish unutilsa ham, mijoz ilovasida rus tili bo'sh qolmaydi.
+   Mavjud tarjimalarga (jumladan admin qo'lda yozganlariga) tegmaydi. */
+export async function fillMissingRu() {
+  const rows = await db.all("SELECT * FROM products WHERE ru IS NULL OR ru = ''");
+  if (!rows.length) return 0;
+  await db.tx(async () => {
+    for (const row of rows) await db.run('UPDATE products SET ru = ? WHERE sku = ?', JSON.stringify(refreshRu(row)), row.sku);
+  });
+  return rows.length;
 }
 
 export async function ensureAdmin() {

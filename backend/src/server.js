@@ -4,7 +4,7 @@ import cors from 'cors';
 import compression from 'compression';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { ensureSchema, ensureAdmin } from './seed.js';
+import { ensureSchema, ensureAdmin, fillMissingRu } from './seed.js';
 import { dialect } from './db.js';
 import { serveUpload, wrap } from './uploads.js';
 import { serveMedia } from './media.js';
@@ -40,6 +40,9 @@ app.use(express.json({ limit: '10mb' }));
 
 // Rasmlar: repodagi statik fayllar diskdan (1 kun kesh, ETag bilan), admin/mijoz yuklaganlari bazadan
 app.use('/assets', express.static(path.join(__dirname, '..', 'assets'), { maxAge: '1d' }), wrap(serveUpload), wrap(serveMedia));
+
+// Ilova ikonkalari repo ildizida (icons/) — github.io ham, shu server ham bir xil nisbiy manzildan beradi
+app.use('/icons', express.static(path.join(__dirname, '..', '..', 'icons'), { maxAge: '1d' }));
 
 // Faqat frontend fayllari beriladi (baza, .env, ichki hujjatlar va kod tashqariga chiqmaydi)
 const ROOT = path.join(__dirname, '..', '..');
@@ -87,6 +90,9 @@ app.use((err, _req, res, _next) => {
 
 app.listen(PORT, () => {
   console.log(`KAMERA OPTOM QARSHI backend — http://localhost:${PORT} · baza: ${dialect}`);
+  // Ruscha tarjimasi bo'sh mahsulotlar fonda to'ldiriladi (server ishga tushishini kechiktirmaydi)
+  fillMissingRu().then(n => { if (n) console.log(`Ruscha tarjima to‘ldirildi: ${n} ta mahsulot`); })
+    .catch(e => console.error('Ruscha tarjimani to‘ldirib bo‘lmadi:', e.message));
   startSocialWorker();
   startStudioWorker();   // klon studiya sahnalari (studio_projects)   // AI video / Instagram navbati (ai_videos) — qayta ishga tushganda davom etadi
   // Parol faqat tasodifiy yaratilganda ko'rsatiladi (ADMIN_PASSWORD berilgan bo'lsa — loglarga yozilmaydi)

@@ -304,6 +304,8 @@ const EXTRA_COLUMNS = {
   banners: [['video', "video TEXT DEFAULT ''"]],
   stories: [['poster', "poster TEXT DEFAULT ''"]],
   orders: [['usta', 'usta INTEGER DEFAULT 0'], ['title', "title TEXT DEFAULT ''"], ['device', "device TEXT DEFAULT ''"], ['credit', "credit TEXT DEFAULT ''"]],
+  // usta maqomi ariza yuborilgan qurilmaga bog'lanadi (devices.code) — raqamni bilgan begona usta narxini ololmaydi
+  ustas: [['device', "device TEXT DEFAULT ''"]],
 };
 
 /* `?` → `$n` (satr va identifikator ichidagilarga tegmaydi) */
@@ -418,6 +420,23 @@ export const setSetting = async (key, value) => {
     'INSERT INTO settings (key, value) VALUES (?, ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value',
     key, JSON.stringify(value));
 };
+
+/* Qurilma: maxfiy `cid` (faqat qurilmaning localStorage'ida) ↔ 6 xonali ochiq kod.
+   Akkaunt yo'q, shuning uchun mijozning buyurtmalari va usta maqomi shu kod orqali qurilmaga bog'lanadi:
+   o'qish uchun telefon raqami yetmaydi — maxfiy cid ham kerak. */
+export const normCid = (v) => { const s = String(v || ''); return /^[A-Za-z0-9-]{8,64}$/.test(s) ? s : ''; };
+const newCode = () => String(100000 + Math.floor(Math.random() * 900000));
+/* cid → kod; create=true bo'lsa yangi qurilma ro'yxatga olinadi. Topilmasa — '' */
+export async function deviceCode(cid, { create = false, phone = '', dev = '' } = {}) {
+  cid = normCid(cid);
+  if (!cid) return '';
+  let row = await db.get('SELECT code FROM devices WHERE cid = ?', cid);
+  for (let i = 0; create && !row && i < 8; i++) {
+    await db.run('INSERT INTO devices (cid, code, phone, dev) VALUES (?, ?, ?, ?) ON CONFLICT DO NOTHING', cid, newCode(), phone, dev);
+    row = await db.get('SELECT code FROM devices WHERE cid = ?', cid);
+  }
+  return row ? row.code : '';
+}
 
 /* Buyurtma raqami: tranzaksiya ichida o'qib-yozish (bir vaqtdagi ikki buyurtma bir xil raqam olmasin) */
 export const nextSeq = (key, start) => db.tx(async () => {

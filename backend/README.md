@@ -42,8 +42,8 @@ Muhit o'zgaruvchilari: `PORT` (default 3000), `ADMIN_PASSWORD`, `JWT_SECRET`.
 | `GET /api/config` | Kredit stavkalari, kalkulyator narxlari, modul flaglari, status oqimi |
 | `POST /api/kit/calc` | Komplekt kalkulyatori — tarkib bo'yicha jami summa + muddatli to'lov variantlari |
 | `POST /api/orders` | Buyurtma yaratish (summa serverda hisoblanadi, ombor qoldig'i tekshiriladi va kamayadi) |
-| `GET /api/orders?phone=...` | Mijoz buyurtmalari |
-| `GET /api/orders/:id?phone=...` | Bitta buyurtma + status tarixi |
+| `GET /api/orders?phone=...&cid=...` | Mijozning shu qurilmadan bergan buyurtmalari (`cid` — qurilmaning maxfiy ID si; raqamning o'zi yetmaydi) |
+| `GET /api/orders/:id?phone=...&cid=...` | Bitta buyurtma + status tarixi (faqat buyurtma berilgan qurilmaga) |
 | `POST /api/callbacks` | Qo'ng'iroq / mutaxassis so'rovi |
 
 `POST /api/orders` misoli:

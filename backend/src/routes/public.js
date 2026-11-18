@@ -1,4 +1,4 @@
-import { db, getSetting, nowStr } from '../db.js';
+import { db, getSetting, nowStr, normCid, deviceCode } from '../db.js';
 import { asyncRouter, parseDataUrl, saveUpload } from '../uploads.js';
 import { shippingFee } from '../currency.js';
 import { publicRu } from '../i18n-ru.js';
@@ -71,7 +71,6 @@ publicRouter.get('/banners', async (_req, res) => {
 
 // ── "Ishlarimiz" videolari: layk va izohlar ──
 // Mijoz akkauntsiz — qurilma localStorage'dagi tasodifiy `cid` bilan tanib olinadi.
-const normCid = (v) => { const s = String(v || ''); return /^[A-Za-z0-9-]{8,64}$/.test(s) ? s : ''; };
 const cleanText = (v, max) => String(v || '').replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/g, '').replace(/\n{3,}/g, '\n\n').trim().slice(0, max);
 const commentAttempts = new Map();
 
@@ -142,7 +141,6 @@ publicRouter.delete('/stories/comments/:cmt', async (req, res) => {
 // ── Qurilma ID va call-markaz komplektlari ──
 // Har bir qurilma 6 xonali qisqa ID oladi (ilova tepasida ko'rinadi). Maxfiy `cid` faqat qurilmada —
 // navbatdagi komplektlarni faqat o'sha qurilma ola oladi, qisqa ID bo'yicha esa faqat admin yuboradi.
-const newCode = () => String(100000 + Math.floor(Math.random() * 900000));
 const devLabel = (v) => cleanText(v, 40).replace(/[^\w .·()/-]/g, '');
 async function pendingPushes(cid) {
   return (await db.all("SELECT id, title, note, items FROM device_pushes WHERE cid = ? AND status = 'Kutilmoqda' ORDER BY id", cid))
@@ -158,11 +156,8 @@ publicRouter.post('/device', async (req, res) => {
   const ph = String(b.phone || '').replace(/[^0-9]/g, '').slice(-9);
   const phone = ph.length === 9 ? ph : '';
   const dev = devLabel(b.dev);
-  let row = await db.get('SELECT code, phone, dev FROM devices WHERE cid = ?', cid);
-  for (let i = 0; !row && i < 8; i++) {
-    await db.run('INSERT INTO devices (cid, code, phone, dev) VALUES (?, ?, ?, ?) ON CONFLICT DO NOTHING', cid, newCode(), phone, dev);
-    row = await db.get('SELECT code, phone, dev FROM devices WHERE cid = ?', cid);
-  }
+  await deviceCode(cid, { create: true, phone, dev });
+  const row = await db.get('SELECT code, phone, dev FROM devices WHERE cid = ?', cid);
   if (!row) return res.status(503).json({ error: 'ID berilmadi — qayta urinib ko‘ring' });
   await db.run('UPDATE devices SET last_seen = ?, phone = ?, dev = ? WHERE cid = ?', nowStr(), phone || row.phone || '', dev || row.dev || '', cid);
   res.json({ code: row.code, inbox: await pendingPushes(cid) });
@@ -279,8 +274,14 @@ publicRouter.post('/ustas', async (req, res) => {
   if (photos.length < 1) return res.status(400).json({ error: 'Tasdiq uchun kamida 1 ta o‘rnatgan kamerangiz rasmini yuklang' });
   if (photos.length > USTA_MAX_PHOTOS) return res.status(400).json({ error: `Ko‘pi bilan ${USTA_MAX_PHOTOS} ta rasm yuklash mumkin` });
 
+  // Usta maqomi ariza yuborilgan qurilmaga bog'lanadi (eski ilova cid yubormaydi — birinchi tekshiruvda bog'lanadi)
+  const device = await deviceCode(b.cid, { create: true, phone });
   const prev = await db.get('SELECT * FROM ustas WHERE phone = ?', phone);
-  if (prev && prev.status === 'Tasdiqlangan') return res.status(409).json({ error: 'Bu raqam allaqachon usta sifatida tasdiqlangan' });
+  if (prev && prev.status === 'Tasdiqlangan') {
+    return res.status(409).json({ error: prev.device && prev.device !== device
+      ? 'Bu raqam boshqa qurilmada usta sifatida tasdiqlangan — qurilmani almashtirish uchun bizga qo‘ng‘iroq qiling'
+      : 'Bu raqam allaqachon usta sifatida tasdiqlangan' });
+  }
   if (prev && prev.status === 'Kutilmoqda') return res.status(409).json({ error: 'Arizangiz ko‘rib chiqilmoqda — admin tez orada javob beradi' });
 
   let parsed;
@@ -294,10 +295,10 @@ publicRouter.post('/ustas', async (req, res) => {
     const fields = [name, String(b.region || '').slice(0, 80), String(b.experience || '').slice(0, 80), String(b.note || '').slice(0, 500), JSON.stringify(saved)];
     if (prev) {
       // Rad etilgan ariza qayta yuboriladi
-      await db.run("UPDATE ustas SET name=?, region=?, experience=?, note=?, photos=?, status='Kutilmoqda', admin_note='', created_at=?, reviewed_at=NULL WHERE id=?",
-        ...fields, nowStr(), prev.id);
+      await db.run("UPDATE ustas SET name=?, region=?, experience=?, note=?, photos=?, status='Kutilmoqda', admin_note='', created_at=?, reviewed_at=NULL, device=? WHERE id=?",
+        ...fields, nowStr(), device, prev.id);
     } else {
-      await db.run('INSERT INTO ustas (name, region, experience, note, photos, phone) VALUES (?,?,?,?,?,?)', ...fields, phone);
+      await db.run('INSERT INTO ustas (name, region, experience, note, photos, phone, device) VALUES (?,?,?,?,?,?,?)', ...fields, phone, device);
     }
   });
   res.status(201).json({ status: 'Kutilmoqda', message: 'Ariza qabul qilindi — admin rasmlarni ko‘rib chiqib tasdiqlaydi' });
@@ -307,8 +308,14 @@ publicRouter.post('/ustas', async (req, res) => {
 publicRouter.get('/ustas/status', async (req, res) => {
   const phone = normPhone(req.query.phone);
   if (phone.length !== 9) return res.status(400).json({ error: 'phone parametri kerak' });
-  const u = await db.get('SELECT name, status, admin_note, reviewed_at FROM ustas WHERE phone = ?', phone);
+  const u = await db.get('SELECT id, name, status, admin_note, reviewed_at, device FROM ustas WHERE phone = ?', phone);
   if (!u) return res.json({ status: null });
+  // Ariza ma'lumoti va usta narxlari faqat ariza bog'langan qurilmaga beriladi — telefon raqamini bilishning o'zi yetmaydi.
+  // Bog'lanmagan eski ariza birinchi murojaat qilgan qurilmaga bog'lanadi (admin «Qurilmani uzish» bilan qayta ochadi).
+  const code = await deviceCode(req.query.cid, { create: true, phone });
+  if (!code) return res.json({ status: null });
+  if (!u.device) { await db.run("UPDATE ustas SET device = ? WHERE id = ? AND (device IS NULL OR device = '')", code, u.id); u.device = code; }
+  if (u.device !== code) return res.json({ status: null, other_device: true });
   const out = { status: u.status, name: u.name, admin_note: u.admin_note || '', reviewed_at: u.reviewed_at };
   if (u.status === 'Tasdiqlangan') {
     const prices = {};

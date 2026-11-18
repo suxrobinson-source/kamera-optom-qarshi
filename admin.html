@@ -1960,6 +1960,15 @@
         ustaRefresh();
       } catch (e) { flash(e.message); }
     }
+    /* Usta narxlari bitta qurilmaga bog‘langan. Usta telefonini almashtirsa — uziladi va ilovani birinchi ochgan qurilmaga qayta bog‘lanadi */
+    async function ustaUnbind(u) {
+      if (typeof confirm === 'function' && !confirm(`${u.name}: usta maqomi hozirgi qurilmadan uzilsinmi?\nShu raqam bilan ilovani birinchi ochgan telefon usta narxlarini ko‘radi.`)) return;
+      try {
+        await api('/api/admin/ustas/' + u.id, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ unbind: true }) });
+        flash('Qurilma uzildi — usta ilovani yangi telefonda ochsin');
+        ustaRefresh();
+      } catch (e) { flash(e.message); }
+    }
     function mUstas() {
       const list = Array.isArray(S.ustas) ? S.ustas : [];
       const ST = { 'Kutilmoqda': [AMB, 'rgba(255,176,32,.12)'], 'Tasdiqlangan': [A, 'rgba(255,79,18,.12)'], 'Rad etildi': [RED, 'rgba(255,77,61,.12)'] };
@@ -1991,6 +2000,10 @@
       ${photos.map(src => `<a href="${esc(src)}" target="_blank" rel="noopener" style="display:block;aspect-ratio:1;border-radius:12px;overflow:hidden;border:1px solid var(--line3);background:var(--tile)"><img src="${esc(src)}" alt="" loading="lazy" style="width:100%;height:100%;object-fit:cover"></a>`).join('')}
     </div>
     ${u.admin_note ? `<div style="font:400 10.5px var(--fm);color:var(--dim2);margin-top:9px">Izoh: ${esc(u.admin_note)}</div>` : ''}
+    ${u.status === 'Tasdiqlangan' ? `<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;font:400 10.5px var(--fm);color:var(--dim2);margin-top:9px">
+      <span>${u.device ? 'Qurilma ID: ' + esc(u.device) : 'Qurilmaga bog‘lanmagan — ilovani birinchi ochgan telefonga bog‘lanadi'}</span>
+      ${u.device ? `<span onclick="${h(() => ustaUnbind(u))}" title="Usta telefonini almashtirgan bo‘lsa" style="flex:none;color:var(--acc);font-weight:600;cursor:pointer">Qurilmani uzish</span>` : ''}
+    </div>` : ''}
     <div style="display:flex;gap:8px;margin-top:13px">
       ${u.status !== 'Tasdiqlangan' ? `<div onclick="${h(() => ustaSetStatus(u, 'Tasdiqlangan'))}" style="flex:1;text-align:center;padding:10px;border-radius:14px;background:var(--acc);color:#ffffff;font:600 11.5px var(--fb);cursor:pointer">Tasdiqlash</div>` : ''}
       ${u.status !== 'Rad etildi' ? `<div onclick="${h(() => ustaSetStatus(u, 'Rad etildi'))}" style="flex:1;text-align:center;padding:10px;border-radius:14px;border:1px solid rgba(255,77,61,.35);background:rgba(255,77,61,.08);color:${RED};font:600 11.5px var(--fb);cursor:pointer">${u.status === 'Tasdiqlangan' ? 'Usta maqomini olish' : 'Rad etish'}</div>` : ''}

@@ -9,8 +9,8 @@
     content="Kuzatuv kameralari, videoregistratorlar va xavfsizlik tizimlari — Qarshi va butun O‘zbekiston bo‘ylab optom narxlarda.">
   <meta name="theme-color" content="#f3f1ed">
   <link rel="manifest" href="manifest.webmanifest">
-  <link rel="icon" type="image/png" sizes="192x192" href="assets/icons/icon-192.png">
-  <link rel="apple-touch-icon" href="assets/icons/icon-192.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
   <script>if ('serviceWorker' in navigator) window.addEventListener('load', function () { navigator.serviceWorker.register('sw.js').catch(function () { }); });</script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -4711,7 +4711,8 @@
       const rawPh = String(S.myPhone).replace(/[^0-9]/g, '');
       if (rawPh.length !== 9) return;
       try {
-        const orders = await j('/api/orders/my?phone=' + rawPh);
+        /* server faqat shu qurilmadan berilgan buyurtmalarni qaytaradi (raqamning o‘zi yetmaydi — maxfiy cid ham kerak) */
+        const orders = await j('/api/orders/my?phone=' + rawPh + '&cid=' + storyCid());
         if (Array.isArray(orders)) {
           const orderStatus = { ...S.orderStatus };
           const notes = { ...S.notes };
@@ -4739,7 +4740,9 @@
               cloud: o.cloud
             };
           });
-          set({ myOrders, orderStatus, notes });
+          /* qurilmaga bog‘lanmagan eski buyurtmalar server ro‘yxatida yo‘q — qurilmada saqlangan nusxasi qoladi */
+          const got = new Set(myOrders.map(o => o.id));
+          set({ myOrders: [...myOrders, ...(S.myOrders || []).filter(o => o && !got.has(o.id))], orderStatus, notes });
         }
       } catch (e) { }
     }
@@ -5226,6 +5229,7 @@
               addrNote: addr && addr.note ? addr.note : '',
               title: o.what || '',
               device: S.devId || '',
+              cid: storyCid(),
               credit: o.credit || undefined,
               items: skus.map(([sku, q]) => ({ sku, qty: q })),
               install: o.install !== undefined ? !!o.install : !!(S.bagInstall || S.install),
@@ -7999,7 +8003,7 @@
       const ph = String(S.myPhone || '').replace(/[^0-9]/g, '');
       if (ph.length !== 9) { S.usta = null; applyUstaPrices(null); return; }
       try {
-        const r = await fetch('/api/ustas/status?phone=' + ph);
+        const r = await fetch('/api/ustas/status?phone=' + ph + '&cid=' + storyCid());
         if (!r.ok) return;
         const u = await r.json();
         S.usta = u && u.status ? u : null;
@@ -8058,7 +8062,7 @@
       try {
         const r = await fetch('/api/ustas', {
           method: 'POST', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name: f.name.trim(), phone: ph, region: f.region, experience: f.exp, note: f.note, photos: f.photos })
+          body: JSON.stringify({ cid: storyCid(), name: f.name.trim(), phone: ph, region: f.region, experience: f.exp, note: f.note, photos: f.photos })
         });
         const d = await r.json().catch(() => ({}));
         if (!r.ok) throw new Error(d.error || 'Ariza yuborilmadi — qayta urinib ko‘ring');

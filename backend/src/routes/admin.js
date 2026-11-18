@@ -73,14 +73,30 @@ adminRouter.patch('/orders/:id/status', async (req, res) => {
   }
   if (![...flow, 'Bekor'].includes(next)) return res.status(400).json({ error: `Status noto'g'ri. Ruxsat: ${flow.join(' → ')} yoki Bekor` });
 
-  await db.tx(async () => {
-    await db.run('UPDATE orders SET status = ? WHERE id = ?', next, id);
-    await db.run('INSERT INTO order_events (order_id, status) VALUES (?, ?)', id, next);
-    // Bekor qilinganda ombor qoldig'i qaytariladi
-    if (next === 'Bekor' && order.status !== 'Bekor') {
-      for (const it of JSON.parse(order.items)) await db.run('UPDATE products SET qty = qty + ? WHERE sku = ?', it.qty, it.sku);
-    }
-  });
+  if (next === order.status) return res.json(parseOrder(order));
+
+  try {
+    await db.tx(async () => {
+      const items = JSON.parse(order.items);
+      // Bekor qilinganda ombor qoldig'i qaytariladi; bekor qilingan buyurtma qayta ochilsa — yana band qilinadi
+      // (aks holda Bekor → Yangi → Bekor har safar qoldiqni oshirib yuborardi)
+      if (next === 'Bekor') {
+        for (const it of items) await db.run('UPDATE products SET qty = qty + ? WHERE sku = ?', it.qty, it.sku);
+      } else if (order.status === 'Bekor') {
+        for (const it of items) {
+          const p = await db.get('SELECT name, qty FROM products WHERE sku = ?' + db.forUpdate, it.sku);
+          if (!p) continue; // microSD variantlari va o'chirilgan mahsulotlar omborda yuritilmaydi
+          if (p.qty < it.qty) throw Object.assign(new Error(`Qayta ochib bo‘lmaydi: "${p.name}" omborda yetarli emas (qoldiq: ${p.qty}, kerak: ${it.qty})`), { status: 409 });
+          await db.run('UPDATE products SET qty = qty - ? WHERE sku = ?', it.qty, it.sku);
+        }
+      }
+      await db.run('UPDATE orders SET status = ? WHERE id = ?', next, id);
+      await db.run('INSERT INTO order_events (order_id, status) VALUES (?, ?)', id, next);
+    });
+  } catch (e) {
+    if (e.status === 409) return res.status(409).json({ error: e.message });
+    throw e;
+  }
   res.json(parseOrder(await db.get('SELECT * FROM orders WHERE id = ?', id)));
 });
 
@@ -277,10 +293,15 @@ adminRouter.get('/ustas', async (_req, res) => {
   res.json((await db.all(`SELECT * FROM ustas ORDER BY CASE status WHEN 'Kutilmoqda' THEN 0 WHEN 'Tasdiqlangan' THEN 1 ELSE 2 END, created_at DESC`)).map(parseUsta));
 });
 
-// PATCH /api/admin/ustas/:id — { status, admin_note? }
+// PATCH /api/admin/ustas/:id — { status, admin_note? } yoki { unbind: true }
+// unbind — usta telefonini almashtirganda: maqom qurilmadan uziladi va ilovani birinchi ochgan qurilmaga qayta bog'lanadi
 adminRouter.patch('/ustas/:id', async (req, res) => {
   const u = await db.get('SELECT * FROM ustas WHERE id = ?', parseInt(req.params.id, 10) || 0);
   if (!u) return res.status(404).json({ error: 'Ariza topilmadi' });
+  if (req.body?.unbind) {
+    await db.run("UPDATE ustas SET device = '' WHERE id = ?", u.id);
+    return res.json(parseUsta(await db.get('SELECT * FROM ustas WHERE id = ?', u.id)));
+  }
   const status = String(req.body?.status || '');
   if (!USTA_STATUSES.includes(status)) return res.status(400).json({ error: 'Status: ' + USTA_STATUSES.join(', ') });
   await db.run('UPDATE ustas SET status = ?, admin_note = ?, reviewed_at = ? WHERE id = ?',

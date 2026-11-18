@@ -44,6 +44,18 @@ export const wrap = (fn) => (typeof fn !== 'function' || fn.length >= 4) ? fn : 
   try { const p = fn(req, res, next); if (p && typeof p.catch === 'function') p.catch(next); }
   catch (e) { next(e); }
 };
+/* Oddiy so'rov cheklovi (xotirada): `key` uchun `windowMs` ichida `max` tadan ko'p bo'lsa true.
+   Server qayta ishga tushganda hisob nolga tushadi — bu spamni sekinlatish uchun yetarli. */
+export function overLimit(map, key, max, windowMs) {
+  const now = Date.now();
+  if (map.size > 5000) for (const [k, v] of map) if (now > v.resetAt) map.delete(k);
+  let rec = map.get(key);
+  if (!rec || now > rec.resetAt) { rec = { n: 0, resetAt: now + windowMs }; map.set(key, rec); }
+  rec.n++;
+  return rec.n > max;
+}
+export const clientIp = (req) => req.ip || req.socket?.remoteAddress || 'local';
+
 export function asyncRouter() {
   const r = Router();
   for (const m of ['get', 'post', 'put', 'patch', 'delete', 'use']) {

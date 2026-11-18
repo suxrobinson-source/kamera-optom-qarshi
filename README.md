@@ -71,7 +71,7 @@ Server standart `http://localhost:3000` portida ishga tushadi:
 ## 🌐 Internetga joylash: github.io + Heroku
 
 - **Sahifalar (github.io)**: https://suxrobinson-source.github.io/kamera-optom-qarshi/ — `app.html`, `admin.html`. GitHub Pages `master` tarmog'idan avtomatik yangilanadi.
-- **API (Heroku)**: https://kamera-optom-qarshi-129c3b4fde7e.herokuapp.com — repo ildizidagi `package.json` va `Procfile` bilan ishga tushadi (`npm start` → `backend/src/server.js`). Heroku manzili `config.js` dagi `KO_API_HOSTED` da.
+- **API (Heroku)**: https://kamera-optom-qarshi-uz-00dda0a0b892.herokuapp.com (Heroku ilova `kamera-optom-qarshi-uz`, EU; ffmpeg + nodejs buildpack, Postgres essential-0) — repo ildizidagi `package.json` va `Procfile` bilan ishga tushadi (`npm start` → `backend/src/server.js`). Heroku manzili `config.js` dagi `KO_API_HOSTED` da.
 - **Baza**: `DATABASE_URL` bo'lsa PostgreSQL (Heroku Postgres), bo'lmasa lokal SQLite (`backend/data/kamera.db`). Kod ikkalasida bir xil ishlaydi (`backend/src/db.js`).
 - **Yuklangan rasmlar** (admin mahsulot rasmlari, usta arizalari) bazada saqlanadi va `/assets/...` manzilidan beriladi — Heroku diski vaqtinchalik bo'lgani uchun.
 - **Heroku Config Vars**: `JWT_SECRET`, `ADMIN_PASSWORD` (birinchi ishga tushishda admin yaratiladi), `DATABASE_URL` (Postgres qo'shimchasi o'zi qo'yadi).

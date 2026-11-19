@@ -578,6 +578,23 @@
       font-variant-numeric: tabular-nums
     }
 
+    /* tor ekran yoki katta shrift (Android «Shrift o‘lchami»): tugmalar nom ustiga chiqmasin */
+    .hd-brand > div { overflow: hidden }
+    .hd-loc { max-width: 100% }
+    .hd-loc b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap }
+    @media (max-width: 360px) {
+      .hd { padding-left: 14px; padding-right: 14px; gap: 6px }
+      .hd-end { gap: 4px }
+      .hd-id { padding: 0 7px }
+      .hd-id:not(.hd-lang) span { display: none }
+      .hd-lang { min-width: 34px }
+      .hd-brand { gap: 7px }
+      .hd-brand > svg { width: 32px; height: 32px }
+    }
+    @media (max-width: 300px) {
+      .hd-brand > svg { display: none }
+    }
+
     /* Til tugmasi: UZ → ЎЗ → RU */
     .hd-lang {
       justify-content: center;
